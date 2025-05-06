@@ -66,11 +66,3 @@ Servidor rodando em `http://localhost:3000`.
 ## 🤝 Contribuição
 
 Sinta-se à vontade para contribuir.
-
-## 📄 Licença
-
-[Adicione a licença aqui]
-
-## 📧 Contato
-
-[Seu Contato]
