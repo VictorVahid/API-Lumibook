@@ -1,8 +1,8 @@
 import express from "express";
 import {
-  createAuditoriaLog,
-  getAllAuditoriaLogs,
-  getAuditoriaLogById,
+	createAuditoriaLog,
+	getAllAuditoriaLogs,
+	getAuditoriaLogById,
 } from "../controllers/auditoriaController.js";
 
 const router = express.Router();
