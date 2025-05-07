@@ -23,7 +23,7 @@ Esta é uma API RESTful simples para gerenciar informações de uma livraria, pe
 3.  `npm install`
 4.  Crie um arquivo `.env` na raiz do projeto e adicione sua string de conexão MongoDB:
     ```
-    MONGODB_URI=mongodb+srv://<seu_usuario>:<sua_senha>@<seu_cluster>.mongodb.net/<seu_banco_de_dados>?retryWrites=true&w=majority
+    MONGO_URI = "mongodb+srv://VahidVictor:VwCdkFcP5sNGUzVx@cluster0.q2wsorl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
     ```
     ⚠️ **Importante:** Substitua os placeholders pelas suas informações de conexão. O arquivo `.env` é ignorado pelo Git.
 
