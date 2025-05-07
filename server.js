@@ -43,7 +43,6 @@ app.use("/api/editoras", editorasRoutes);
 app.use("/api/funcionarios", funcionariosRoutes);
 app.use("/api/itensEmprestimo", itensEmprestimoRoutes);
 app.use("/api/livrosAutores", livrosAutoresRoutes);
-
 app.use("/api/auditoria", auditoriaRoutes);
 
 app.get("/api/status", (req, res) => {
