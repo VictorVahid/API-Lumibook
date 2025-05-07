@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-// Define o schema dos livros com validações e restrições básicas
 const livrosSchema = new mongoose.Schema(
 	{
 		titulo: {
@@ -23,6 +22,11 @@ const livrosSchema = new mongoose.Schema(
 			required: true,
 			maxlength: 255,
 		},
+		genero: {
+			type: String,
+			required: true,
+			maxlength: 100,
+		},
 	},
 	{
 		timestamps: true,
@@ -30,5 +34,6 @@ const livrosSchema = new mongoose.Schema(
 );
 
 const Livro = mongoose.model("Livro", livrosSchema);
+
 
 export default Livro;

@@ -1,23 +1,31 @@
 import mongoose from "mongoose";
 
-const editorasSchema = new mongoose.Schema(
+const editoraSchema = new mongoose.Schema(
 	{
 		nome: {
 			type: String,
 			required: true,
 			maxlength: 255,
 		},
-		cidade: {
+		cnpj: {
 			type: String,
-			maxlength: 100,
+			required: true,
+			unique: true,
+			maxlength: 20,
 		},
-		estado: {
-			type: String,
-			maxlength: 50,
+		telefone: {
+			ddd: { type: String, required: true, maxlength: 3 },
+			numero: { type: String, required: true, maxlength: 10 },
 		},
-		pais: {
-			type: String,
-			maxlength: 50,
+		endereco: {
+			rua: { type: String, required: true, maxlength: 255 },
+			numero: { type: String, required: true, maxlength: 10 },
+			complemento: { type: String, maxlength: 100 },
+			bairro: { type: String, required: true, maxlength: 100 },
+			cidade: { type: String, required: true, maxlength: 100 },
+			estado: { type: String, required: true, maxlength: 100 },
+			pais: { type: String, required: true, maxlength: 100 },
+			cep: { type: String, required: true, maxlength: 20 },
 		},
 	},
 	{
@@ -25,6 +33,6 @@ const editorasSchema = new mongoose.Schema(
 	}
 );
 
-const Editora = mongoose.model("Editora", editorasSchema);
+const Editora = mongoose.model("Editora", editoraSchema);
 
 export default Editora;

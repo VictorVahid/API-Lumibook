@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
-const usuariosSchema = new mongoose.Schema(
+const usuarioSchema = new mongoose.Schema(
 	{
-		nome_completo: {
+		nome: {
 			type: String,
 			required: true,
 			maxlength: 255,
@@ -10,31 +10,33 @@ const usuariosSchema = new mongoose.Schema(
 		email: {
 			type: String,
 			required: true,
-			maxlength: 255,
 			unique: true,
+			maxlength: 255,
 		},
-		senha_hash: {
+		senha: {
 			type: String,
 			required: true,
 			maxlength: 255,
 		},
-		tipo_usuario: {
+		telefone: {
+			ddd: { type: String, required: true, maxlength: 3 },
+			numero: { type: String, required: true, maxlength: 10 },
+		},
+		endereco: {
+			rua: { type: String, required: true, maxlength: 255 },
+			numero: { type: String, required: true, maxlength: 10 },
+			complemento: { type: String, maxlength: 100 },
+			bairro: { type: String, required: true, maxlength: 100 },
+			cidade: { type: String, required: true, maxlength: 100 },
+			estado: { type: String, required: true, maxlength: 100 },
+			pais: { type: String, required: true, maxlength: 100 },
+			cep: { type: String, required: true, maxlength: 20 },
+		},
+		role: {
 			type: String,
+			enum: ["usuario", "admin"],
+			default: "usuario",
 			required: true,
-			maxlength: 20,
-			default: "Comum",
-		},
-		ativo: {
-			type: Boolean,
-			default: true,
-		},
-		endereco_id: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "Endereco",
-		},
-		telefone_id: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "Telefone",
 		},
 	},
 	{
@@ -42,6 +44,6 @@ const usuariosSchema = new mongoose.Schema(
 	}
 );
 
-const Usuario = mongoose.model("Usuario", usuariosSchema);
+const Usuario = mongoose.model("Usuario", usuarioSchema);
 
 export default Usuario;
