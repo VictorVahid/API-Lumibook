@@ -5,8 +5,8 @@ const livrosSchema = new mongoose.Schema(
 	{
 		titulo: {
 			type: String,
-			required: true, // Campo obrigatório
-			maxlength: 255, // Limite de caracteres
+			required: true,
+			maxlength: 255,
 		},
 		autor: {
 			type: String,
@@ -25,12 +25,10 @@ const livrosSchema = new mongoose.Schema(
 		},
 	},
 	{
-		timestamps: true, // Cria campos createdAt e updatedAt automaticamente
+		timestamps: true,
 	}
 );
 
-// Cria o modelo Livro baseado no schema acima
 const Livro = mongoose.model("Livro", livrosSchema);
 
-// Exporta o modelo para ser usado nos controllers
 export default Livro;

@@ -11,20 +11,19 @@ import {
 
 const router = express.Router();
 
-// Rota POST - cria um novo livro
+// Rota POST
 router.post("/", createLivro);
 
-// Rota GET - retorna todos os livros
+// Rota GET
 router.get("/", getAllLivros);
 
-// Rota GET - retorna um livro pelo ID
+// Rota GET
 router.get("/:id", getLivroById);
 
-// Rota PUT - atualiza um livro pelo ID
+// Rota PUT
 router.put("/:id", updateLivro);
 
-// Rota DELETE - remove um livro pelo ID
+// Rota DELETE
 router.delete("/:id", deleteLivro);
 
-// Exporta as rotas para serem usadas no server.js
 export default router;

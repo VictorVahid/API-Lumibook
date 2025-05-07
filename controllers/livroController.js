@@ -1,4 +1,4 @@
-import Livro from "../db/schemas/livros.js"; // Modelo Mongoose do recurso "Livro"
+import Livro from "../db/schemas/livros.js"; //Importa o model Livro.js dos schemas
 
 // Cria um novo livro
 export const createLivro = async (req, res) => {

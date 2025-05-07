@@ -1,16 +1,16 @@
-import express from "express"; // Framework para criar servidor e rotas
-import mongoose from "mongoose"; // ODM para trabalhar com MongoDB
-import cors from "cors"; // Middleware para permitir requisições de outros domínios (ex: front-end)
-import dotenv from "dotenv"; // Carrega variáveis de ambiente do arquivo .env
-import livroRoutes from "./routes/livros.js"; // Rotas relacionadas ao recurso "livros"
+import express from "express"; 
+import mongoose from "mongoose"; 
+import cors from "cors"; 
+import dotenv from "dotenv"; 
+import livroRoutes from "./routes/livros.js"; 
 
-dotenv.config(); // Carrega variáveis do .env
+dotenv.config(); 
 
-const app = express(); // Inicializa o app Express
+const app = express(); 
 
 // Middlewares globais
-app.use(cors()); // Permite requisições CORS (de outros domínios)
-app.use(express.json()); // Permite ler JSON no corpo das requisições
+app.use(cors()); 
+app.use(express.json()); 
 
 // Conexão com o MongoDB usando a URI do .env
 mongoose
@@ -19,13 +19,12 @@ mongoose
 	.catch((err) => console.error("❌ Erro ao conectar no MongoDB:", err));
 
 // Rotas da aplicação
-app.use("/api/livros", livroRoutes); // CRUD de livros
+app.use("/api/livros", livroRoutes); 
 app.get("/api/status", (req, res) => {
-	// Rota de status para verificar se API está no ar
 	res.status(200).json({ status: "API online 🚀" });
 });
 
-// Inicializa o servidor na porta configurada ou padrão 3000
+// Inicializa o servidor na porta 3000
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
 	console.log(`🟢 Servidor rodando na porta ${PORT}`);
