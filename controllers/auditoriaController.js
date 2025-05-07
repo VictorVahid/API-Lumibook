@@ -30,5 +30,3 @@ export const getAuditoriaLogById = async (req, res) => {
 		res.status(500).send(`Erro ao buscar log de auditoria: ${error}`);
 	}
 };
-
-// Geralmente não se atualiza ou deleta logs de auditoria

@@ -32,7 +32,7 @@ const emprestimosSchema = new mongoose.Schema(
 			type: Number,
 			default: 0,
 		},
-		datas_devolucao: [Date], // Histórico de datas de devolução (para renovações)
+		datas_devolucao: [Date], 
 	},
 	{
 		timestamps: true,

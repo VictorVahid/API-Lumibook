@@ -1,6 +1,6 @@
 import Livro from "../db/schemas/livros.js"; //Importa o model Livro.js dos schemas
 
-// Cria um novo livro
+
 export const createLivro = async (req, res) => {
 	try {
 		const newLivro = await Livro.create(req.body);
@@ -10,7 +10,6 @@ export const createLivro = async (req, res) => {
 	}
 };
 
-// Retorna todos os livros cadastrados
 export const getAllLivros = async (req, res) => {
 	try {
 		const livrosAll = await Livro.find();
@@ -20,7 +19,7 @@ export const getAllLivros = async (req, res) => {
 	}
 };
 
-// Retorna um único livro pelo ID
+
 export const getLivroById = async (req, res) => {
 	try {
 		const livro = await Livro.findById(req.params.id);
@@ -31,7 +30,7 @@ export const getLivroById = async (req, res) => {
 	}
 };
 
-// Atualiza um livro existente
+
 export const updateLivro = async (req, res) => {
 	try {
 		const update = await Livro.findByIdAndUpdate(req.params.id, req.body, {
@@ -44,7 +43,7 @@ export const updateLivro = async (req, res) => {
 	}
 };
 
-// Deleta um livro pelo ID
+
 export const deleteLivro = async (req, res) => {
 	try {
 		const deleted = await Livro.findByIdAndDelete(req.params.id);

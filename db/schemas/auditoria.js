@@ -4,7 +4,7 @@ const auditoriaSchema = new mongoose.Schema(
 	{
 		usuario_id: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "Usuario", // Ou Funcionario, dependendo de quem realiza as ações
+			ref: "Usuario", 
 		},
 		tipo_acao: {
 			type: String,
@@ -16,7 +16,7 @@ const auditoriaSchema = new mongoose.Schema(
 			maxlength: 255,
 		},
 		detalhes: {
-			type: mongoose.Schema.Types.Mixed, // Para armazenar detalhes específicos da ação (JSON)
+			type: mongoose.Schema.Types.Mixed, 
 		},
 		data_hora: {
 			type: Date,

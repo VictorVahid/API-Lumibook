@@ -28,8 +28,8 @@ app.use(express.json());
 // Conexão com o MongoDB usando a URI do .env
 mongoose
 	.connect(process.env.MONGO_URI)
-	.then(() => console.log("✅ MongoDB conectado"))
-	.catch((err) => console.error("❌ Erro ao conectar no MongoDB:", err));
+	.then(() => console.log("🟢 MongoDB conectado"))
+	.catch((err) => console.error("	🔴 Erro ao conectar no MongoDB:", err));
 
 // Rotas da aplicação
 app.use("/api/livros", livroRoutes);
