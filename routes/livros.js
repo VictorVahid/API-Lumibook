@@ -1,6 +1,5 @@
 import express from "express";
 
-// Importa os controladores responsáveis por cada operação CRUD
 import {
 	createLivro,
 	getAllLivros,
