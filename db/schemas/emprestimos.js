@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const emprestimosSchema = new mongoose.Schema(
+const emprestimoSchema = new mongoose.Schema(
 	{
 		usuario_id: {
 			type: mongoose.Schema.Types.ObjectId,
@@ -11,34 +11,23 @@ const emprestimosSchema = new mongoose.Schema(
 			type: Date,
 			default: Date.now,
 		},
-		data_devolucao_prevista: {
+		data_prevista_devolucao: {
 			type: Date,
 			required: true,
 		},
-		data_devolucao: {
-			type: Date,
-		},
-		status: {
-			type: String,
-			required: true,
-			maxlength: 20,
-			default: "Em andamento",
-		},
-		observacoes: {
-			type: String,
-			maxlength: 255,
-		},
-		numero_renovacoes: {
-			type: Number,
-			default: 0,
-		},
-		datas_devolucao: [Date], 
+		itens: [
+			{
+				exemplar_id: {
+					type: mongoose.Schema.Types.ObjectId,
+					ref: "Exemplar",
+					required: true,
+				},
+				data_devolucao_item: Date,
+			},
+		],
 	},
-	{
-		timestamps: true,
-	}
+	{ timestamps: true }
 );
 
-const Emprestimo = mongoose.model("Emprestimo", emprestimosSchema);
-
+const Emprestimo = mongoose.model("Emprestimo", emprestimoSchema);
 export default Emprestimo;

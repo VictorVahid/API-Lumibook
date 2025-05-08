@@ -2,52 +2,65 @@ import Autor from "../db/schemas/autores.js";
 
 export const createAutor = async (req, res) => {
 	try {
-		const newAutor = await Autor.create(req.body);
-		res.status(201).json(newAutor);
-	} catch (error) {
-		res.status(500).send(`Erro ao criar autor: ${error}`);
+		const novoAutor = new Autor(req.body);
+		const autorSalvo = await novoAutor.save();
+		res.status(201).json(autorSalvo);
+	} catch (erro) {
+		res.status(400).json({ mensagem: erro.message });
 	}
 };
 
 export const getAllAutores = async (req, res) => {
 	try {
-		const autoresAll = await Autor.find();
-		res.json(autoresAll);
-	} catch (error) {
-		res.status(500).send(`Erro ao buscar autores: ${error}`);
+		const autores = await Autor.find();
+		res.json(autores);
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };
 
 export const getAutorById = async (req, res) => {
 	try {
 		const autor = await Autor.findById(req.params.id);
-		if (!autor) return res.status(404).send("Autor não encontrado");
-		res.json(autor);
-	} catch (error) {
-		res.status(500).send(`Erro ao buscar autor: ${error}`);
+		if (autor) {
+			res.json(autor);
+		} else {
+			res.status(404).json({ mensagem: "Autor não encontrado" });
+		}
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };
 
 export const updateAutor = async (req, res) => {
 	try {
-		const update = await Autor.findByIdAndUpdate(req.params.id, req.body, {
-			new: true,
-		});
-		if (!update) return res.status(404).send("Autor não encontrado");
-		res.json(update);
-	} catch (error) {
-		res.status(500).send(`Erro ao atualizar autor: ${error}`);
+		const autorAtualizado = await Autor.findByIdAndUpdate(
+			req.params.id,
+			req.body,
+			{
+				new: true,
+				runValidators: true,
+			}
+		);
+		if (autorAtualizado) {
+			res.json(autorAtualizado);
+		} else {
+			res.status(404).json({ mensagem: "Autor não encontrado" });
+		}
+	} catch (erro) {
+		res.status(400).json({ mensagem: erro.message });
 	}
 };
 
 export const deleteAutor = async (req, res) => {
 	try {
-		const deleted = await Autor.findByIdAndDelete(req.params.id);
-		if (!deleted) return res.status(404).send("Autor não encontrado");
-		res
-			.status(200)
-			.json({ message: "Autor deletado com sucesso", deletedAutor: deleted });
-	} catch (error) {
-		res.status(500).send(`Erro ao deletar autor: ${error}`);
+		const autorDeletado = await Autor.findByIdAndDelete(req.params.id);
+		if (autorDeletado) {
+			res.status(204).send();
+		} else {
+			res.status(404).json({ mensagem: "Autor não encontrado" });
+		}
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };

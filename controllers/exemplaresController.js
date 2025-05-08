@@ -2,19 +2,20 @@ import Exemplar from "../db/schemas/exemplares.js";
 
 export const createExemplar = async (req, res) => {
 	try {
-		const newExemplar = await Exemplar.create(req.body);
-		res.status(201).json(newExemplar);
-	} catch (error) {
-		res.status(500).send(`Erro ao criar exemplar: ${error}`);
+		const novoExemplar = new Exemplar(req.body);
+		const exemplarSalvo = await novoExemplar.save();
+		res.status(201).json(exemplarSalvo);
+	} catch (erro) {
+		res.status(400).json({ mensagem: erro.message });
 	}
 };
 
 export const getAllExemplares = async (req, res) => {
 	try {
-		const exemplaresAll = await Exemplar.find().populate("livro_id");
-		res.json(exemplaresAll);
-	} catch (error) {
-		res.status(500).send(`Erro ao buscar exemplares: ${error}`);
+		const exemplares = await Exemplar.find().populate("livro_id");
+		res.json(exemplares);
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };
 
@@ -23,36 +24,42 @@ export const getExemplarById = async (req, res) => {
 		const exemplar = await Exemplar.findById(req.params.id).populate(
 			"livro_id"
 		);
-		if (!exemplar) return res.status(404).send("Exemplar não encontrado");
-		res.json(exemplar);
-	} catch (error) {
-		res.status(500).send(`Erro ao buscar exemplar: ${error}`);
+		if (exemplar) {
+			res.json(exemplar);
+		} else {
+			res.status(404).json({ mensagem: "Exemplar não encontrado" });
+		}
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };
 
 export const updateExemplar = async (req, res) => {
 	try {
-		const update = await Exemplar.findByIdAndUpdate(req.params.id, req.body, {
-			new: true,
-		}).populate("livro_id");
-		if (!update) return res.status(404).send("Exemplar não encontrado");
-		res.json(update);
-	} catch (error) {
-		res.status(500).send(`Erro ao atualizar exemplar: ${error}`);
+		const exemplarAtualizado = await Exemplar.findByIdAndUpdate(
+			req.params.id,
+			req.body,
+			{ new: true, runValidators: true }
+		);
+		if (exemplarAtualizado) {
+			res.json(exemplarAtualizado);
+		} else {
+			res.status(404).json({ mensagem: "Exemplar não encontrado" });
+		}
+	} catch (erro) {
+		res.status(400).json({ mensagem: erro.message });
 	}
 };
 
 export const deleteExemplar = async (req, res) => {
 	try {
-		const deleted = await Exemplar.findByIdAndDelete(req.params.id);
-		if (!deleted) return res.status(404).send("Exemplar não encontrado");
-		res
-			.status(200)
-			.json({
-				message: "Exemplar deletado com sucesso",
-				deletedExemplar: deleted,
-			});
-	} catch (error) {
-		res.status(500).send(`Erro ao deletar exemplar: ${error}`);
+		const exemplarDeletado = await Exemplar.findByIdAndDelete(req.params.id);
+		if (exemplarDeletado) {
+			res.status(204).send();
+		} else {
+			res.status(404).json({ mensagem: "Exemplar não encontrado" });
+		}
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };

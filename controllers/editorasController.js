@@ -2,55 +2,62 @@ import Editora from "../db/schemas/editoras.js";
 
 export const createEditora = async (req, res) => {
 	try {
-		const newEditora = await Editora.create(req.body);
-		res.status(201).json(newEditora);
-	} catch (error) {
-		res.status(500).send(`Erro ao criar editora: ${error}`);
+		const novaEditora = new Editora(req.body);
+		const editoraSalva = await novaEditora.save();
+		res.status(201).json(editoraSalva);
+	} catch (erro) {
+		res.status(400).json({ mensagem: erro.message });
 	}
 };
 
 export const getAllEditoras = async (req, res) => {
 	try {
-		const editorasAll = await Editora.find();
-		res.json(editorasAll);
-	} catch (error) {
-		res.status(500).send(`Erro ao buscar editoras: ${error}`);
+		const editoras = await Editora.find();
+		res.json(editoras);
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };
 
 export const getEditoraById = async (req, res) => {
 	try {
 		const editora = await Editora.findById(req.params.id);
-		if (!editora) return res.status(404).send("Editora não encontrada");
-		res.json(editora);
-	} catch (error) {
-		res.status(500).send(`Erro ao buscar editora: ${error}`);
+		if (editora) {
+			res.json(editora);
+		} else {
+			res.status(404).json({ mensagem: "Editora não encontrada" });
+		}
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };
 
 export const updateEditora = async (req, res) => {
 	try {
-		const update = await Editora.findByIdAndUpdate(req.params.id, req.body, {
-			new: true,
-		});
-		if (!update) return res.status(404).send("Editora não encontrada");
-		res.json(update);
-	} catch (error) {
-		res.status(500).send(`Erro ao atualizar editora: ${error}`);
+		const editoraAtualizada = await Editora.findByIdAndUpdate(
+			req.params.id,
+			req.body,
+			{ new: true, runValidators: true }
+		);
+		if (editoraAtualizada) {
+			res.json(editoraAtualizada);
+		} else {
+			res.status(404).json({ mensagem: "Editora não encontrada" });
+		}
+	} catch (erro) {
+		res.status(400).json({ mensagem: erro.message });
 	}
 };
 
 export const deleteEditora = async (req, res) => {
 	try {
-		const deleted = await Editora.findByIdAndDelete(req.params.id);
-		if (!deleted) return res.status(404).send("Editora não encontrada");
-		res
-			.status(200)
-			.json({
-				message: "Editora deletada com sucesso",
-				deletedEditora: deleted,
-			});
-	} catch (error) {
-		res.status(500).send(`Erro ao deletar editora: ${error}`);
+		const editoraDeletada = await Editora.findByIdAndDelete(req.params.id);
+		if (editoraDeletada) {
+			res.status(204).send();
+		} else {
+			res.status(404).json({ mensagem: "Editora não encontrada" });
+		}
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };

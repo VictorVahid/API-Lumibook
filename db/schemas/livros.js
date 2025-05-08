@@ -1,39 +1,25 @@
 import mongoose from "mongoose";
 
-const livrosSchema = new mongoose.Schema(
+const livroSchema = new mongoose.Schema(
 	{
-		titulo: {
-			type: String,
+		titulo: { type: String, required: true, maxlength: 255 },
+		isbn: { type: String, unique: true },
+		categoria: { type: String },
+		editora_id: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Editora",
 			required: true,
-			maxlength: 255,
 		},
-		autor: {
-			type: String,
-			required: true,
-			maxlength: 255,
-		},
-		isbn: {
-			type: String,
-			required: true,
-			maxlength: 20,
-		},
-		assunto: {
-			type: String,
-			required: true,
-			maxlength: 255,
-		},
-		genero: {
-			type: String,
-			required: true,
-			maxlength: 100,
-		},
+		autores: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "Autor",
+				required: true,
+			},
+		],
 	},
-	{
-		timestamps: true,
-	}
+	{ timestamps: true }
 );
 
-const Livro = mongoose.model("Livro", livrosSchema);
-
-
+const Livro = mongoose.model("Livro", livroSchema);
 export default Livro;

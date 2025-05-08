@@ -2,58 +2,62 @@ import Usuario from "../db/schemas/usuarios.js";
 
 export const createUser = async (req, res) => {
 	try {
-		const newUser = await Usuario.create(req.body);
-		res.status(201).json(newUser);
-	} catch (error) {
-		res.status(500).send(`Erro ao criar usuário: ${error}`);
+		const novoUsuario = new Usuario(req.body);
+		const usuarioSalvo = await novoUsuario.save();
+		res.status(201).json(usuarioSalvo);
+	} catch (erro) {
+		res.status(400).json({ mensagem: erro.message });
 	}
 };
 
 export const getAllUsers = async (req, res) => {
 	try {
-		const usersAll = await Usuario.find()
-			.populate("endereco_id")
-			.populate("telefone_id");
-		res.json(usersAll);
-	} catch (error) {
-		res.status(500).send(`Erro ao buscar usuários: ${error}`);
+		const usuarios = await Usuario.find();
+		res.json(usuarios);
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };
 
 export const getUserById = async (req, res) => {
 	try {
-		const user = await Usuario.findById(req.params.id)
-			.populate("endereco_id")
-			.populate("telefone_id");
-		if (!user) return res.status(404).send("Usuário não encontrado");
-		res.json(user);
-	} catch (error) {
-		res.status(500).send(`Erro ao buscar usuário: ${error}`);
+		const usuario = await Usuario.findById(req.params.id);
+		if (usuario) {
+			res.json(usuario);
+		} else {
+			res.status(404).json({ mensagem: "Usuário não encontrado" });
+		}
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };
 
 export const updateUser = async (req, res) => {
 	try {
-		const update = await Usuario.findByIdAndUpdate(req.params.id, req.body, {
-			new: true,
-		})
-			.populate("endereco_id")
-			.populate("telefone_id");
-		if (!update) return res.status(404).send("Usuário não encontrado");
-		res.json(update);
-	} catch (error) {
-		res.status(500).send(`Erro ao atualizar usuário: ${error}`);
+		const usuarioAtualizado = await Usuario.findByIdAndUpdate(
+			req.params.id,
+			req.body,
+			{ new: true, runValidators: true }
+		);
+		if (usuarioAtualizado) {
+			res.json(usuarioAtualizado);
+		} else {
+			res.status(404).json({ mensagem: "Usuário não encontrado" });
+		}
+	} catch (erro) {
+		res.status(400).json({ mensagem: erro.message });
 	}
 };
 
 export const deleteUser = async (req, res) => {
 	try {
-		const deleted = await Usuario.findByIdAndDelete(req.params.id);
-		if (!deleted) return res.status(404).send("Usuário não encontrado");
-		res
-			.status(200)
-			.json({ message: "Usuário deletado com sucesso", deletedUser: deleted });
-	} catch (error) {
-		res.status(500).send(`Erro ao deletar usuário: ${error}`);
+		const usuarioDeletado = await Usuario.findByIdAndDelete(req.params.id);
+		if (usuarioDeletado) {
+			res.status(204).send();
+		} else {
+			res.status(404).json({ mensagem: "Usuário não encontrado" });
+		}
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };

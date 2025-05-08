@@ -2,21 +2,22 @@ import Multa from "../db/schemas/multas.js";
 
 export const createMulta = async (req, res) => {
 	try {
-		const newMulta = await Multa.create(req.body);
-		res.status(201).json(newMulta);
-	} catch (error) {
-		res.status(500).send(`Erro ao criar multa: ${error}`);
+		const novaMulta = new Multa(req.body);
+		const multaSalva = await novaMulta.save();
+		res.status(201).json(multaSalva);
+	} catch (erro) {
+		res.status(400).json({ mensagem: erro.message });
 	}
 };
 
 export const getAllMultas = async (req, res) => {
 	try {
-		const multasAll = await Multa.find()
+		const multas = await Multa.find()
 			.populate("emprestimo_id")
 			.populate("usuario_id");
-		res.json(multasAll);
-	} catch (error) {
-		res.status(500).send(`Erro ao buscar multas: ${error}`);
+		res.json(multas);
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };
 
@@ -25,35 +26,45 @@ export const getMultaById = async (req, res) => {
 		const multa = await Multa.findById(req.params.id)
 			.populate("emprestimo_id")
 			.populate("usuario_id");
-		if (!multa) return res.status(404).send("Multa não encontrada");
-		res.json(multa);
-	} catch (error) {
-		res.status(500).send(`Erro ao buscar multa: ${error}`);
+		if (multa) {
+			res.json(multa);
+		} else {
+			res.status(404).json({ mensagem: "Multa não encontrada" });
+		}
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };
 
 export const updateMulta = async (req, res) => {
 	try {
-		const update = await Multa.findByIdAndUpdate(req.params.id, req.body, {
-			new: true,
-		})
-			.populate("emprestimo_id")
-			.populate("usuario_id");
-		if (!update) return res.status(404).send("Multa não encontrada");
-		res.json(update);
-	} catch (error) {
-		res.status(500).send(`Erro ao atualizar multa: ${error}`);
+		const multaAtualizada = await Multa.findByIdAndUpdate(
+			req.params.id,
+			req.body,
+			{
+				new: true,
+				runValidators: true,
+			}
+		);
+		if (multaAtualizada) {
+			res.json(multaAtualizada);
+		} else {
+			res.status(404).json({ mensagem: "Multa não encontrada" });
+		}
+	} catch (erro) {
+		res.status(400).json({ mensagem: erro.message });
 	}
 };
 
 export const deleteMulta = async (req, res) => {
 	try {
-		const deleted = await Multa.findByIdAndDelete(req.params.id);
-		if (!deleted) return res.status(404).send("Multa não encontrada");
-		res
-			.status(200)
-			.json({ message: "Multa deletada com sucesso", deletedMulta: deleted });
-	} catch (error) {
-		res.status(500).send(`Erro ao deletar multa: ${error}`);
+		const multaDeletada = await Multa.findByIdAndDelete(req.params.id);
+		if (multaDeletada) {
+			res.status(204).send();
+		} else {
+			res.status(404).json({ mensagem: "Multa não encontrada" });
+		}
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };

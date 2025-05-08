@@ -2,31 +2,34 @@ import Auditoria from "../db/schemas/auditoria.js";
 
 export const createAuditoriaLog = async (req, res) => {
 	try {
-		const newAuditoriaLog = await Auditoria.create(req.body);
-		res.status(201).json(newAuditoriaLog);
-	} catch (error) {
-		res.status(500).send(`Erro ao criar log de auditoria: ${error}`);
+		const novaAuditoria = new Auditoria(req.body);
+		const auditoriaSalva = await novaAuditoria.save();
+		res.status(201).json(auditoriaSalva);
+	} catch (erro) {
+		res.status(400).json({ mensagem: erro.message });
 	}
 };
 
 export const getAllAuditoriaLogs = async (req, res) => {
 	try {
-		const auditoriaLogsAll = await Auditoria.find().populate("usuario_id");
-		res.json(auditoriaLogsAll);
-	} catch (error) {
-		res.status(500).send(`Erro ao buscar logs de auditoria: ${error}`);
+		const auditorias = await Auditoria.find().populate("usuario_id");
+		res.json(auditorias);
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };
 
 export const getAuditoriaLogById = async (req, res) => {
 	try {
-		const auditoriaLog = await Auditoria.findById(req.params.id).populate(
+		const auditoria = await Auditoria.findById(req.params.id).populate(
 			"usuario_id"
 		);
-		if (!auditoriaLog)
-			return res.status(404).send("Log de auditoria não encontrado");
-		res.json(auditoriaLog);
-	} catch (error) {
-		res.status(500).send(`Erro ao buscar log de auditoria: ${error}`);
+		if (auditoria) {
+			res.json(auditoria);
+		} else {
+			res.status(404).json({ mensagem: "Auditoria não encontrada" });
+		}
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };

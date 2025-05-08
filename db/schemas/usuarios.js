@@ -2,22 +2,9 @@ import mongoose from "mongoose";
 
 const usuarioSchema = new mongoose.Schema(
 	{
-		nome: {
-			type: String,
-			required: true,
-			maxlength: 255,
-		},
-		email: {
-			type: String,
-			required: true,
-			unique: true,
-			maxlength: 255,
-		},
-		senha: {
-			type: String,
-			required: true,
-			maxlength: 255,
-		},
+		nome: { type: String, required: true, maxlength: 255 },
+		email: { type: String, required: true, unique: true, maxlength: 255 },
+		senha: { type: String, required: true, maxlength: 255 },
 		telefone: {
 			ddd: { type: String, required: true, maxlength: 3 },
 			numero: { type: String, required: true, maxlength: 10 },
@@ -34,16 +21,25 @@ const usuarioSchema = new mongoose.Schema(
 		},
 		role: {
 			type: String,
-			enum: ["usuario", "admin"],
+			enum: ["usuario", "funcionario", "admin"],
 			default: "usuario",
 			required: true,
 		},
+		cargo: {
+			type: String,
+			maxlength: 100,
+		},
+		ativo: {
+			type: Boolean,
+			default: true,
+		},
+		perfil_acesso_id: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "PerfilAcesso",
+		},
 	},
-	{
-		timestamps: true,
-	}
+	{ timestamps: true }
 );
 
 const Usuario = mongoose.model("Usuario", usuarioSchema);
-
 export default Usuario;

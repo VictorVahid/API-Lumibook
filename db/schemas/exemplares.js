@@ -1,29 +1,21 @@
 import mongoose from "mongoose";
 
-const exemplaresSchema = new mongoose.Schema(
+const exemplarSchema = new mongoose.Schema(
 	{
 		livro_id: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Livro",
 			required: true,
 		},
-		codigo_barras: {
+		codigo_exemplar: { type: String, required: true, unique: true },
+		situacao: {
 			type: String,
-			required: true,
-			unique: true,
-		},
-		status: {
-			type: String,
-			required: true,
-			maxlength: 20,
-			default: "Disponível",
+			enum: ["disponivel", "emprestado", "reservado", "indisponivel"],
+			default: "disponivel",
 		},
 	},
-	{
-		timestamps: true,
-	}
+	{ timestamps: true }
 );
 
-const Exemplar = mongoose.model("Exemplar", exemplaresSchema);
-
+const Exemplar = mongoose.model("Exemplar", exemplarSchema);
 export default Exemplar;

@@ -2,21 +2,22 @@ import Reserva from "../db/schemas/reservas.js";
 
 export const createReserva = async (req, res) => {
 	try {
-		const newReserva = await Reserva.create(req.body);
-		res.status(201).json(newReserva);
-	} catch (error) {
-		res.status(500).send(`Erro ao criar reserva: ${error}`);
+		const novaReserva = new Reserva(req.body);
+		const reservaSalva = await novaReserva.save();
+		res.status(201).json(reservaSalva);
+	} catch (erro) {
+		res.status(400).json({ mensagem: erro.message });
 	}
 };
 
 export const getAllReservas = async (req, res) => {
 	try {
-		const reservasAll = await Reserva.find()
+		const reservas = await Reserva.find()
 			.populate("exemplar_id")
 			.populate("usuario_id");
-		res.json(reservasAll);
-	} catch (error) {
-		res.status(500).send(`Erro ao buscar reservas: ${error}`);
+		res.json(reservas);
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };
 
@@ -25,38 +26,42 @@ export const getReservaById = async (req, res) => {
 		const reserva = await Reserva.findById(req.params.id)
 			.populate("exemplar_id")
 			.populate("usuario_id");
-		if (!reserva) return res.status(404).send("Reserva não encontrada");
-		res.json(reserva);
-	} catch (error) {
-		res.status(500).send(`Erro ao buscar reserva: ${error}`);
+		if (reserva) {
+			res.json(reserva);
+		} else {
+			res.status(404).json({ mensagem: "Reserva não encontrada" });
+		}
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };
 
 export const updateReserva = async (req, res) => {
 	try {
-		const update = await Reserva.findByIdAndUpdate(req.params.id, req.body, {
-			new: true,
-		})
-			.populate("exemplar_id")
-			.populate("usuario_id");
-		if (!update) return res.status(404).send("Reserva não encontrada");
-		res.json(update);
-	} catch (error) {
-		res.status(500).send(`Erro ao atualizar reserva: ${error}`);
+		const reservaAtualizada = await Reserva.findByIdAndUpdate(
+			req.params.id,
+			req.body,
+			{ new: true, runValidators: true }
+		);
+		if (reservaAtualizada) {
+			res.json(reservaAtualizada);
+		} else {
+			res.status(404).json({ mensagem: "Reserva não encontrada" });
+		}
+	} catch (erro) {
+		res.status(400).json({ mensagem: erro.message });
 	}
 };
 
 export const deleteReserva = async (req, res) => {
 	try {
-		const deleted = await Reserva.findByIdAndDelete(req.params.id);
-		if (!deleted) return res.status(404).send("Reserva não encontrada");
-		res
-			.status(200)
-			.json({
-				message: "Reserva deletada com sucesso",
-				deletedReserva: deleted,
-			});
-	} catch (error) {
-		res.status(500).send(`Erro ao deletar reserva: ${error}`);
+		const reservaDeletada = await Reserva.findByIdAndDelete(req.params.id);
+		if (reservaDeletada) {
+			res.status(204).send();
+		} else {
+			res.status(404).json({ mensagem: "Reserva não encontrada" });
+		}
+	} catch (erro) {
+		res.status(500).json({ mensagem: erro.message });
 	}
 };

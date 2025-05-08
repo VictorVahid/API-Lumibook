@@ -24,11 +24,8 @@ const reservasSchema = new mongoose.Schema(
 			type: Date,
 		},
 	},
-	{
-		timestamps: true,
-	}
+	{ timestamps: true }
 );
 
 const Reserva = mongoose.model("Reserva", reservasSchema);
-
 export default Reserva;

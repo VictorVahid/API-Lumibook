@@ -12,9 +12,6 @@ import reservasRoutes from "./routes/reservas.js";
 import multasRoutes from "./routes/multas.js";
 import autoresRoutes from "./routes/autores.js";
 import editorasRoutes from "./routes/editoras.js";
-import funcionariosRoutes from "./routes/funcionarios.js";
-import itensEmprestimoRoutes from "./routes/itensEmprestimo.js";
-import livrosAutoresRoutes from "./routes/livrosAutores.js";
 import auditoriaRoutes from "./routes/auditoria.js";
 
 dotenv.config();
@@ -40,9 +37,6 @@ app.use("/api/reservas", reservasRoutes);
 app.use("/api/multas", multasRoutes);
 app.use("/api/autores", autoresRoutes);
 app.use("/api/editoras", editorasRoutes);
-app.use("/api/funcionarios", funcionariosRoutes);
-app.use("/api/itensEmprestimo", itensEmprestimoRoutes);
-app.use("/api/livrosAutores", livrosAutoresRoutes);
 app.use("/api/auditoria", auditoriaRoutes);
 
 app.get("/api/status", (req, res) => {

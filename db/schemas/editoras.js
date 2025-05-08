@@ -2,17 +2,8 @@ import mongoose from "mongoose";
 
 const editoraSchema = new mongoose.Schema(
 	{
-		nome: {
-			type: String,
-			required: true,
-			maxlength: 255,
-		},
-		cnpj: {
-			type: String,
-			required: true,
-			unique: true,
-			maxlength: 20,
-		},
+		nome: { type: String, required: true, maxlength: 255 },
+		cnpj: { type: String, required: true, unique: true, maxlength: 20 },
 		telefone: {
 			ddd: { type: String, required: true, maxlength: 3 },
 			numero: { type: String, required: true, maxlength: 10 },
@@ -28,11 +19,8 @@ const editoraSchema = new mongoose.Schema(
 			cep: { type: String, required: true, maxlength: 20 },
 		},
 	},
-	{
-		timestamps: true,
-	}
+	{ timestamps: true }
 );
 
 const Editora = mongoose.model("Editora", editoraSchema);
-
 export default Editora;

@@ -1,25 +1,12 @@
 import mongoose from "mongoose";
 
-const autoresSchema = new mongoose.Schema(
+const autorSchema = new mongoose.Schema(
 	{
-		nome: {
-			type: String,
-			required: true,
-			maxlength: 255,
-		},
-		data_nascimento: {
-			type: Date,
-		},
-		nacionalidade: {
-			type: String,
-			maxlength: 100,
-		},
+		nome: { type: String, required: true, maxlength: 255 },
+		biografia: { type: String },
 	},
-	{
-		timestamps: true,
-	}
+	{ timestamps: true }
 );
 
-const Autor = mongoose.model("Autor", autoresSchema);
-
+const Autor = mongoose.model("Autor", autorSchema);
 export default Autor;
