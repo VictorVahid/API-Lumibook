@@ -9,6 +9,28 @@ export const createAutor = async (req, res) => {
 		res.status(400).json({ mensagem: erro.message });
 	}
 };
+export const createMultipleAutores = async (req, res) => {
+	try {
+		if (!Array.isArray(req.body)) {
+			return res
+				.status(400)
+				.json({
+					mensagem: "O corpo da requisição deve ser um array de autores.",
+				});
+		}
+
+		const autoresSalvos = [];
+		for (const autorData of req.body) {
+			const novoAutor = new Autor(autorData);
+			const autorSalvo = await novoAutor.save();
+			autoresSalvos.push(autorSalvo);
+		}
+
+		res.status(201).json(autoresSalvos); // Responde com o array de autores criados
+	} catch (erro) {
+		res.status(400).json({ mensagem: erro.message });
+	}
+};
 
 export const getAllAutores = async (req, res) => {
 	try {

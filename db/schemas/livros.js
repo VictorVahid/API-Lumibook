@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const livroSchema = new mongoose.Schema(
 	{
+		id: { type: String, required: true, unique: true, auto_increment: true },
 		titulo: { type: String, required: true, maxlength: 255 },
 		isbn: { type: String, unique: true },
 		categoria: { type: String },
