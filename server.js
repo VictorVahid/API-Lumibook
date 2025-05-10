@@ -12,7 +12,7 @@ import multasRoutes from "./routes/multas.js";
 import autoresRoutes from "./routes/autores.js";
 import editorasRoutes from "./routes/editoras.js";
 import auditoriaRoutes from "./routes/auditoria.js";
-
+import authRoutes from "./routes/auth.js";
 dotenv.config();
 
 const app = express();
@@ -36,6 +36,7 @@ app.use("/api/autores", autoresRoutes);
 app.use("/api/editoras", editorasRoutes);
 app.use("/api/auditoria", auditoriaRoutes);
 app.use("/api/fila", filaRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get("/api/status", (req, res) => {
 	res.status(200).json({ status: "API online 🚀" });

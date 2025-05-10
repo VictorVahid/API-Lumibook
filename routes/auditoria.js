@@ -5,6 +5,7 @@ import {
 	getAuditoriaLogById,
 } from "../controllers/auditoriaController.js";
 
+
 const router = express.Router();
 
 router.post("/logs", createAuditoriaLog);
