@@ -7,8 +7,8 @@ import {
 
 const router = express.Router();
 
-router.post("/", createAuditoriaLog);
-router.get("/", getAllAuditoriaLogs);
+router.post("/logs", createAuditoriaLog);
+router.get("/logs", getAllAuditoriaLogs);
 router.get("/:id", getAuditoriaLogById);
 
 export default router;

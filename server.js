@@ -7,8 +7,7 @@ import dotenv from "dotenv";
 import livroRoutes from "./routes/livros.js";
 import exemplaresRoutes from "./routes/exemplares.js";
 import usuariosRoutes from "./routes/usuarios.js";
-import emprestimosRoutes from "./routes/emprestimos.js";
-import reservasRoutes from "./routes/reservas.js";
+import filaRoutes from "./routes/fila.js";
 import multasRoutes from "./routes/multas.js";
 import autoresRoutes from "./routes/autores.js";
 import editorasRoutes from "./routes/editoras.js";
@@ -32,12 +31,11 @@ mongoose
 app.use("/api/livros", livroRoutes);
 app.use("/api/exemplares", exemplaresRoutes);
 app.use("/api/usuarios", usuariosRoutes);
-app.use("/api/emprestimos", emprestimosRoutes);
-app.use("/api/reservas", reservasRoutes);
 app.use("/api/multas", multasRoutes);
 app.use("/api/autores", autoresRoutes);
 app.use("/api/editoras", editorasRoutes);
 app.use("/api/auditoria", auditoriaRoutes);
+app.use("/api/fila", filaRoutes);
 
 app.get("/api/status", (req, res) => {
 	res.status(200).json({ status: "API online 🚀" });
