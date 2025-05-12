@@ -1,0 +1,12 @@
+node_modules/
+.env
+package-lock.json
+dist/
+.DS_Store
+.vscode/
+.idea/
+*.log
+*.sublime-workspace
+*.sublime-project
+coverage/
+
