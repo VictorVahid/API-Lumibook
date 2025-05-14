@@ -1,21 +1,30 @@
+// src/presentation/controllers/NotificationController.js
+
 const SendReminder = require("../../usecases/sendReminder");
+const SendNotification = require("../../usecases/sendNotification");
+const LoanService = require("../../infrastructure/services/LoanService.js");
 
 class NotificationController {
 	constructor() {
-		this.sendReminder = new SendReminder();
+		const sendNotification = new SendNotification();
+		this.sendReminder = new SendReminder(sendNotification);
+		this.loanService = new LoanService();
 	}
 
-	async sendLoanReminder(req, res) {
+	async sendLoanReminder(req, res, next) {
 		try {
 			const { loanId } = req.params;
-			// Supondo que existe um LoanService para buscar o empréstimo
-			const loan = await LoanService.getLoanById(loanId);
+			if (!loanId)
+				return res.status(400).json({ error: "loanId é obrigatório" });
+
+			const loan = await this.loanService.getLoanById(loanId);
+			if (!loan)
+				return res.status(404).json({ error: "Empréstimo não encontrado" });
 
 			await this.sendReminder.execute(loan);
-
-			res.json({ success: true });
-		} catch (error) {
-			res.status(500).json({ error: error.message });
+			return res.status(200).json({ success: true });
+		} catch (err) {
+			return next(err);
 		}
 	}
 }

@@ -1,7 +1,27 @@
-const EmailService = require("../../src/infrastructure/services/EmailService");
-const Notification = require("../../src/domain/models/Notification");
+// src/usecases/sendNotification.js
+
+// Importa a instância de EmailService responsável pelo envio de e-mails
+const EmailService = require("../infrastructure/services/EmailService");
+// Importa o modelo de domínio Notification
+const Notification = require("../domain/models/Notification");
+
 class SendNotification {
+	/**
+	 * @param {object} [emailService] - implementação concreta ou mock para testes
+	 */
+	constructor(emailService = EmailService) {
+		this.emailService = emailService;
+	}
+
+	/**
+	 * Executa o envio de uma notificação por e-mail
+	 * @param {string} type - nome do template (ex: 'loanReminder')
+	 * @param {string} recipient - e-mail do destinatário
+	 * @param {object} data - payload com dados para o template
+	 * @returns {Promise<Notification>}
+	 */
 	async execute(type, recipient, data) {
+		// Cria a entidade Notification no estado inicial
 		const notification = new Notification({
 			type,
 			recipient,
@@ -9,10 +29,13 @@ class SendNotification {
 		});
 
 		try {
-			await EmailService.send(type, recipient, data);
+			// Dispara o e-mail usando EmailService
+			await this.emailService.send(type, recipient, data);
+			// Marca como enviado ao sucesso
 			notification.markAsSent();
 			return notification;
 		} catch (error) {
+			// Marca como falhado em caso de erro
 			notification.markAsFailed();
 			throw error;
 		}

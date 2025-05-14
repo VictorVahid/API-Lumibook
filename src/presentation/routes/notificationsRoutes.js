@@ -1,8 +1,12 @@
-const express = require('express');
+// src/presentation/routes/notificationRoutes.js
+const express = require("express");
 const router = express.Router();
-const NotificationController = require('../controllers/NotificationController');
+const NotificationController = require("../controllers/NotificationController");
 
-// Enviar lembrete manualmente
-router.post('/loans/:loanId/reminder', NotificationController.sendLoanReminder);
+// POST /api/notifications/loans/:loanId/reminder
+router.post(
+	"/loans/:loanId/reminder",
+	NotificationController.sendLoanReminder.bind(NotificationController)
+);
 
 module.exports = router;
