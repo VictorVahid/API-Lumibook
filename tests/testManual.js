@@ -28,13 +28,7 @@ async function testMailtrapConnection() {
     console.error('\n❌ Erro durante o teste:');
     console.error('Código:', error.code);
     console.error('Mensagem:', error.message);
-    
-    if (error.code === 'EAUTH') {
-      console.log('\n🔑 Solução:');
-      console.log('1. Verifique se EMAIL_USER e EMAIL_PASSWORD estão corretos no .env');
-      console.log('2. Confira as credenciais no painel do Mailtrap → SMTP Settings');
-      console.log('3. Certifique-se que o arquivo .env está sendo carregado (require(\'dotenv\').config())');
-    }
+    console.error('Detalhes:', error.response);
   }
 }
 

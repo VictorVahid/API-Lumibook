@@ -4,15 +4,15 @@ const nodemailer = require("nodemailer");
 const emailTemplates = require("./emailTemplates");
 
 // validação das ENV
-[
-	"EMAIL_HOST",
-	"EMAIL_PORT",
-	"EMAIL_USER",
-	"EMAIL_PASSWORD",
-	"EMAIL_FROM",
-].forEach((k) => {
-	if (!process.env[k]) throw new Error(`Missing env ${k}`);
-});
+if (
+	!process.env.EMAIL_HOST ||
+	!process.env.EMAIL_PORT ||
+	!process.env.EMAIL_USER ||
+	!process.env.EMAIL_PASSWORD ||
+	!process.env.EMAIL_FROM
+) {
+	throw new Error("Missing email env variables");
+}
 
 class EmailService {
 	constructor() {
@@ -28,8 +28,23 @@ class EmailService {
 		});
 	}
 
-	async send(templateName, recipient, data) {
-		// ...
+	async send(templateName, toAddress, data) {
+		const template = emailTemplates[templateName];
+
+		if (!template) {
+			throw new Error(`Template '${templateName}' not found`);
+		}
+
+		const html = template.html.replace(/\${(\w+)}/g, (match, key) => data[key]);
+
+		const message = {
+			from: process.env.EMAIL_FROM,
+			to: toAddress,
+			subject: template.subject.replace(/\${(\w+)}/g, (match, key) => data[key]),
+			html,
+		};
+
+		await this.transporter.sendMail(message);
 	}
 }
 
