@@ -1,76 +1,355 @@
 {
   "info": {
     "name": "Lumibook API",
-    "_postman_id": "12345678-aaaa-bbbb-cccc-1234567890ab",
-    "description": "Cole\u00e7\u00e3o de testes da API Lumibook",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "lumibook-collection-id"
   },
-  "item": [
-    {
-      "name": "Status da API",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/api/status",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "status"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Listar Livros",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/api/livros",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "livros"
-          ]
-        }
-      }
-    },
-    {
-      "name": "Criar Livro",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"titulo\": \"Livro Exemplo\",\n  \"autor\": \"Autor Teste\",\n  \"isbn\": \"1234567890123\",\n  \"assunto\": \"Tecnologia\",\n  \"genero\": \"Inform\\u00e1tica\"\n}"
-        },
-        "url": {
-          "raw": "{{base_url}}/api/livros",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "api",
-            "livros"
-          ]
-        }
-      }
-    }
-  ],
   "variable": [
     {
       "key": "base_url",
       "value": "http://localhost:3000"
     }
-  ]
+  ],
+  "item": [
+    {
+      "name": "Livros",
+      "item": [
+        {
+          "name": "Listar livros",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/livros",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "livros"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Criar livro",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Livro de Teste\",\n  \"isbn\": \"1234567890123\",\n  \"editora\": \"Editora Exemplo\",\n  \"ano\": 2025,\n  \"categoria\": \"Tecnologia\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/livros",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "livros"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usu\u00e1rios",
+      "item": [
+        {
+          "name": "Listar usu\u00e1rios",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/usuarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Criar usu\u00e1rio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Usu\\u00e1rio Exemplo\",\n  \"email\": \"teste@lumibook.com\",\n  \"senha\": \"123456\",\n  \"papel\": \"leitor\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/usuarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Emprestimos",
+      "item": [
+        {
+          "name": "Listar emprestimos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/emprestimos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "emprestimos"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Criar emprestimos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuarioId\": \"id_do_usuario\",\n  \"dataEmprestimo\": \"2025-05-29\",\n  \"dataPrevistaDevolucao\": \"2025-06-05\",\n  \"itens\": [\n    \"id_exemplar1\",\n    \"id_exemplar2\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/emprestimos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "emprestimos"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reservas",
+      "item": [
+        {
+          "name": "Listar reservas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/reservas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reservas"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Criar reservas",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuarioId\": \"id_do_usuario\",\n  \"exemplarId\": \"id_do_exemplar\",\n  \"dataReserva\": \"2025-05-29\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/reservas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reservas"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Multas",
+      "item": [
+        {
+          "name": "Listar multas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/multas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "multas"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Criar multas",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"emprestimoId\": \"id_emprestimo\",\n  \"valor\": 10.5,\n  \"data\": \"2025-05-29\",\n  \"status\": \"pendente\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/multas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "multas"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auditoria",
+      "item": [
+        {
+          "name": "Listar auditoria",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/auditoria",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auditoria"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Criar auditoria",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"admin@example.com\",\n  \"acao\": \"cria\\u00e7\\u00e3o\",\n  \"entidadeAfetada\": \"livro\",\n  \"detalhes\": \"Livro inserido com sucesso\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auditoria",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auditoria"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notificacoes",
+      "item": [
+        {
+          "name": "Listar notificacoes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/notificacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "notificacoes"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Criar notificacoes",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"loanId\": \"id_emprestimo\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/notificacoes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "notificacoes"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  }
 }
