@@ -1,4 +1,4 @@
- // src/server.js
+// src/server.js
 require("dotenv").config();
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false); // opcional: suprime warnings futuros de strictQuery
@@ -16,4 +16,3 @@ mongoose
 		console.error("Erro ao conectar no MongoDB:", err);
 		process.exit(1);
 	});
-
