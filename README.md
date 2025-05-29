@@ -6,19 +6,19 @@ Uma API RESTful robusta e escalável para **gestão completa de acervo e operaç
 
 ## 🔧 Funcionalidades
 
-* **Livros**: Cadastro, edição, consulta e exclusão de obras
-* **Exemplares**: Controle de cópias físicas (status, localização)
-* **Usuários**: Gerenciamento completo de leitores
-* **Empréstimos**: Registro, devolução e monitoramento de prazos
-* **Itens de Empréstimo**: Vinculação de exemplares a empréstimos
-* **Reservas**: Criação e cancelamento de reservas
-* **Multas**: Geração automática e atualização de multas por atraso
-* **Autores / Editoras**: Cadastro e manutenção
-* **Funcionários**: Gerenciamento de colaboradores internos
-* **Livro-Autor**: Relacionamento N\:N entre livros e autores
-* **Auditoria**: Registro de ações críticas para rastreabilidade
-* **Status**: Verificação de saúde da API
-* **Notificações por e-mail**: Envio de lembretes e alertas
+- **Livros**: Cadastro, edição, consulta e exclusão de obras
+- **Exemplares**: Controle de cópias físicas (status, localização)
+- **Usuários**: Gerenciamento completo de leitores
+- **Empréstimos**: Registro, devolução e monitoramento de prazos
+- **Itens de Empréstimo**: Vinculação de exemplares a empréstimos
+- **Reservas**: Criação e cancelamento de reservas
+- **Multas**: Geração automática e atualização de multas por atraso
+- **Autores / Editoras**: Cadastro e manutenção
+- **Funcionários**: Gerenciamento de colaboradores internos
+- **Livro-Autor**: Relacionamento N\:N entre livros e autores
+- **Auditoria**: Registro de ações críticas para rastreabilidade
+- **Status**: Verificação de saúde da API
+- **Notificações por e-mail**: Envio de lembretes e alertas
 
 ---
 
@@ -26,28 +26,28 @@ Uma API RESTful robusta e escalável para **gestão completa de acervo e operaç
 
 ### Core
 
-* Node.js + Express
-* MongoDB + Mongoose
-* Clean Architecture + Separação de Camadas
+- Node.js + Express
+- MongoDB + Mongoose
+- Clean Architecture + Separação de Camadas
 
 ### Suporte
 
-* dotenv (configuração ambiente)
-* cors (controle de origem)
-* bcryptjs (hash de senha)
+- dotenv (configuração ambiente)
+- cors (controle de origem)
+- bcryptjs (hash de senha)
 
 ### Dev & Testes
 
-* Jest + Supertest (testes automatizados)
-* nodemon (hot reload)
-* mongodb-memory-server (ambiente isolado para testes)
+- Jest + Supertest (testes automatizados)
+- nodemon (hot reload)
+- mongodb-memory-server (ambiente isolado para testes)
 
 ---
 
 ## ⚙️ Requisitos
 
-* Node.js 14+
-* MongoDB local ou Mongo Atlas
+- Node.js 14+
+- MongoDB local ou Mongo Atlas
 
 ---
 
@@ -94,21 +94,21 @@ src/
 
 ```dotenv
 PORT=3000
-MONGO_URI=mongodb://localhost:27017/lumibook
+MONGO_URI=mongodb://<usuario>:<senha>@<host>:<porta>/<banco>
 EMAIL_HOST=smtp.mailtrap.io
 EMAIL_PORT=2525
-EMAIL_USER=usuario
-EMAIL_PASSWORD=senha
-TEST_EMAIL=test@example.com
+EMAIL_USER=<email_user>
+EMAIL_PASSWORD=<email_pass>
+TEST_EMAIL=<email_teste>
+
 ```
 
 ---
 
 ## 📚 Documentação
 
-* [→ Documentação de Endpoints (completa)](docs/endpoints.md)
-* [→ Collection Postman](docs/lumibook-collection.json) *(pronta para importação)*
-* [→ Modelo ER do Banco de Dados](docs/diagrama-er.png)
+- [→ Documentação de Endpoints (completa)](docs/endpoints.md)
+- [→ Collection Postman](docs/lumibook-collection.json) _(pronta para importação)_
 
 > A listagem completa de todos os endpoints foi movida para o arquivo `docs/endpoints.md` para manter o `README.md` limpo e objetivo. Consulte lá a referência completa por domínio.
 
@@ -120,17 +120,17 @@ TEST_EMAIL=test@example.com
 npm test
 ```
 
-* Banco em memória (isolado)
-* Verificação de rotas e serviços
-* Cobertura de lógica de domínio e envio de e-mails
+- Banco em memória (isolado)
+- Verificação de rotas e serviços
+- Cobertura de lógica de domínio e envio de e-mails
 
 ---
 
 ## 🔒 Segurança
 
-* Hash de senhas com bcrypt
-* Nenhum dado sensível em commits
-* Camada de domínio isolada
+- Hash de senhas com bcrypt
+- Nenhum dado sensível em commits
+- Camada de domínio isolada
 
 ---
 
