@@ -15,11 +15,11 @@ describe("Mailtrap EmailService", () => {
 	});
 
 	it("deve conseguir verificar a conexão SMTP com o Mailtrap", async () => {
-  		try {
-    		await EmailService.transporter.verify();
-  		} catch (error) {
-    		console.error(error);
- 		}
+		try {
+			await EmailService.transporter.verify();
+		} catch (error) {
+			console.error(error);
+		}
 	});
 
 	it("deve enviar um e-mail de teste (loanReminder) sem falhar", async () => {
