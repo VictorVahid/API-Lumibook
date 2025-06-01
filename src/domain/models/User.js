@@ -1,11 +1,13 @@
 class User {
-	constructor({ id, nome, email, senhaHash, role, ativo }) {
+	constructor({ id, nome, email, senhaHash, role, ativo, telefone, matricula }) {
 		this.id = id;
 		this.nome = nome;
 		this.email = email;
 		this.senhaHash = senhaHash;
 		this.role = role;
 		this.ativo = ativo;
+		this.telefone = telefone;
+		this.matricula = matricula;
 		this.validate();
 	}
 

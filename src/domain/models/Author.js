@@ -1,9 +1,10 @@
 class Author {
-	constructor({ id, nome, bio, nascimento }) {
+	constructor({ id, nome, bio, biografia, nascimento, nacionalidade }) {
 		this.id = id;
 		this.nome = nome;
-		this.bio = bio;
+		this.bio = bio || biografia;
 		this.nascimento = nascimento;
+		this.nacionalidade = nacionalidade;
 		this.validate();
 	}
 

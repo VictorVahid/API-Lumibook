@@ -1,0 +1,87 @@
+{
+  "info": {
+    "name": "LumiBook API - Completa",
+    "_postman_id": "lumibook-collection-2024",
+    "description": "Coleção completa de testes para a API do LumiBook, separada por entidades seguindo Clean Architecture.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Books",
+      "item": [
+        { "name": "Listar Livros", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:3000/books", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["books"] } } },
+        { "name": "Criar Livro", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"title\": \"Dom Casmurro\",\n  \"author\": \"Machado de Assis\",\n  \"price\": 39.9,\n  \"stock\": 10\n}" }, "url": { "raw": "http://localhost:3000/books", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["books"] } } },
+        { "name": "Detalhar Livro", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:3000/books/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["books", "1"] } } },
+        { "name": "Atualizar Livro (PUT)", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"title\": \"Dom Casmurro - Atualizado\",\n  \"author\": \"Machado de Assis\",\n  \"price\": 49.9,\n  \"stock\": 8\n}" }, "url": { "raw": "http://localhost:3000/books/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["books", "1"] } } },
+        { "name": "Atualizar Livro (PATCH)", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"stock\": 12\n}" }, "url": { "raw": "http://localhost:3000/books/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["books", "1"] } } },
+        { "name": "Deletar Livro", "request": { "method": "DELETE", "header": [], "url": { "raw": "http://localhost:3000/books/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["books", "1"] } } }
+      ]
+    },
+    {
+      "name": "Authors",
+      "item": [
+        { "name": "Listar Autores", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:3000/authors", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["authors"] } } },
+        { "name": "Criar Autor", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"nome\": \"Machado de Assis\",\n  \"bio\": \"Escritor brasileiro.\",\n  \"nascimento\": \"1839-06-21\"\n}" }, "url": { "raw": "http://localhost:3000/authors", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["authors"] } } },
+        { "name": "Detalhar Autor", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:3000/authors/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["authors", "1"] } } },
+        { "name": "Atualizar Autor (PUT)", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"nome\": \"Machado de Assis - Atualizado\",\n  \"bio\": \"Bio atualizada.\",\n  \"nascimento\": \"1839-06-21\"\n}" }, "url": { "raw": "http://localhost:3000/authors/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["authors", "1"] } } },
+        { "name": "Atualizar Autor (PATCH)", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"bio\": \"Nova bio.\"\n}" }, "url": { "raw": "http://localhost:3000/authors/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["authors", "1"] } } },
+        { "name": "Deletar Autor", "request": { "method": "DELETE", "header": [], "url": { "raw": "http://localhost:3000/authors/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["authors", "1"] } } }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        { "name": "Listar Usuários", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:3000/users", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["users"] } } },
+        { "name": "Criar Usuário", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"nome\": \"João Silva\",\n  \"email\": \"joao@email.com\",\n  \"senhaHash\": \"123456\",\n  \"role\": \"aluno\",\n  \"ativo\": true\n}" }, "url": { "raw": "http://localhost:3000/users", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["users"] } } },
+        { "name": "Detalhar Usuário", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:3000/users/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["users", "1"] } } },
+        { "name": "Atualizar Usuário (PUT)", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"nome\": \"João Silva Atualizado\",\n  \"email\": \"joao@email.com\",\n  \"senhaHash\": \"654321\",\n  \"role\": \"aluno\",\n  \"ativo\": false\n}" }, "url": { "raw": "http://localhost:3000/users/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["users", "1"] } } },
+        { "name": "Atualizar Usuário (PATCH)", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"ativo\": false\n}" }, "url": { "raw": "http://localhost:3000/users/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["users", "1"] } } },
+        { "name": "Deletar Usuário", "request": { "method": "DELETE", "header": [], "url": { "raw": "http://localhost:3000/users/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["users", "1"] } } }
+      ]
+    },
+    {
+      "name": "Reservations",
+      "item": [
+        { "name": "Listar Reservas", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:3000/reservations", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["reservations"] } } },
+        { "name": "Criar Reserva", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"usuarioId\": 1,\n  \"livroId\": 1,\n  \"status\": \"ativa\",\n  \"dataReserva\": \"2024-06-01\"\n}" }, "url": { "raw": "http://localhost:3000/reservations", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["reservations"] } } },
+        { "name": "Detalhar Reserva", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:3000/reservations/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["reservations", "1"] } } },
+        { "name": "Atualizar Reserva (PUT)", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"usuarioId\": 1,\n  \"livroId\": 1,\n  \"status\": \"finalizada\",\n  \"dataReserva\": \"2024-06-01\"\n}" }, "url": { "raw": "http://localhost:3000/reservations/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["reservations", "1"] } } },
+        { "name": "Atualizar Reserva (PATCH)", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"status\": \"cancelada\"\n}" }, "url": { "raw": "http://localhost:3000/reservations/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["reservations", "1"] } } },
+        { "name": "Deletar Reserva", "request": { "method": "DELETE", "header": [], "url": { "raw": "http://localhost:3000/reservations/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["reservations", "1"] } } }
+      ]
+    },
+    {
+      "name": "Exemplares",
+      "item": [
+        { "name": "Listar Exemplares", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:3000/exemplares", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["exemplares"] } } },
+        { "name": "Criar Exemplar", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"livroId\": 1,\n  \"status\": \"disponível\",\n  \"localizacao\": \"Estante A\"\n}" }, "url": { "raw": "http://localhost:3000/exemplares", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["exemplares"] } } },
+        { "name": "Detalhar Exemplar", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:3000/exemplares/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["exemplares", "1"] } } },
+        { "name": "Atualizar Exemplar (PUT)", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"livroId\": 1,\n  \"status\": \"emprestado\",\n  \"localizacao\": \"Estante B\"\n}" }, "url": { "raw": "http://localhost:3000/exemplares/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["exemplares", "1"] } } },
+        { "name": "Atualizar Exemplar (PATCH)", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"status\": \"danificado\"\n}" }, "url": { "raw": "http://localhost:3000/exemplares/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["exemplares", "1"] } } },
+        { "name": "Deletar Exemplar", "request": { "method": "DELETE", "header": [], "url": { "raw": "http://localhost:3000/exemplares/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["exemplares", "1"] } } }
+      ]
+    },
+    {
+      "name": "Fines",
+      "item": [
+        { "name": "Listar Multas", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:3000/fines", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["fines"] } } },
+        { "name": "Criar Multa", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"usuarioId\": 1,\n  \"reservaId\": 1,\n  \"valor\": 10.5,\n  \"status\": \"pendente\",\n  \"dataGeracao\": \"2024-06-01\"\n}" }, "url": { "raw": "http://localhost:3000/fines", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["fines"] } } },
+        { "name": "Detalhar Multa", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:3000/fines/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["fines", "1"] } } },
+        { "name": "Atualizar Multa (PUT)", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"usuarioId\": 1,\n  \"reservaId\": 1,\n  \"valor\": 15.0,\n  \"status\": \"paga\",\n  \"dataGeracao\": \"2024-06-01\"\n}" }, "url": { "raw": "http://localhost:3000/fines/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["fines", "1"] } } },
+        { "name": "Atualizar Multa (PATCH)", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"status\": \"paga\"\n}" }, "url": { "raw": "http://localhost:3000/fines/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["fines", "1"] } } },
+        { "name": "Deletar Multa", "request": { "method": "DELETE", "header": [], "url": { "raw": "http://localhost:3000/fines/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["fines", "1"] } } }
+      ]
+    },
+    {
+      "name": "Publishers",
+      "item": [
+        { "name": "Listar Editoras", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:3000/publishers", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["publishers"] } } },
+        { "name": "Criar Editora", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"nome\": \"Companhia das Letras\",\n  \"endereco\": \"Rua Exemplo, 123\",\n  \"contato\": \"(11) 99999-9999\"\n}" }, "url": { "raw": "http://localhost:3000/publishers", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["publishers"] } } },
+        { "name": "Detalhar Editora", "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:3000/publishers/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["publishers", "1"] } } },
+        { "name": "Atualizar Editora (PUT)", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"nome\": \"Companhia das Letras - Atualizada\",\n  \"endereco\": \"Rua Nova, 456\",\n  \"contato\": \"(11) 98888-8888\"\n}" }, "url": { "raw": "http://localhost:3000/publishers/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["publishers", "1"] } } },
+        { "name": "Atualizar Editora (PATCH)", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"contato\": \"(11) 97777-7777\"\n}" }, "url": { "raw": "http://localhost:3000/publishers/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["publishers", "1"] } } },
+        { "name": "Deletar Editora", "request": { "method": "DELETE", "header": [], "url": { "raw": "http://localhost:3000/publishers/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["publishers", "1"] } } }
+      ]
+    }
+  ]
+} 

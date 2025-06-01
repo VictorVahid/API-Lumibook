@@ -6,5 +6,6 @@ fineRouter.get("/multas", fineCtrl.listFines);
 fineRouter.post("/multas", fineCtrl.createFine);
 fineRouter.get("/multas/:id", fineCtrl.getFine);
 fineRouter.patch("/multas/:id/status", fineCtrl.patchFineStatus);
+fineRouter.patch("/multas/:id/pagar", fineCtrl.payFine);
 
 module.exports = fineRouter;

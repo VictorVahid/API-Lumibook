@@ -46,3 +46,12 @@ exports.patchFineStatus = async (req, res) => {
 		res.status(400).json({ error: e.message });
 	}
 };
+
+exports.payFine = async (req, res) => {
+	try {
+		const updated = await updateFineUC.execute(req.params.id, { status: 'paga' });
+		return res.status(200).json(updated);
+	} catch (e) {
+		return res.status(400).json({ error: e.message });
+	}
+};
