@@ -11,6 +11,15 @@ class CreateUser {
 		if (data.papel && !data.role) {
 			data.role = data.papel;
 		}
+		// Mapeamento automático de papel para role
+		const papelMap = {
+			"aluno": "leitor",
+			"professor": "funcionario",
+			"admin": "admin"
+		};
+		if (data.role && papelMap[data.role]) {
+			data.role = papelMap[data.role];
+		}
 		if (!data.nome || typeof data.nome !== 'string' || data.nome.trim() === "")
 			throw new Error("Nome é obrigatório e deve ser uma string");
 		if (!data.email || typeof data.email !== 'string' || data.email.trim() === "")

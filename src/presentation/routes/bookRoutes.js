@@ -8,5 +8,6 @@ bookRouter.get("/books/:id", bookCtrl.getBook);
 bookRouter.put("/books/:id", bookCtrl.replaceBook);
 bookRouter.patch("/books/:id", bookCtrl.patchBook);
 bookRouter.delete("/books/:id", bookCtrl.deleteBook);
+bookRouter.get("/livros/recentes", bookCtrl.getRecentBooks);
 
 module.exports = bookRouter;

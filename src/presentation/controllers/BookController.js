@@ -7,6 +7,7 @@ const {
 	DeleteBook,
 } = require("../../usecases/bookUseCases");
 const MongooseBookRepo = require("../../infrastructure/mongoose/repositories/MongooseBookRepository");
+const BookModel = require("../../infrastructure/mongoose/models/BookSchema");
 
 const repoBook = new MongooseBookRepo();
 const createBookUC = new CreateBook(repoBook);
@@ -68,5 +69,15 @@ exports.deleteBook = async (req, res) => {
 		res.json(result);
 	} catch (e) {
 		res.status(404).json({ error: e.message });
+	}
+};
+
+exports.getRecentBooks = async (req, res) => {
+	const limit = parseInt(req.query.limit) || 5;
+	try {
+		const books = await BookModel.find().sort({ createdAt: -1 }).limit(limit);
+		res.json(books);
+	} catch (e) {
+		res.status(500).json({ error: e.message });
 	}
 };
