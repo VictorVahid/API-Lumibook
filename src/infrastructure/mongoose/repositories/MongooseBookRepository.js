@@ -10,6 +10,19 @@ class MongooseBookRepository extends BookRepository {
 			author: doc.author,
 			price: doc.price,
 			stock: doc.stock,
+			ano: doc.ano,
+			tipo: doc.tipo,
+			categoria: doc.categoria,
+			edicao: doc.edicao,
+			idioma: doc.idioma,
+			isbn: doc.isbn,
+			localizacao: doc.localizacao,
+			sinopse: doc.sinopse,
+			paginas: doc.paginas,
+			resumo: doc.resumo,
+			editora: doc.editora,
+			exemplares: doc.exemplares,
+			disponivel: doc.disponivel,
 		};
 	}
 
@@ -22,6 +35,19 @@ class MongooseBookRepository extends BookRepository {
 			author: doc.author,
 			price: doc.price,
 			stock: doc.stock,
+			ano: doc.ano,
+			tipo: doc.tipo,
+			categoria: doc.categoria,
+			edicao: doc.edicao,
+			idioma: doc.idioma,
+			isbn: doc.isbn,
+			localizacao: doc.localizacao,
+			sinopse: doc.sinopse,
+			paginas: doc.paginas,
+			resumo: doc.resumo,
+			editora: doc.editora,
+			exemplares: doc.exemplares,
+			disponivel: doc.disponivel,
 		}));
 	}
 
@@ -34,6 +60,19 @@ class MongooseBookRepository extends BookRepository {
 			author: doc.author,
 			price: doc.price,
 			stock: doc.stock,
+			ano: doc.ano,
+			tipo: doc.tipo,
+			categoria: doc.categoria,
+			edicao: doc.edicao,
+			idioma: doc.idioma,
+			isbn: doc.isbn,
+			localizacao: doc.localizacao,
+			sinopse: doc.sinopse,
+			paginas: doc.paginas,
+			resumo: doc.resumo,
+			editora: doc.editora,
+			exemplares: doc.exemplares,
+			disponivel: doc.disponivel,
 		};
 	}
 

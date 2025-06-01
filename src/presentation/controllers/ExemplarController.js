@@ -19,7 +19,7 @@ exports.createExemplar = async (req, res) => {
 		const result = await createExUC.execute(req.body);
 		res.status(201).json(result);
 	} catch (e) {
-		res.status(400).json({ error: e.message });
+		res.status(400).json({ message: e.message });
 	}
 };
 
@@ -34,7 +34,7 @@ exports.getExemplar = async (req, res) => {
 		const ex = await getExUC.execute(req.params.id);
 		res.json(ex);
 	} catch (e) {
-		res.status(404).json({ error: e.message });
+		res.status(404).json({ message: e.message });
 	}
 };
 
@@ -45,7 +45,7 @@ exports.patchExemplarStatus = async (req, res) => {
 		});
 		res.json(updated);
 	} catch (e) {
-		res.status(400).json({ error: e.message });
+		res.status(400).json({ message: e.message });
 	}
 };
 
@@ -54,6 +54,6 @@ exports.deleteExemplar = async (req, res) => {
 		const result = await deleteExUC.execute(req.params.id);
 		res.json(result);
 	} catch (e) {
-		res.status(404).json({ error: e.message });
+		res.status(404).json({ message: e.message });
 	}
 };

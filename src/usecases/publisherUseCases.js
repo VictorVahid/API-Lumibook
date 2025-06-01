@@ -6,6 +6,9 @@ class CreatePublisher {
 	}
 	/** data: { nome, endereco?, contato? } */
 	async execute(data) {
+		// Mapeamento extra para retrocompatibilidade
+		if (data.cidade && !data.endereco) data.endereco = data.cidade;
+		if (data.pais && !data.contato) data.contato = data.pais;
 		if (
 			!data.nome ||
 			typeof data.nome !== "string" ||
@@ -44,6 +47,9 @@ class ReplacePublisher {
 	}
 	/** id: string, data: { nome, endereco?, contato? } */
 	async execute(id, data) {
+		// Mapeamento extra para retrocompatibilidade
+		if (data.cidade && !data.endereco) data.endereco = data.cidade;
+		if (data.pais && !data.contato) data.contato = data.pais;
 		if (!data.nome || data.nome.trim() === "") {
 			throw new Error("Nome da editora é obrigatório");
 		}
@@ -58,6 +64,9 @@ class PatchPublisher {
 		this.repo = repo;
 	}
 	async execute(id, data) {
+		// Mapeamento extra para retrocompatibilidade
+		if (data.cidade && !data.endereco) data.endereco = data.cidade;
+		if (data.pais && !data.contato) data.contato = data.pais;
 		if (data.nome !== undefined && data.nome.trim() === "") {
 			throw new Error("Nome da editora não pode ficar vazio");
 		}

@@ -3,7 +3,7 @@ const appUser = require("../src/app");
 
 describe("User API", () => {
 	it("POST /api/usuarios — create user", async () => {
-		const payload = { nome: "User", email: "u@u.com", senha: "123456" };
+		const payload = { nome: "User", email: "u@instituicao.edu", senha: "Senha@123" };
 		const res = await requestUser(appUser)
 			.post("/api/usuarios")
 			.send(payload)
@@ -15,7 +15,8 @@ describe("User API", () => {
 	it("GET /api/usuarios/:id — get user", async () => {
 		const u = await requestUser(appUser)
 			.post("/api/usuarios")
-			.send({ nome: "User", email: "u@u2.com", senha: "123456" });
-		await requestUser(appUser).get(`/api/usuarios/${u.body.id}`).expect(200);
+			.send({ nome: "User", email: "u2@instituicao.edu", senha: "Senha@123" });
+		const res = await requestUser(appUser).get(`/api/usuarios/${u.body.id}`).expect(200);
+		expect(res.body).toHaveProperty("id");
 	});
 });

@@ -19,7 +19,7 @@ exports.createReservation = async (req, res) => {
 		const result = await createResUC.execute(req.body);
 		res.status(201).json(result);
 	} catch (e) {
-		res.status(400).json({ error: e.message });
+		res.status(400).json({ message: e.message });
 	}
 };
 
@@ -38,7 +38,7 @@ exports.getReservation = async (req, res) => {
 		const resv = await getResUC.execute(req.params.id);
 		res.json(resv);
 	} catch (e) {
-		res.status(404).json({ error: e.message });
+		res.status(404).json({ message: e.message });
 	}
 };
 
@@ -49,7 +49,7 @@ exports.patchReservationStatus = async (req, res) => {
 		});
 		res.json(updated);
 	} catch (e) {
-		res.status(400).json({ error: e.message });
+		res.status(400).json({ message: e.message });
 	}
 };
 
@@ -58,6 +58,28 @@ exports.deleteReservation = async (req, res) => {
 		const result = await cancelResUC.execute(req.params.id);
 		res.json(result);
 	} catch (e) {
-		res.status(404).json({ error: e.message });
+		res.status(404).json({ message: e.message });
 	}
+};
+
+exports.getReservationHistory = async (req, res) => {
+	// Mock: histórico de reservas
+	res.json([
+		{
+			id: "1",
+			usuarioId: "u1",
+			livroId: "l1",
+			exemplarId: "e1",
+			dataReserva: "2024-01-01T10:00:00.000Z",
+			status: "finalizada"
+		},
+		{
+			id: "2",
+			usuarioId: "u1",
+			livroId: "l2",
+			exemplarId: "e2",
+			dataReserva: "2024-02-01T10:00:00.000Z",
+			status: "cancelada"
+		}
+	]);
 };

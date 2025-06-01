@@ -21,7 +21,7 @@ exports.createAuthor = async (req, res) => {
 		const result = await createUC.execute(req.body);
 		res.status(201).json(result);
 	} catch (e) {
-		res.status(400).json({ error: e.message });
+		res.status(400).json({ message: e.message });
 	}
 };
 
@@ -35,7 +35,7 @@ exports.getAuthor = async (req, res) => {
 		const author = await getUC.execute(req.params.id);
 		res.json(author);
 	} catch (e) {
-		res.status(404).json({ error: e.message });
+		res.status(404).json({ message: e.message });
 	}
 };
 
@@ -44,7 +44,7 @@ exports.replaceAuthor = async (req, res) => {
 		const updated = await replaceUC.execute(req.params.id, req.body);
 		res.json(updated);
 	} catch (e) {
-		res.status(400).json({ error: e.message });
+		res.status(400).json({ message: e.message });
 	}
 };
 
@@ -53,7 +53,7 @@ exports.patchAuthor = async (req, res) => {
 		const patched = await patchUC.execute(req.params.id, req.body);
 		res.json(patched);
 	} catch (e) {
-		res.status(400).json({ error: e.message });
+		res.status(400).json({ message: e.message });
 	}
 };
 
@@ -62,6 +62,6 @@ exports.deleteAuthor = async (req, res) => {
 		const result = await deleteUC.execute(req.params.id);
 		res.json(result);
 	} catch (e) {
-		res.status(404).json({ error: e.message });
+		res.status(404).json({ message: e.message });
 	}
 };

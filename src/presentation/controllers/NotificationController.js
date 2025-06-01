@@ -15,11 +15,11 @@ class NotificationController {
 		try {
 			const { loanId } = req.params;
 			if (!loanId)
-				return res.status(400).json({ error: "loanId é obrigatório" });
+				return res.status(400).json({ message: "loanId é obrigatório" });
 
 			const loan = await this.loanService.getLoanById(loanId);
 			if (!loan)
-				return res.status(404).json({ error: "Empréstimo não encontrado" });
+				return res.status(404).json({ message: "Empréstimo não encontrado" });
 
 			await this.sendReminder.execute(loan);
 			return res.status(200).json({ success: true });

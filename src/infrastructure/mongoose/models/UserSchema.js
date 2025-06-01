@@ -7,6 +7,8 @@ const UserSchema = new mongoose.Schema(
 		senhaHash: { type: String, required: true },
 		role: { type: String, default: "usuario" },
 		ativo: { type: Boolean, default: true },
+		telefone: { type: String, required: false },
+		matricula: { type: String, required: false },
 	},
 	{ collection: "usuarios" }
 );

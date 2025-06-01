@@ -53,6 +53,18 @@ class MongooseUserRepository extends UserRepository {
 	async findAll() {
 		return await UserModel.find({}, { senhaHash: 0, senha: 0 });
 	}
+
+	async findByEmail(email) {
+		const doc = await UserModel.findOne({ email }).exec();
+		if (!doc) return null;
+		return doc.toObject();
+	}
+
+	async findByMatricula(matricula) {
+		const doc = await UserModel.findOne({ matricula }).exec();
+		if (!doc) return null;
+		return doc.toObject();
+	}
 }
 
 module.exports = MongooseUserRepository;

@@ -1,5 +1,5 @@
 class Book {
-	constructor({ id, title, author, price, stock, isbn, ano, tipo, categoria, editora, idioma, paginas, resumo, localizacao, exemplares, adminId, dataCatalogacao, status }) {
+	constructor({ id, title, author, price, stock, isbn, ano, tipo, categoria, edicao, idioma, paginas, resumo, localizacao, exemplares, adminId, dataCatalogacao, status, disponivel }) {
 		this.id = id;
 		this.title = title;
 		this.author = author;
@@ -9,7 +9,7 @@ class Book {
 		this.ano = ano;
 		this.tipo = tipo;
 		this.categoria = categoria;
-		this.editora = editora;
+		this.edicao = edicao;
 		this.idioma = idioma;
 		this.paginas = paginas;
 		this.resumo = resumo;
@@ -18,6 +18,7 @@ class Book {
 		this.adminId = adminId;
 		this.dataCatalogacao = dataCatalogacao;
 		this.status = status;
+		this.disponivel = disponivel;
 		this.validate();
 	}
 

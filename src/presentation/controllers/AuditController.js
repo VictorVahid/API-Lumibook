@@ -16,7 +16,7 @@ exports.listLogs = async (req, res) => {
 		const logs = await listAuditUC.execute(filters);
 		res.json(logs);
 	} catch (e) {
-		res.status(500).json({ error: e.message });
+		res.status(500).json({ message: e.message });
 	}
 };
 
@@ -25,6 +25,6 @@ exports.getLog = async (req, res) => {
 		const log = await getAuditUC.execute(req.params.id);
 		res.json(log);
 	} catch (e) {
-		res.status(404).json({ error: e.message });
+		res.status(404).json({ message: e.message });
 	}
 };

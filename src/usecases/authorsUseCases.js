@@ -9,6 +9,9 @@ class CreateAuthor {
 	 * data: { nome, bio?, nascimento? }
 	 */
 	async execute(data) {
+		// Mapeamento extra para retrocompatibilidade
+		if (data.biografia && !data.bio) data.bio = data.biografia;
+		if (data.nacionalidade && !data.nascimento) data.nascimento = data.nacionalidade;
 		const { nome } = data;
 		if (!nome || typeof nome !== "string" || nome.trim() === "") {
 			throw new Error("O nome do autor é obrigatório");
@@ -57,6 +60,9 @@ class ReplaceAuthor {
 	 * id: string, data: { nome, bio?, nascimento? }
 	 */
 	async execute(id, data) {
+		// Mapeamento extra para retrocompatibilidade
+		if (data.biografia && !data.bio) data.bio = data.biografia;
+		if (data.nacionalidade && !data.nascimento) data.nascimento = data.nacionalidade;
 		if (
 			!data.nome ||
 			typeof data.nome !== "string" ||
@@ -81,6 +87,9 @@ class PatchAuthor {
 	 * id: string, data: Partial<{ nome, bio, nascimento }>
 	 */
 	async execute(id, data) {
+		// Mapeamento extra para retrocompatibilidade
+		if (data.biografia && !data.bio) data.bio = data.biografia;
+		if (data.nacionalidade && !data.nascimento) data.nascimento = data.nacionalidade;
 		if (
 			data.nome !== undefined &&
 			(typeof data.nome !== "string" || data.nome.trim() === "")

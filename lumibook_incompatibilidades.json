@@ -1,0 +1,74 @@
+{
+  "back": {
+    "ajustes_necessarios": {
+      "usuarios_register": [
+        "Padronizar campo de erro para 'message' (atualmente é 'error')."
+      ],
+      "usuarios_login": [
+        "Adicionar retorno de 'token' (JWT) no login.",
+        "Opcional: retornar objeto direto ao invés de wrapper 'success/data/message'."
+      ],
+      "books": [
+        "Traduzir nomes dos campos para português ('title' → 'titulo', 'author' → 'autor').",
+        "Opcional: retornar array direto ao invés de wrapper 'success/data'."
+      ],
+      "reservas": [
+        "Opcional: retornar objeto direto ao invés de wrapper 'success/data'."
+      ],
+      "multas": [
+        "Opcional: retornar array direto ao invés de wrapper 'success/data'."
+      ],
+      "emprestimos": [
+        "Garantir retorno do campo 'id' na resposta.",
+        "Opcional: retornar objeto direto ao invés de wrapper 'success/data'."
+      ],
+      "autores": [
+        "Opcional: retornar objeto direto ao invés de wrapper 'success/data'."
+      ],
+      "editoras": [
+        "Opcional: retornar objeto direto ao invés de wrapper 'success/data'."
+      ],
+      "erros": [
+        "Padronizar campo de erro para 'message' (atualmente é 'error')."
+      ]
+    },
+    "regras_quebradas": {
+      "usuarios_login": [
+        "Autenticação JWT não está implementada no back."
+      ]
+    }
+  },
+  "front": {
+    "ajustes_necessarios": {
+      "usuarios_register": [
+        "Aceitar campo de erro 'error' além de 'message' (ou alinhar com o back)."
+      ],
+      "usuarios_login": [
+        "Aceitar wrapper 'success/data/message' na resposta do login, ou alinhar com o back.",
+        "Não esperar campo 'token' se o back não implementar JWT."
+      ],
+      "books": [
+        "Aceitar wrapper 'success/data' e nomes de campos em inglês ('title', 'author'), ou alinhar com o back."
+      ],
+      "reservas": [
+        "Aceitar wrapper 'success/data' na resposta, ou alinhar com o back."
+      ],
+      "multas": [
+        "Aceitar wrapper 'success/data' na resposta, ou alinhar com o back."
+      ],
+      "emprestimos": [
+        "Aceitar wrapper 'success/data' e garantir que pode lidar com ausência do campo 'id'."
+      ],
+      "autores": [
+        "Aceitar wrapper 'success/data' na resposta, ou alinhar com o back."
+      ],
+      "editoras": [
+        "Aceitar wrapper 'success/data' na resposta, ou alinhar com o back."
+      ],
+      "erros": [
+        "Aceitar campo de erro 'error' além de 'message' (ou alinhar com o back)."
+      ]
+    },
+    "regras_quebradas": {}
+  }
+} 

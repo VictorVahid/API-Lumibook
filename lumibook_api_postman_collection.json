@@ -1,0 +1,490 @@
+{
+  "info": {
+    "_postman_id": "lumibook-api-collection-001",
+    "name": "Lumibook API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Coleção completa para testar todos os endpoints da API Lumibook, com exemplos variados."
+  },
+  "item": [
+    {
+      "name": "Usuários",
+      "item": [
+        {
+          "name": "Registrar Usuário (Aluno)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Aluno Teste\",\n  \"email\": \"aluno@instituicao.edu\",\n  \"senha\": \"Senha@123\",\n  \"role\": \"aluno\",\n  \"matricula\": \"20231234\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/usuarios", "host": ["{{baseUrl}}"], "path": ["api", "usuarios"] }
+          }
+        },
+        {
+          "name": "Registrar Usuário (Professor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Prof Teste\",\n  \"email\": \"prof@instituicao.edu\",\n  \"senha\": \"Senha@123\",\n  \"role\": \"professor\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/usuarios", "host": ["{{baseUrl}}"], "path": ["api", "usuarios"] }
+          }
+        },
+        {
+          "name": "Login Usuário",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identificador\": \"aluno@instituicao.edu\",\n  \"senha\": \"Senha@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/usuarios/login", "host": ["{{baseUrl}}"], "path": ["api", "usuarios", "login"] }
+          }
+        },
+        {
+          "name": "Listar Usuários",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/usuarios", "host": ["{{baseUrl}}"], "path": ["api", "usuarios"] }
+          }
+        },
+        {
+          "name": "Buscar Usuário por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/usuarios/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api", "usuarios", "{{userId}}"] }
+          }
+        },
+        {
+          "name": "Avatar do Usuário",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/usuarios/{{userId}}/avatar", "host": ["{{baseUrl}}"], "path": ["api", "usuarios", "{{userId}}", "avatar"] }
+          }
+        },
+        {
+          "name": "Estatísticas do Usuário",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/usuarios/{{userId}}/stats", "host": ["{{baseUrl}}"], "path": ["api", "usuarios", "{{userId}}", "stats"] }
+          }
+        },
+        {
+          "name": "Deletar Usuário",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/usuarios/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api", "usuarios", "{{userId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Livros",
+      "item": [
+        {
+          "name": "Cadastrar Livro Completo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Node.js Avançado\",\n  \"author\": \"Fulano\",\n  \"price\": 99.9,\n  \"stock\": 10,\n  \"ano\": 2023,\n  \"tipo\": \"Livro\",\n  \"categoria\": \"Tecnologia\",\n  \"edicao\": \"2a\",\n  \"idioma\": \"Português\",\n  \"isbn\": \"1234567890\",\n  \"localizacao\": \"Estante A\",\n  \"sinopse\": \"Livro sobre Node.js\",\n  \"paginas\": 350,\n  \"resumo\": \"Resumo do livro\",\n  \"editora\": \"Editora XPTO\",\n  \"exemplares\": [],\n  \"disponivel\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/books", "host": ["{{baseUrl}}"], "path": ["api", "books"] }
+          }
+        },
+        {
+          "name": "Cadastrar Livro Mínimo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Livro Simples\",\n  \"author\": \"Autor Simples\",\n  \"price\": 10,\n  \"stock\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/books", "host": ["{{baseUrl}}"], "path": ["api", "books"] }
+          }
+        },
+        {
+          "name": "Listar Livros",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/books", "host": ["{{baseUrl}}"], "path": ["api", "books"] }
+          }
+        },
+        {
+          "name": "Buscar Livro por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/books/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["api", "books", "{{bookId}}"] }
+          }
+        },
+        {
+          "name": "Atualizar Livro (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Node.js Atualizado\",\n  \"author\": \"Fulano Atualizado\",\n  \"price\": 120,\n  \"stock\": 5\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/books/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["api", "books", "{{bookId}}"] }
+          }
+        },
+        {
+          "name": "Atualizar Livro (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 80\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/books/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["api", "books", "{{bookId}}"] }
+          }
+        },
+        {
+          "name": "Deletar Livro",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/books/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["api", "books", "{{bookId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Autores",
+      "item": [
+        {
+          "name": "Cadastrar Autor",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Autor Exemplo\",\n  \"bio\": \"Biografia do autor\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/autores", "host": ["{{baseUrl}}"], "path": ["api", "autores"] }
+          }
+        },
+        {
+          "name": "Listar Autores",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/autores", "host": ["{{baseUrl}}"], "path": ["api", "autores"] }
+          }
+        },
+        {
+          "name": "Buscar Autor por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/autores/{{authorId}}", "host": ["{{baseUrl}}"], "path": ["api", "autores", "{{authorId}}"] }
+          }
+        },
+        {
+          "name": "Atualizar Autor (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bio\": \"Nova biografia\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/autores/{{authorId}}", "host": ["{{baseUrl}}"], "path": ["api", "autores", "{{authorId}}"] }
+          }
+        },
+        {
+          "name": "Deletar Autor",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/autores/{{authorId}}", "host": ["{{baseUrl}}"], "path": ["api", "autores", "{{authorId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Editoras",
+      "item": [
+        {
+          "name": "Cadastrar Editora",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Editora XPTO\",\n  \"endereco\": \"Rua das Letras, 123\",\n  \"contato\": \"contato@editora.com\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/editoras", "host": ["{{baseUrl}}"], "path": ["api", "editoras"] }
+          }
+        },
+        {
+          "name": "Listar Editoras",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/editoras", "host": ["{{baseUrl}}"], "path": ["api", "editoras"] }
+          }
+        },
+        {
+          "name": "Buscar Editora por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/editoras/{{publisherId}}", "host": ["{{baseUrl}}"], "path": ["api", "editoras", "{{publisherId}}"] }
+          }
+        },
+        {
+          "name": "Atualizar Editora (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contato\": \"novo@editora.com\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/editoras/{{publisherId}}", "host": ["{{baseUrl}}"], "path": ["api", "editoras", "{{publisherId}}"] }
+          }
+        },
+        {
+          "name": "Deletar Editora",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/editoras/{{publisherId}}", "host": ["{{baseUrl}}"], "path": ["api", "editoras", "{{publisherId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Exemplares",
+      "item": [
+        {
+          "name": "Cadastrar Exemplar",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"livroId\": \"{{bookId}}\",\n  \"status\": \"disponível\",\n  \"localizacao\": \"Estante B\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/exemplares", "host": ["{{baseUrl}}"], "path": ["api", "exemplares"] }
+          }
+        },
+        {
+          "name": "Listar Exemplares",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/exemplares", "host": ["{{baseUrl}}"], "path": ["api", "exemplares"] }
+          }
+        },
+        {
+          "name": "Buscar Exemplar por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/exemplares/{{exemplarId}}", "host": ["{{baseUrl}}"], "path": ["api", "exemplares", "{{exemplarId}}"] }
+          }
+        },
+        {
+          "name": "Atualizar Status do Exemplar",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"emprestado\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/exemplares/{{exemplarId}}/status", "host": ["{{baseUrl}}"], "path": ["api", "exemplares", "{{exemplarId}}", "status"] }
+          }
+        },
+        {
+          "name": "Deletar Exemplar",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/exemplares/{{exemplarId}}", "host": ["{{baseUrl}}"], "path": ["api", "exemplares", "{{exemplarId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reservas",
+      "item": [
+        {
+          "name": "Criar Reserva",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuarioId\": \"{{userId}}\",\n  \"livroId\": \"{{bookId}}\",\n  \"exemplarId\": \"{{exemplarId}}\",\n  \"dataReserva\": \"2024-06-01T12:00:00.000Z\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/reservas", "host": ["{{baseUrl}}"], "path": ["api", "reservas"] }
+          }
+        },
+        {
+          "name": "Listar Reservas",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/reservas", "host": ["{{baseUrl}}"], "path": ["api", "reservas"] }
+          }
+        },
+        {
+          "name": "Buscar Reserva por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/reservas/{{reservaId}}", "host": ["{{baseUrl}}"], "path": ["api", "reservas", "{{reservaId}}"] }
+          }
+        },
+        {
+          "name": "Atualizar Status da Reserva",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"cancelada\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/reservas/{{reservaId}}/status", "host": ["{{baseUrl}}"], "path": ["api", "reservas", "{{reservaId}}", "status"] }
+          }
+        },
+        {
+          "name": "Deletar Reserva",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/reservas/{{reservaId}}", "host": ["{{baseUrl}}"], "path": ["api", "reservas", "{{reservaId}}"] }
+          }
+        },
+        {
+          "name": "Histórico de Reservas",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/reservas/historico", "host": ["{{baseUrl}}"], "path": ["api", "reservas", "historico"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Multas",
+      "item": [
+        {
+          "name": "Criar Multa",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuarioId\": \"{{userId}}\",\n  \"reservaId\": \"{{reservaId}}\",\n  \"valor\": 20,\n  \"status\": \"pendente\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/multas", "host": ["{{baseUrl}}"], "path": ["api", "multas"] }
+          }
+        },
+        {
+          "name": "Listar Multas",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/multas", "host": ["{{baseUrl}}"], "path": ["api", "multas"] }
+          }
+        },
+        {
+          "name": "Buscar Multa por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/multas/{{multaId}}", "host": ["{{baseUrl}}"], "path": ["api", "multas", "{{multaId}}"] }
+          }
+        },
+        {
+          "name": "Atualizar Status da Multa",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"paga\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/multas/{{multaId}}/status", "host": ["{{baseUrl}}"], "path": ["api", "multas", "{{multaId}}", "status"] }
+          }
+        },
+        {
+          "name": "Pagar Multa",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/multas/{{multaId}}/pagar", "host": ["{{baseUrl}}"], "path": ["api", "multas", "{{multaId}}", "pagar"] }
+          }
+        },
+        {
+          "name": "Histórico de Multas",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/multas/historico", "host": ["{{baseUrl}}"], "path": ["api", "multas", "historico"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Estatísticas do Sistema",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/admin/stats", "host": ["{{baseUrl}}"], "path": ["api", "admin", "stats"] }
+          }
+        },
+        {
+          "name": "Atividades do Sistema",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/admin/activities", "host": ["{{baseUrl}}"], "path": ["api", "admin", "activities"] }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "userId", "value": "" },
+    { "key": "bookId", "value": "" },
+    { "key": "authorId", "value": "" },
+    { "key": "publisherId", "value": "" },
+    { "key": "exemplarId", "value": "" },
+    { "key": "reservaId", "value": "" },
+    { "key": "multaId", "value": "" }
+  ]
+} 
