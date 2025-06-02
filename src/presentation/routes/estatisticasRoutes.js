@@ -1,14 +1,30 @@
 const express = require("express");
 const router = express.Router();
+const LoanModel = require("../../infrastructure/mongoose/models/Loan.js");
+const ReservationModel = require("../../infrastructure/mongoose/models/ReservationSchema.js");
 
 // Estatísticas de aluno
-router.get("/alunos/:id/estatisticas", (req, res) => {
+router.get("/alunos/:id/estatisticas", async (req, res) => {
+  const usuarioId = req.params.id;
+  // Limite fixo para aluno (ajuste se necessário)
+  const limiteConcorrente = 3;
+
+  // Buscar empréstimos ativos (status: 'ativo' ou 'atrasado')
+  const livrosEmprestados = await LoanModel.countDocuments({ usuario: usuarioId, status: { $in: ["ativo", "atrasado"] } });
+
+  // Buscar reservas ativas (status: 'pendente', 'ativa', 'atendida')
+  const reservasAtivas = await ReservationModel.countDocuments({ usuarioId, status: { $in: ["pendente", "ativa", "atendida"] } });
+
+  // Calcular livrosDisponiveis
+  const livrosDisponiveis = Math.max(0, limiteConcorrente - (livrosEmprestados + reservasAtivas));
+
   res.json({
-    livrosEmprestados: 1,
-    limiteConcorrente: 3,
-    devolucoesPendentes: 0,
-    reservasAtivas: 0,
-    historicoEmprestimos: 2,
+    livrosEmprestados,
+    livrosDisponiveis,
+    limiteConcorrente,
+    devolucoesPendentes: 0, // ajuste se necessário
+    reservasAtivas,
+    historicoEmprestimos: 0, // ajuste se necessário
     ultimaAtualizacao: new Date().toISOString(),
     tipoUsuario: "aluno"
   });
