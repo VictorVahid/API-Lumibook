@@ -27,6 +27,26 @@ router.get("/professores/:id/estatisticas", (req, res) => {
   });
 });
 
+// Estatísticas de admin
+router.get("/admin/:id/estatisticas", (req, res) => {
+  res.json({
+    livrosEmprestados: 0,
+    livrosDisponiveis: 0,
+    limiteConcorrente: 0,
+    devolucoesPendentes: 0,
+    reservasAtivas: 0,
+    historicoEmprestimos: 0,
+    ultimaAtualizacao: new Date().toISOString(),
+    tipoUsuario: "admin",
+    multasPendentes: 0,
+    pontosUsuario: 0,
+    bibliografiasGerenciadas: 0,
+    turmasAtivas: 0,
+    livrosSolicitados: 0,
+    fonte: "",
+  });
+});
+
 // Atualizar estatística específica
 router.put("/usuarios/:id/estatisticas/:statKey", (req, res) => {
   res.json({ success: true, statKey: req.params.statKey, newValue: req.body.value });

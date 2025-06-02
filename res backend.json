@@ -1,0 +1,230 @@
+{
+  "rotas_disponiveis": [
+    "/usuarios/login",
+    "/usuarios/register",
+    "/usuarios/{id}",
+    "/usuarios/perfil",
+    "/usuarios/perfil (PATCH)",
+    "/usuarios/{id} (PATCH)",
+    "/usuarios/{id} (DELETE)",
+    "/usuarios/{id}/atividades",
+    "/usuarios/{id}/avatar",
+    "/auditoria/logs",
+    "/obras/tipos",
+    "/obras/categorias",
+    "/obras/verificar-duplicata",
+    "/obras/isbn/{isbn}",
+    "/livros/{bookId}",
+    "/livros/relacionados/{bookId}",
+    "/livros/recentes",
+    "/livros/buscar (TODO)",
+    "/admin/obras/catalogar",
+    "/emprestimos",
+    "/emprestimos/{emprestimoId}/devolucao (TODO)",
+    "/emprestimos/historico (TODO)",
+    "/reservas",
+    "/reservas/historico",
+    "/multas",
+    "/multas/historico",
+    "/multas/{multaId}/pagar (TODO)",
+    "/editoras/buscar (TODO)",
+    "/editoras",
+    "/editoras/{id}",
+    "/autores/buscar (TODO)",
+    "/autores",
+    "/autores/{id}",
+    "/professores/{id}/estatisticas",
+    "/alunos/{id}/estatisticas",
+    "/admin/{id}/estatisticas"
+  ],
+  "servicos": {
+    "UserService": ["login", "logout (TODO)", "isAuthenticated (TODO)", "getAuthToken (TODO)", "register", "getUserById", "updateUser", "deleteUser", "getUserProfile", "getSystemActivities (TODO)"] ,
+    "CatalogService": ["catalogarObra", "getTiposObra", "getCategorias", "getEditoras", "verificarDuplicata", "buscarPorISBN", "getBookById", "getRelatedBooks", "getRecentBooks", "searchBooks (TODO)"] ,
+    "StatsService": ["getUserStats", "updateStat (TODO)", "getUserHistory", "calculateUserLimits (TODO)"] ,
+    "ReservationService": ["createReservation", "cancelReservation", "getActiveReservations", "getReservationHistory"],
+    "LoanService": ["createLoan", "returnLoan (TODO)", "getActiveLoans (TODO)", "getLoanHistory (TODO)", "cancelLoan (TODO)"] ,
+    "FineService": ["getActiveFines (TODO)", "payFine (TODO)", "getFineHistory"],
+    "AuthorService": ["searchAuthors (TODO)", "createAuthor", "updateAuthor", "deleteAuthor"],
+    "PublisherService": ["searchPublishers (TODO)", "createPublisher", "updatePublisher", "deletePublisher"],
+    "profileService": ["getProfile", "updateProfile"],
+    "avatarService": ["getUserAvatar"],
+    "activityService": ["getUserActivities (TODO)", "getSystemActivities (TODO)"]
+  },
+  "campos_esperados": {
+    "Usuário": ["id", "nome", "email", "papel", "matricula", "tipoLogin", "avatarUrl", "token"],
+    "Livro": ["id", "titulo", "autor", "editora", "ano", "isbn", "categoria", "tipo", "paginas", "localizacao", "status", "dataCatalogacao", "exemplares", "resumo"],
+    "Reserva": ["livroId", "exemplarId", "dataReserva", "status"],
+    "Empréstimo": ["livroId", "itens", "dataEmprestimo", "dataPrevistaDevolucao", "status"],
+    "Multa": ["id", "descricao", "valor", "status"],
+    "Estatísticas": ["livrosEmprestados", "livrosDisponiveis", "limiteConcorrente", "devolucoesPendentes", "reservasAtivas", "historicoEmprestimos", "ultimaAtualizacao", "fonte", "tipoUsuario", "multasPendentes", "pontosUsuario", "bibliografiasGerenciadas", "turmasAtivas", "livrosSolicitados"]
+  },
+  "regras": [
+    "Todos os endpoints devem retornar os campos exatamente como o front espera.",
+    "Os nomes dos campos no JSON devem ser idênticos aos utilizados pelo front.",
+    "Endpoints que retornam listas devem retornar arrays, nunca objetos aninhados desnecessários.",
+    "Endpoints de estatísticas devem retornar todos os campos esperados, mesmo que alguns sejam zero ou string vazia.",
+    "O campo 'token' deve ser retornado no login e salvo no localStorage.",
+    "Os endpoints de avatar devem retornar 'avatarUrl' no JSON.",
+    "O endpoint de atividades do sistema deve retornar logs em formato de array, com campos como 'acao', 'usuario', 'data', etc.",
+    "Se houver campos opcionais, o back deve garantir que eles existam (mesmo que nulos) para evitar erros de undefined no front.",
+    "Nomes de arquivos e serviços devem seguir padrão PascalCase."
+  ],
+  "observacoes": [
+    "Alguns endpoints e serviços ainda estão como TODO e precisam ser implementados.",
+    "A maioria dos campos e rotas já está padronizada, mas recomenda-se revisão contínua ao evoluir o projeto.",
+    "Verificar sempre se campos opcionais estão presentes como nulos para evitar erros no front."
+  ],
+  "exemplos": {
+    "login": {
+      "request": {
+        "method": "POST",
+        "url": "/api/usuarios/login",
+        "body": {
+          "identificador": "usuario@instituicao.edu",
+          "senha": "SenhaForte123!"
+        }
+      },
+      "response": {
+        "id": "64f1c2...",
+        "nome": "João da Silva",
+        "email": "usuario@instituicao.edu",
+        "papel": "aluno",
+        "matricula": "20231234",
+        "tipoLogin": "email",
+        "avatarUrl": "https://.../avatar/64f1c2...",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      }
+    },
+    "getUser": {
+      "request": {
+        "method": "GET",
+        "url": "/api/usuarios/64f1c2..."
+      },
+      "response": {
+        "id": "64f1c2...",
+        "nome": "João da Silva",
+        "email": "usuario@instituicao.edu",
+        "papel": "aluno",
+        "matricula": "20231234",
+        "tipoLogin": "email",
+        "avatarUrl": "https://.../avatar/64f1c2...",
+        "statusConta": "ativa",
+        "telefone": null
+      }
+    },
+    "getAvatar": {
+      "request": {
+        "method": "GET",
+        "url": "/api/usuarios/64f1c2.../avatar"
+      },
+      "response": {
+        "avatarUrl": "https://.../avatar/64f1c2..."
+      }
+    },
+    "searchBooks": {
+      "request": {
+        "method": "GET",
+        "url": "/api/livros/buscar?q=harry"
+      },
+      "response": [
+        {
+          "id": "65a1b2...",
+          "titulo": "Harry Potter e a Pedra Filosofal",
+          "autor": "J.K. Rowling",
+          "editora": "Rocco",
+          "ano": 1997,
+          "isbn": "9788532511010",
+          "categoria": "Fantasia",
+          "tipo": "Livro",
+          "paginas": 320,
+          "localizacao": "Estante A",
+          "status": "disponivel",
+          "dataCatalogacao": "2024-05-01T12:00:00.000Z",
+          "exemplares": [
+            { "codigo": "EX001", "status": "disponivel" }
+          ],
+          "resumo": "O início da saga do bruxo Harry Potter."
+        }
+      ]
+    },
+    "createReservation": {
+      "request": {
+        "method": "POST",
+        "url": "/api/reservas",
+        "body": {
+          "usuarioId": "64f1c2...",
+          "livroId": "65a1b2..."
+        }
+      },
+      "response": {
+        "id": "resv123",
+        "usuarioId": "64f1c2...",
+        "livroId": "65a1b2...",
+        "status": "pendente",
+        "dataReserva": "2024-06-01T10:00:00.000Z"
+      }
+    },
+    "reservationHistory": {
+      "request": {
+        "method": "GET",
+        "url": "/api/reservas/historico?usuarioId=64f1c2..."
+      },
+      "response": [
+        {
+          "id": "1",
+          "livroId": "l1",
+          "exemplarId": "e1",
+          "dataReserva": "2024-01-01T10:00:00.000Z",
+          "status": "finalizada"
+        },
+        {
+          "id": "2",
+          "livroId": "l2",
+          "exemplarId": "e2",
+          "dataReserva": "2024-02-01T10:00:00.000Z",
+          "status": "cancelada"
+        }
+      ]
+    },
+    "userActivities": {
+      "request": {
+        "method": "GET",
+        "url": "/api/usuarios/64f1c2.../atividades"
+      },
+      "response": [
+        {
+          "acao": "login",
+          "usuario": "64f1c2...",
+          "data": "2024-06-01T12:00:00.000Z",
+          "detalhes": "Usuário realizou login"
+        },
+        {
+          "acao": "reserva_livro",
+          "usuario": "64f1c2...",
+          "data": "2024-06-01T12:05:00.000Z",
+          "detalhes": "Usuário reservou um livro"
+        }
+      ]
+    },
+    "fineHistory": {
+      "request": {
+        "method": "GET",
+        "url": "/api/multas/historico?usuarioId=64f1c2..."
+      },
+      "response": [
+        {
+          "id": "1",
+          "descricao": "Atraso na devolução",
+          "valor": 10,
+          "status": "paga"
+        },
+        {
+          "id": "2",
+          "descricao": "Livro danificado",
+          "valor": 20,
+          "status": "pendente"
+        }
+      ]
+    }
+  }
+} 

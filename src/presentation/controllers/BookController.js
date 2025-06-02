@@ -20,6 +20,7 @@ const deleteBookUC = new DeleteBook(repoBook);
 function traduzirLivro(livro) {
 	if (!livro) return livro;
 	const obj = { ...livro._doc || livro };
+	obj.id = livro.id || livro._id || obj.id || obj._id || null;
 	if (obj.title) {
 		obj.titulo = obj.title;
 		delete obj.title;
@@ -107,4 +108,31 @@ exports.getRecentBooks = async (req, res) => {
 	} catch (e) {
 		res.status(500).json({ message: e.message });
 	}
+};
+
+exports.getRelatedBooks = async (req, res) => {
+	// Mock: retorna livros relacionados (poderia ser por categoria, autor, etc)
+	const bookId = req.params.bookId;
+	const books = await listBooksUC.execute({});
+	const relacionados = books.filter(b => b.id !== bookId).slice(0, 3);
+	res.json(relacionados.map(traduzirLivro));
+};
+
+exports.getBookByISBN = async (req, res) => {
+	const isbn = req.params.isbn;
+	const books = await listBooksUC.execute({});
+	const book = books.find(b => b.isbn === isbn);
+	if (!book) return res.status(404).json({ message: "Livro não encontrado" });
+	res.json(traduzirLivro(book));
+};
+
+exports.searchBooks = async (req, res) => {
+	const termo = req.query.q || "";
+	const books = await listBooksUC.execute({});
+	const filtrados = books.filter(livro => {
+		const texto = [livro.title, livro.author, livro.isbn, livro.categoria, livro.tipo, livro.resumo]
+			.map(x => (x || "").toLowerCase()).join(" ");
+		return texto.includes(termo.toLowerCase());
+	});
+	res.json(filtrados.map(traduzirLivro));
 };

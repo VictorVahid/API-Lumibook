@@ -1,5 +1,6 @@
 const FineRepository = require("../../../domain/repositories/FineRepository");
 const FineModel = require("../models/FineSchema");
+const mongoose = require("mongoose");
 
 class MongooseFineRepository extends FineRepository {
 	async create(fine) {
@@ -30,6 +31,9 @@ class MongooseFineRepository extends FineRepository {
 	}
 
 	async findById(id) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		const doc = await FineModel.findById(id).exec();
 		if (!doc) return null;
 		return {
@@ -43,6 +47,9 @@ class MongooseFineRepository extends FineRepository {
 	}
 
 	async updateStatus(id, { status }) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		const doc = await FineModel.findByIdAndUpdate(
 			id,
 			{ status },

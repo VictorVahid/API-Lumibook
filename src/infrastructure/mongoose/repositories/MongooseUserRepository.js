@@ -1,6 +1,7 @@
 // src/infrastructure/mongoose/repositories/MongooseUserRepository.js
 const UserRepository = require("../../../domain/repositories/UserRepository");
 const UserModel = require("../models/UserSchema");
+const mongoose = require("mongoose");
 
 class MongooseUserRepository extends UserRepository {
 	async create(user) {
@@ -15,6 +16,9 @@ class MongooseUserRepository extends UserRepository {
 	}
 
 	async findById(id) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		const doc = await UserModel.findById(id).exec();
 		if (!doc) return null;
 		return {
@@ -27,6 +31,9 @@ class MongooseUserRepository extends UserRepository {
 	}
 
 	async update(id, data) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		const doc = await UserModel.findByIdAndUpdate(id, data, {
 			new: true,
 		}).exec();
@@ -41,6 +48,9 @@ class MongooseUserRepository extends UserRepository {
 	}
 
 	async delete(id) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		const doc = await UserModel.findByIdAndDelete(id).exec();
 		if (!doc) return null;
 		return {

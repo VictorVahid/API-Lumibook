@@ -1,5 +1,6 @@
 const ReservationRepository = require("../../../domain/repositories/ReservationRepository");
 const ReservationModel = require("../models/ReservationSchema");
+const mongoose = require("mongoose");
 
 class MongooseReservationRepository extends ReservationRepository {
 	async create(reservation) {
@@ -29,6 +30,9 @@ class MongooseReservationRepository extends ReservationRepository {
 	}
 
 	async findById(id) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		const doc = await ReservationModel.findById(id).exec();
 		if (!doc) return null;
 		return {
@@ -41,6 +45,9 @@ class MongooseReservationRepository extends ReservationRepository {
 	}
 
 	async updateStatus(id, { status }) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		const doc = await ReservationModel.findByIdAndUpdate(
 			id,
 			{ status },
@@ -57,6 +64,9 @@ class MongooseReservationRepository extends ReservationRepository {
 	}
 
 	async delete(id) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		await ReservationModel.findByIdAndDelete(id).exec();
 	}
 }

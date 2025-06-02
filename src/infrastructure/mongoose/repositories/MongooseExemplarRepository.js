@@ -1,5 +1,6 @@
 const ExemplarRepository = require("../../../domain/repositories/ExemplarRepository");
 const ExemplarModel = require("../models/ExemplarSchema");
+const mongoose = require("mongoose");
 
 class MongooseExemplarRepository extends ExemplarRepository {
 	async create(exemplar) {
@@ -26,6 +27,9 @@ class MongooseExemplarRepository extends ExemplarRepository {
 	}
 
 	async findById(id) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		const doc = await ExemplarModel.findById(id).exec();
 		if (!doc) return null;
 		return {
@@ -37,6 +41,9 @@ class MongooseExemplarRepository extends ExemplarRepository {
 	}
 
 	async updateStatus(id, { status }) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		const doc = await ExemplarModel.findByIdAndUpdate(
 			id,
 			{ status },
@@ -52,6 +59,9 @@ class MongooseExemplarRepository extends ExemplarRepository {
 	}
 
 	async delete(id) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		await ExemplarModel.findByIdAndDelete(id).exec();
 	}
 }

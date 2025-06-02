@@ -12,5 +12,11 @@ userRouter.patch("/usuarios/:id", userCtrl.patchUser);
 userRouter.delete("/usuarios/:id", userCtrl.deleteUser);
 userRouter.get("/usuarios/:id/avatar", userCtrl.getAvatar);
 userRouter.get("/usuarios/:id/stats", userCtrl.getUserStats);
+userRouter.get("/usuarios/perfil", userCtrl.getUser);
+userRouter.patch("/usuarios/perfil", userCtrl.patchUser);
+userRouter.get("/usuarios/:id/atividades", userCtrl.getUserActivities);
+
+// Atividades do usuário
+// userRouter.get("/usuarios/:id/atividades", userCtrl.getUserActivities); // Adicionar se necessário
 
 module.exports = userRouter;

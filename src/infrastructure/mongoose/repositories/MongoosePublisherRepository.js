@@ -1,5 +1,6 @@
 const PublisherRepository = require("../../../domain/repositories/PublisherRepository");
 const PublisherModel = require("../models/PublisherSchema");
+const mongoose = require("mongoose");
 
 class MongoosePublisherRepository extends PublisherRepository {
 	async create(publisher) {
@@ -23,6 +24,9 @@ class MongoosePublisherRepository extends PublisherRepository {
 	}
 
 	async findById(id) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		const doc = await PublisherModel.findById(id).exec();
 		if (!doc) return null;
 		return {
@@ -34,6 +38,9 @@ class MongoosePublisherRepository extends PublisherRepository {
 	}
 
 	async update(id, data) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		const doc = await PublisherModel.findByIdAndUpdate(id, data, {
 			new: true,
 		}).exec();
@@ -47,6 +54,9 @@ class MongoosePublisherRepository extends PublisherRepository {
 	}
 
 	async delete(id) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		await PublisherModel.findByIdAndDelete(id).exec();
 	}
 }

@@ -14,10 +14,21 @@ const getResUC = new GetReservation(repoRes);
 const updateResUC = new UpdateReservationStatus(repoRes);
 const cancelResUC = new CancelReservation(repoRes);
 
+function padronizarReserva(reserva) {
+	return {
+		id: reserva.id || null,
+		usuarioId: reserva.usuarioId || null,
+		livroId: reserva.livroId || null,
+		exemplarId: reserva.exemplarId || null,
+		dataReserva: reserva.dataReserva || null,
+		status: reserva.status || null
+	};
+}
+
 exports.createReservation = async (req, res) => {
 	try {
 		const result = await createResUC.execute(req.body);
-		res.status(201).json(result);
+		res.status(201).json(padronizarReserva(result));
 	} catch (e) {
 		res.status(400).json({ message: e.message });
 	}
@@ -30,13 +41,13 @@ exports.listReservations = async (req, res) => {
 		status: req.query.status,
 	};
 	const ress = await listResUC.execute(filters);
-	res.json(ress);
+	res.json(ress.map(padronizarReserva));
 };
 
 exports.getReservation = async (req, res) => {
 	try {
 		const resv = await getResUC.execute(req.params.id);
-		res.json(resv);
+		res.json(padronizarReserva(resv));
 	} catch (e) {
 		res.status(404).json({ message: e.message });
 	}
@@ -65,21 +76,19 @@ exports.deleteReservation = async (req, res) => {
 exports.getReservationHistory = async (req, res) => {
 	// Mock: histórico de reservas
 	res.json([
-		{
+		padronizarReserva({
 			id: "1",
-			usuarioId: "u1",
 			livroId: "l1",
 			exemplarId: "e1",
 			dataReserva: "2024-01-01T10:00:00.000Z",
 			status: "finalizada"
-		},
-		{
+		}),
+		padronizarReserva({
 			id: "2",
-			usuarioId: "u1",
 			livroId: "l2",
 			exemplarId: "e2",
 			dataReserva: "2024-02-01T10:00:00.000Z",
 			status: "cancelada"
-		}
+		})
 	]);
 };

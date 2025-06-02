@@ -14,7 +14,13 @@ exports.listLogs = async (req, res) => {
 			acao: req.query.acao,
 		};
 		const logs = await listAuditUC.execute(filters);
-		res.json(logs);
+		res.json(logs.map(log => ({
+			id: log.id,
+			acao: log.acao,
+			usuario: log.usuarioId || null,
+			data: log.timestamp || null,
+			detalhes: log.detalhes || null
+		})));
 	} catch (e) {
 		res.status(500).json({ message: e.message });
 	}

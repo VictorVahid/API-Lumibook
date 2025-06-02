@@ -1,6 +1,7 @@
 // src/infrastructure/mongoose/repositories/MongooseAuthorRepository.js
 const AuthorRepository = require("../../../domain/repositories/AuthorRepository");
 const AuthorModel = require("../models/AuthorSchema");
+const mongoose = require("mongoose");
 
 class MongooseAuthorRepository extends AuthorRepository {
 	async create(author) {
@@ -24,6 +25,9 @@ class MongooseAuthorRepository extends AuthorRepository {
 	}
 
 	async findById(id) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		const doc = await AuthorModel.findById(id).exec();
 		if (!doc) return null;
 		return {
@@ -35,6 +39,9 @@ class MongooseAuthorRepository extends AuthorRepository {
 	}
 
 	async update(id, data) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		const doc = await AuthorModel.findByIdAndUpdate(id, data, {
 			new: true,
 		}).exec();
@@ -48,6 +55,9 @@ class MongooseAuthorRepository extends AuthorRepository {
 	}
 
 	async delete(id) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		await AuthorModel.findByIdAndDelete(id).exec();
 	}
 }

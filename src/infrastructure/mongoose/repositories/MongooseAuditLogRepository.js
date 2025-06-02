@@ -1,5 +1,6 @@
 const AuditLogRepository = require("../../../domain/repositories/AuditLogRepository");
 const AuditLogModel = require("../models/AuditLogSchema");
+const mongoose = require("mongoose");
 
 class MongooseAuditLogRepository extends AuditLogRepository {
 	async findByFilters({ dataInicio, dataFim, usuario, acao }) {
@@ -20,6 +21,9 @@ class MongooseAuditLogRepository extends AuditLogRepository {
 	}
 
 	async findById(id) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
 		const doc = await AuditLogModel.findById(id).exec();
 		if (!doc) return null;
 		return {
@@ -29,6 +33,13 @@ class MongooseAuditLogRepository extends AuditLogRepository {
 			timestamp: doc.timestamp,
 			detalhes: doc.detalhes,
 		};
+	}
+
+	async delete(id) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
+			return null;
+		}
+		await AuditLogModel.findByIdAndDelete(id).exec();
 	}
 }
 

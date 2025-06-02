@@ -9,4 +9,7 @@ publisherRouter.put("/editoras/:id", pubCtrl.replacePublisher);
 publisherRouter.patch("/editoras/:id", pubCtrl.patchPublisher);
 publisherRouter.delete("/editoras/:id", pubCtrl.deletePublisher);
 
+// Buscar editoras por nome
+// publisherRouter.get("/editoras/buscar", pubCtrl.searchPublishers); // Adicionar se necessário
+
 module.exports = publisherRouter;
