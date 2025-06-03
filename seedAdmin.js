@@ -7,7 +7,7 @@ const User = require('./src/infrastructure/mongoose/models/UserSchema');
 async function seedAdmin() {
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    const email = 'admin@universitas.edu.br';
+    const email = 'adminVictor@universitas.edu.br';
     const senha = 'admin123!'; // Altere para uma senha forte antes de rodar em produção
     const nome = 'Administrador';
 
