@@ -1,10 +1,13 @@
+// Controller responsável pelas operações de auditoria (logs de ações)
 const { ListAuditLogs, GetAuditLog } = require("../../usecases/auditUseCases");
 const MongooseAuditRepo = require("../../infrastructure/mongoose/repositories/MongooseAuditLogRepository");
 
+// Instancia os casos de uso com o repositório de auditoria
 const repoAudit = new MongooseAuditRepo();
 const listAuditUC = new ListAuditLogs(repoAudit);
 const getAuditUC = new GetAuditLog(repoAudit);
 
+// Listagem de logs de auditoria com filtros opcionais
 exports.listLogs = async (req, res) => {
 	try {
 		const filters = {
@@ -26,6 +29,7 @@ exports.listLogs = async (req, res) => {
 	}
 };
 
+// Busca de um log de auditoria por ID
 exports.getLog = async (req, res) => {
 	try {
 		const log = await getAuditUC.execute(req.params.id);

@@ -1,18 +1,15 @@
 // src/usecases/sendReminder.js
+// Caso de uso para envio de lembretes de devolução de empréstimos
 const SendNotification = require("./sendNotification");
 
 class SendReminder {
-	/**
-	 * @param {SendNotification} sendNotification
-	 */
+	// Recebe uma instância de SendNotification (injeção de dependência)
 	constructor(sendNotification) {
 		if (!sendNotification) throw new Error("SendNotification é obrigatório");
 		this.sendNotification = sendNotification;
 	}
 
-	/**
-	 * @param {Object} loan – deve conter { user: { email, name }, item: { title }, dueDate: Date }
-	 */
+	// Executa o envio do lembrete para o usuário do empréstimo
 	async execute(loan) {
 		if (!loan?.user?.email || !loan?.item?.title || !loan?.dueDate) {
 			throw new Error("Loan inválido para envio de lembrete");

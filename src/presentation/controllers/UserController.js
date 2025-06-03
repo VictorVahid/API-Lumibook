@@ -1,3 +1,4 @@
+// Controller responsável pelas operações relacionadas a usuários
 const {
 	CreateUser,
 	GetUser,
@@ -8,12 +9,14 @@ const MongooseUserRepo = require("../../infrastructure/mongoose/repositories/Mon
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+// Instancia os casos de uso com o repositório de usuários
 const userRepo = new MongooseUserRepo();
 const createUserUC = new CreateUser(userRepo);
 const getUserUC = new GetUser(userRepo);
 const updateUserUC = new UpdateUser(userRepo);
 const deleteUserUC = new DeleteUser(userRepo);
 
+// Função utilitária para padronizar o retorno do usuário na API
 function padronizarUsuario(user) {
 	return {
 		id: user.id || user._id || null,
@@ -28,15 +31,16 @@ function padronizarUsuario(user) {
 	};
 }
 
+// Criação de novo usuário com regras de negócio para cada papel
+// Apenas 'aluno' e 'professor' são permitidos via API pública. Cadastro de 'admin' deve ser manual ou via endpoint restrito.
 exports.createUser = async (req, res) => {
 	try {
 		const { papel, role, matricula, email } = req.body;
-		const papelFinal = papel || role;
+		const papelFinal = (papel || role || '').toLowerCase();
 		if (papelFinal === "aluno") {
 			if (!matricula || !/^\d{7,}$/.test(matricula)) {
 				return res.status(400).json({ message: "Matrícula obrigatória e deve conter ao menos 7 dígitos numéricos para aluno." });
 			}
-			// Email pode ser qualquer um
 		} else if (papelFinal === "professor") {
 			if (!email || !/^[^@]+@universitas\.edu\.br$/.test(email)) {
 				return res.status(400).json({ message: "Email institucional obrigatório para professor." });
@@ -44,34 +48,65 @@ exports.createUser = async (req, res) => {
 			if (matricula) {
 				return res.status(400).json({ message: "Professor não deve ter matrícula." });
 			}
-		} else if (papelFinal === "admin") {
-			return res.status(403).json({ message: "Cadastro de admin não permitido pelo endpoint." });
+		} else {
+			// Bloqueia qualquer tentativa de cadastro de admin ou papel não permitido
+			return res.status(403).json({ message: "Cadastro permitido apenas para alunos e professores. Cadastro de admin/bibliotecário deve ser feito manualmente ou via endpoint restrito." });
 		}
 		const result = await createUserUC.execute(req.body);
-		return res.status(201).json(padronizarUsuario(result));
+		return res.status(201).json({
+			id: result.id || result._id,
+			nome: result.nome,
+			email: result.email,
+			papel: result.papel || result.role
+		});
 	} catch (e) {
 		return res.status(400).json({ message: e.message });
 	}
 };
 
+// Busca usuário por ID ou perfil autenticado
 exports.getUser = async (req, res) => {
 	try {
-		const user = await getUserUC.execute(req.params.id);
-		return res.status(200).json(padronizarUsuario(user));
+		let user;
+		if (req.user && req.path === '/perfil') {
+			user = await getUserUC.execute(req.user.id);
+			return res.status(200).json({
+				id: user.id || user._id,
+				nome: user.nome,
+				email: user.email,
+				papel: user.papel || user.role,
+				statusConta: user.statusConta || 'ativa'
+			});
+		} else {
+			user = await getUserUC.execute(req.params.id);
+			return res.status(200).json(padronizarUsuario(user));
+		}
 	} catch (e) {
 		return res.status(404).json({ message: e.message });
 	}
 };
 
+// Atualização parcial dos dados do usuário
 exports.patchUser = async (req, res) => {
 	try {
-		const updated = await updateUserUC.execute(req.params.id, req.body);
-		return res.status(200).json(padronizarUsuario(updated));
+		let updated;
+		if (req.user && req.path === '/perfil') {
+			updated = await updateUserUC.execute(req.user.id, req.body);
+			return res.status(200).json({
+				id: updated.id || updated._id,
+				nome: updated.nome,
+				telefone: updated.telefone
+			});
+		} else {
+			updated = await updateUserUC.execute(req.params.id, req.body);
+			return res.status(200).json(padronizarUsuario(updated));
+		}
 	} catch (e) {
 		return res.status(400).json({ message: e.message });
 	}
 };
 
+// Remoção de usuário
 exports.deleteUser = async (req, res) => {
 	try {
 		const result = await deleteUserUC.execute(req.params.id);
@@ -81,6 +116,7 @@ exports.deleteUser = async (req, res) => {
 	}
 };
 
+// Login de usuário com regras específicas para cada tipo de identificador
 exports.login = async (req, res) => {
 	const { identificador, senha } = req.body;
 	if (!identificador || !senha) {
@@ -90,7 +126,6 @@ exports.login = async (req, res) => {
 	let papel = null;
 	let tipoLogin = null;
 	if (/^\d{7,}$/.test(identificador)) {
-		// Matrícula: só aluno
 		user = await userRepo.findByMatricula(identificador);
 		papel = user && (user.papel || user.role);
 		tipoLogin = "matricula";
@@ -105,7 +140,6 @@ exports.login = async (req, res) => {
 			return res.status(403).json({ message: "Somente admin pode logar com este email." });
 		}
 	} else if (/^[^@]+@universitas\.edu\.br$/.test(identificador)) {
-		// Email institucional: só professor
 		user = await userRepo.findByEmail(identificador);
 		papel = user && (user.papel || user.role);
 		tipoLogin = "email";
@@ -135,6 +169,7 @@ exports.login = async (req, res) => {
 	});
 };
 
+// Lista todos os usuários cadastrados
 exports.listUsers = async (req, res) => {
 	try {
 		const users = await userRepo.findAll();
@@ -144,8 +179,8 @@ exports.listUsers = async (req, res) => {
 	}
 };
 
+// Retorna apenas o avatar do usuário
 exports.getAvatar = async (req, res) => {
-	// Retorna avatarUrl em JSON
 	const user = await userRepo.findById(req.params.id);
 	if (!user) {
 		return res.status(404).json({ message: "Usuário não encontrado" });
@@ -153,8 +188,8 @@ exports.getAvatar = async (req, res) => {
 	return res.json({ avatarUrl: user.avatarUrl || user.avatar || null });
 };
 
+// Estatísticas simuladas do usuário (mock)
 exports.getUserStats = async (req, res) => {
-	// Mock: estatísticas básicas
 	res.json({
 		livrosEmprestados: 2,
 		livrosDisponiveis: 10,
@@ -167,21 +202,17 @@ exports.getUserStats = async (req, res) => {
 	});
 };
 
+// Atividades simuladas do usuário (mock)
 exports.getUserActivities = async (req, res) => {
-	// Mock: atividades do usuário
 	const userId = req.params.id;
+	// Exemplo de atividades mockadas
 	res.json([
 		{
-			acao: "login",
-			usuario: userId,
-			data: new Date().toISOString(),
-			detalhes: "Usuário realizou login"
-		},
-		{
-			acao: "reserva_livro",
-			usuario: userId,
-			data: new Date().toISOString(),
-			detalhes: "Usuário reservou um livro"
+			tipo: "emprestimo",
+			livroId: "456",
+			titulo: "Livro Teste",
+			data: "2024-03-20",
+			status: "ativo"
 		}
 	]);
 };

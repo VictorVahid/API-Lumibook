@@ -2,11 +2,12 @@ const express = require("express");
 const fineCtrl = require("../controllers/FineController");
 const fineRouter = express.Router();
 
-fineRouter.get("/multas", fineCtrl.listFines);
-fineRouter.post("/multas", fineCtrl.createFine);
-fineRouter.get("/multas/:id", fineCtrl.getFine);
-fineRouter.patch("/multas/:id/status", fineCtrl.patchFineStatus);
-fineRouter.patch("/multas/:id/pagar", fineCtrl.payFine);
-fineRouter.get("/multas/historico", fineCtrl.getFineHistory);
+fineRouter.get("/fines", fineCtrl.listFines);
+fineRouter.post("/fines", fineCtrl.createFine);
+fineRouter.get("/fines/:id", fineCtrl.getFine);
+fineRouter.patch("/fines/:id/status", fineCtrl.patchFineStatus);
+fineRouter.post("/fines/:fineId/pay", fineCtrl.payFine);
+fineRouter.get("/fines/user/:userId", fineCtrl.getFinesByUser);
+fineRouter.get("/fines/history/:userId", fineCtrl.getFineHistory);
 
 module.exports = fineRouter;

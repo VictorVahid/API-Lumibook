@@ -1,3 +1,4 @@
+// Controller responsável pelas operações de reservas de livros
 const {
 	CreateReservation,
 	ListReservations,
@@ -7,6 +8,7 @@ const {
 } = require("../../usecases/reservationUseCases");
 const MongooseReservationRepo = require("../../infrastructure/mongoose/repositories/MongooseReservationRepository");
 
+// Instancia os casos de uso com o repositório de reservas
 const repoRes = new MongooseReservationRepo();
 const createResUC = new CreateReservation(repoRes);
 const listResUC = new ListReservations(repoRes);
@@ -14,6 +16,7 @@ const getResUC = new GetReservation(repoRes);
 const updateResUC = new UpdateReservationStatus(repoRes);
 const cancelResUC = new CancelReservation(repoRes);
 
+// Função utilitária para padronizar o retorno da reserva na API
 function padronizarReserva(reserva) {
 	return {
 		id: reserva.id || null,
@@ -25,70 +28,106 @@ function padronizarReserva(reserva) {
 	};
 }
 
+// Criação de uma nova reserva
 exports.createReservation = async (req, res) => {
 	try {
 		const result = await createResUC.execute(req.body);
-		res.status(201).json(padronizarReserva(result));
+		res.status(201).json({
+			id: result.id || result._id,
+			userId: result.usuarioId,
+			bookId: result.livroId,
+			status: result.status
+		});
 	} catch (e) {
 		res.status(400).json({ message: e.message });
 	}
 };
 
+// Listagem de reservas com filtros opcionais
 exports.listReservations = async (req, res) => {
 	const filters = {
-		usuarioId: req.query.usuarioId,
-		livroId: req.query.livroId,
+		usuarioId: req.query.userId || req.query.usuarioId,
+		livroId: req.query.bookId || req.query.livroId,
 		status: req.query.status,
 	};
 	const ress = await listResUC.execute(filters);
-	res.json(ress.map(padronizarReserva));
+	res.json(ress.map(r => ({
+		id: r.id || r._id,
+		userId: r.usuarioId,
+		bookId: r.livroId,
+		status: r.status
+	})));
 };
 
+// Busca de uma reserva por ID
 exports.getReservation = async (req, res) => {
 	try {
 		const resv = await getResUC.execute(req.params.id);
-		res.json(padronizarReserva(resv));
+		res.json({
+			id: resv.id || resv._id,
+			userId: resv.usuarioId,
+			bookId: resv.livroId,
+			status: resv.status
+		});
 	} catch (e) {
 		res.status(404).json({ message: e.message });
 	}
 };
 
+// Atualização do status da reserva (ex: ativa, cancelada)
 exports.patchReservationStatus = async (req, res) => {
 	try {
-		const updated = await updateResUC.execute(req.params.id, {
-			status: req.body.status,
-		});
-		res.json(updated);
+		const updated = await updateResUC.execute(req.params.id, { status: req.body.status });
+		res.json({ id: updated.id || updated._id, status: updated.status });
 	} catch (e) {
 		res.status(400).json({ message: e.message });
 	}
 };
 
+// Cancelamento de uma reserva
 exports.deleteReservation = async (req, res) => {
 	try {
-		const result = await cancelResUC.execute(req.params.id);
-		res.json(result);
+		await cancelResUC.execute(req.params.id);
+		res.json({ message: "Reserva cancelada com sucesso" });
 	} catch (e) {
 		res.status(404).json({ message: e.message });
 	}
 };
 
+// Histórico simulado de reservas do usuário (mock)
 exports.getReservationHistory = async (req, res) => {
-	// Mock: histórico de reservas
 	res.json([
-		padronizarReserva({
-			id: "1",
-			livroId: "l1",
-			exemplarId: "e1",
-			dataReserva: "2024-01-01T10:00:00.000Z",
-			status: "finalizada"
-		}),
-		padronizarReserva({
-			id: "2",
-			livroId: "l2",
-			exemplarId: "e2",
-			dataReserva: "2024-02-01T10:00:00.000Z",
-			status: "cancelada"
-		})
+		{ id: "1", userId: "1", bookId: "l1", status: "finalizada" },
+		{ id: "2", userId: "1", bookId: "l2", status: "cancelada" }
 	]);
+};
+
+// Buscar reservas por usuário
+exports.getReservationsByUser = async (req, res) => {
+	try {
+		const ress = await listResUC.execute({ usuarioId: req.params.userId });
+		res.json(ress.map(r => ({
+			id: r.id || r._id,
+			userId: r.usuarioId,
+			bookId: r.livroId,
+			status: r.status
+		})));
+	} catch (e) {
+		res.status(400).json({ message: e.message });
+	}
+};
+
+// Buscar reservas por livro
+exports.getReservationsByBook = async (req, res) => {
+	try {
+		const ress = await listResUC.execute({ livroId: req.params.bookId });
+		res.json(ress.map(r => ({
+			id: r.id || r._id,
+			userId: r.usuarioId,
+			bookId: r.livroId,
+			status: r.status
+		})));
+	} catch (e) {
+		res.status(400).json({ message: e.message });
+	}
 };

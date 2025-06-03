@@ -1,17 +1,19 @@
+// Casos de uso (usecases) para operações de usuários
 const User = require("../domain/models/User");
 const bcrypt = require("bcryptjs");
 
+// Criação de um novo usuário com validações de papel, email e senha
 class CreateUser {
 	constructor(repo) {
 		this.repo = repo;
 	}
 	/** data: { nome, email, senha, role?, ativo?, telefone?, matricula? } */
 	async execute(data) {
-		// Aceitar 'papel' como alias de 'role'
+		// Aceita 'papel' como alias de 'role' para flexibilidade
 		if (data.papel && !data.role) {
 			data.role = data.papel;
 		}
-		// Mapeamento automático de papel para role
+		// Mapeamento automático de papel para role (ex: aluno -> leitor)
 		const papelMap = {
 			"aluno": "leitor",
 			"professor": "funcionario",
@@ -58,6 +60,7 @@ class CreateUser {
 	}
 }
 
+// Busca de usuário por ID
 class GetUser {
 	constructor(repo) {
 		this.repo = repo;
@@ -69,6 +72,7 @@ class GetUser {
 	}
 }
 
+// Atualização parcial dos dados do usuário
 class UpdateUser {
 	constructor(repo) {
 		this.repo = repo;
@@ -87,6 +91,7 @@ class UpdateUser {
 	}
 }
 
+// Remoção de usuário
 class DeleteUser {
 	constructor(repo) {
 		this.repo = repo;

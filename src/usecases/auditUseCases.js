@@ -1,3 +1,5 @@
+// Casos de uso (usecases) para operações de auditoria (logs)
+// Permite listar e buscar logs de ações do sistema
 class ListAuditLogs {
 	constructor(repo) {
 		this.repo = repo;

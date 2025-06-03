@@ -1,16 +1,19 @@
 // src/presentation/controllers/NotificationController.js
 
+// Controller responsável por notificações e lembretes relacionados a empréstimos
 const SendReminder = require("../../usecases/sendReminder");
 const SendNotification = require("../../usecases/sendNotification");
 const LoanService = require("../../infrastructure/services/LoanService.js");
 
 class NotificationController {
 	constructor() {
+		// Instancia os serviços de notificação e lembrete
 		const sendNotification = new SendNotification();
 		this.sendReminder = new SendReminder(sendNotification);
 		this.loanService = new LoanService();
 	}
 
+	// Envia lembrete de devolução de empréstimo para o usuário
 	async sendLoanReminder(req, res, next) {
 		try {
 			const { loanId } = req.params;

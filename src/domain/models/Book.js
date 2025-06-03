@@ -1,3 +1,4 @@
+// Modelo de domínio para Livro
 class Book {
 	constructor({ id, title, author, price, stock, isbn, ano, tipo, categoria, edicao, idioma, paginas, resumo, localizacao, exemplares, adminId, dataCatalogacao, status, disponivel }) {
 		this.id = id;
@@ -22,6 +23,7 @@ class Book {
 		this.validate();
 	}
 
+	// Validação de campos obrigatórios do livro
 	validate() {
 		if (!this.title || this.title.trim() === "")
 			throw new Error("Título do livro é obrigatório");

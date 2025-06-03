@@ -1,5 +1,7 @@
+// Casos de uso (usecases) para operações de editoras
 const Publisher = require("../domain/models/Publisher");
 
+// Criação de uma nova editora com validação de campos obrigatórios
 class CreatePublisher {
 	constructor(repo) {
 		this.repo = repo;
@@ -21,6 +23,7 @@ class CreatePublisher {
 	}
 }
 
+// Listagem de editoras
 class ListPublishers {
 	constructor(repo) {
 		this.repo = repo;
@@ -30,6 +33,7 @@ class ListPublishers {
 	}
 }
 
+// Busca de uma editora por ID
 class GetPublisher {
 	constructor(repo) {
 		this.repo = repo;
@@ -41,6 +45,7 @@ class GetPublisher {
 	}
 }
 
+// Substituição completa dos dados de uma editora
 class ReplacePublisher {
 	constructor(repo) {
 		this.repo = repo;
@@ -59,6 +64,7 @@ class ReplacePublisher {
 	}
 }
 
+// Atualização parcial dos dados de uma editora
 class PatchPublisher {
 	constructor(repo) {
 		this.repo = repo;
@@ -76,6 +82,7 @@ class PatchPublisher {
 	}
 }
 
+// Remoção de uma editora
 class DeletePublisher {
 	constructor(repo) {
 		this.repo = repo;

@@ -1,3 +1,4 @@
+// Modelo de domínio para Reserva de Livro
 class Reservation {
 	constructor({ id, usuarioId, livroId, status, dataReserva }) {
 		this.id = id;
@@ -8,6 +9,7 @@ class Reservation {
 		this.validate();
 	}
 
+	// Validação de campos obrigatórios da reserva
 	validate() {
 		if (!this.usuarioId) throw new Error("usuarioId é obrigatório");
 		if (!this.livroId) throw new Error("livroId é obrigatório");

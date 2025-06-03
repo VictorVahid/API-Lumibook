@@ -16,6 +16,7 @@ router.use(require("./editorasRoutes"));
 router.use(require("./emprestimosRoutes"));
 router.use(require("./estatisticasRoutes"));
 router.use(require("./historicoRoutes"));
+router.use(require("./bibliotecarioRoutes"));
 
 // Rota de health check para testar conexão com o backend
 router.get("/", (req, res) => {

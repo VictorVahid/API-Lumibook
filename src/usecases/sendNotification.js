@@ -1,6 +1,6 @@
 // src/usecases/sendNotification.js
 
-// Importa a instância de EmailService responsável pelo envio de e-mails
+// Caso de uso para envio de notificações por e-mail
 const EmailService = require("../infrastructure/services/EmailService");
 // Importa o modelo de domínio Notification
 const Notification = require("../domain/models/Notification");

@@ -1,5 +1,7 @@
+// Casos de uso (usecases) para operações de autores
 const Author = require("../domain/models/Author");
 
+// Criação de um novo autor com validação de campos obrigatórios
 class CreateAuthor {
 	constructor(repo) {
 		this.repo = repo;
@@ -21,6 +23,7 @@ class CreateAuthor {
 	}
 }
 
+// Listagem de autores
 class ListAuthors {
 	constructor(repo) {
 		this.repo = repo;
@@ -34,6 +37,7 @@ class ListAuthors {
 	}
 }
 
+// Busca de um autor por ID
 class GetAuthor {
 	constructor(repo) {
 		this.repo = repo;
@@ -51,6 +55,7 @@ class GetAuthor {
 	}
 }
 
+// Substituição completa dos dados de um autor
 class ReplaceAuthor {
 	constructor(repo) {
 		this.repo = repo;
@@ -78,6 +83,7 @@ class ReplaceAuthor {
 	}
 }
 
+// Atualização parcial dos dados de um autor
 class PatchAuthor {
 	constructor(repo) {
 		this.repo = repo;
@@ -104,6 +110,7 @@ class PatchAuthor {
 	}
 }
 
+// Remoção de um autor
 class DeleteAuthor {
 	constructor(repo) {
 		this.repo = repo;

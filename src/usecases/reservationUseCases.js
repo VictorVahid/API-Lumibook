@@ -1,5 +1,7 @@
+// Casos de uso (usecases) para operações de reservas
 const Reservation = require("../domain/models/Reservation");
 
+// Criação de uma nova reserva com validação de campos obrigatórios
 class CreateReservation {
 	constructor(repo) {
 		this.repo = repo;
@@ -14,6 +16,7 @@ class CreateReservation {
 	}
 }
 
+// Listagem de reservas com filtros opcionais
 class ListReservations {
 	constructor(repo) {
 		this.repo = repo;
@@ -24,6 +27,7 @@ class ListReservations {
 	}
 }
 
+// Busca de uma reserva por ID
 class GetReservation {
 	constructor(repo) {
 		this.repo = repo;
@@ -35,6 +39,7 @@ class GetReservation {
 	}
 }
 
+// Atualização do status da reserva (ex: ativa, cancelada)
 class UpdateReservationStatus {
 	constructor(repo) {
 		this.repo = repo;
@@ -48,6 +53,7 @@ class UpdateReservationStatus {
 	}
 }
 
+// Cancelamento de uma reserva
 class CancelReservation {
 	constructor(repo) {
 		this.repo = repo;

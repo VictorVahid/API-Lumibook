@@ -1,3 +1,4 @@
+// Controller responsável pelas operações de multas
 const {
 	IssueFine,
 	ListFines,
@@ -6,12 +7,14 @@ const {
 } = require("../../usecases/fineUseCases");
 const MongooseFineRepo = require("../../infrastructure/mongoose/repositories/MongooseFineRepository");
 
+// Instancia os casos de uso com o repositório de multas
 const repoFine = new MongooseFineRepo();
 const issueFineUC = new IssueFine(repoFine);
 const listFinesUC = new ListFines(repoFine);
 const getFineUC = new GetFine(repoFine);
 const updateFineUC = new UpdateFineStatus(repoFine);
 
+// Criação de uma nova multa
 exports.createFine = async (req, res) => {
 	try {
 		const result = await issueFineUC.execute(req.body);
@@ -21,12 +24,14 @@ exports.createFine = async (req, res) => {
 	}
 };
 
+// Listagem de multas com filtros opcionais
 exports.listFines = async (req, res) => {
 	const filters = { usuarioId: req.query.usuarioId, status: req.query.status };
 	const fines = await listFinesUC.execute(filters);
 	res.json(fines);
 };
 
+// Busca de uma multa por ID
 exports.getFine = async (req, res) => {
 	try {
 		const fine = await getFineUC.execute(req.params.id);
@@ -36,6 +41,7 @@ exports.getFine = async (req, res) => {
 	}
 };
 
+// Atualização do status da multa (ex: paga, pendente)
 exports.patchFineStatus = async (req, res) => {
 	try {
 		const updated = await updateFineUC.execute(req.params.id, {
@@ -47,6 +53,7 @@ exports.patchFineStatus = async (req, res) => {
 	}
 };
 
+// Pagamento de multa (altera status para 'paga')
 exports.payFine = async (req, res) => {
 	try {
 		const updated = await updateFineUC.execute(req.params.id, { status: 'paga' });
@@ -56,8 +63,8 @@ exports.payFine = async (req, res) => {
 	}
 };
 
+// Histórico simulado de multas do usuário (mock)
 exports.getFineHistory = async (req, res) => {
-	// Mock: histórico de multas
 	res.json([
 		{
 			id: "1",
@@ -72,4 +79,14 @@ exports.getFineHistory = async (req, res) => {
 			status: "pendente"
 		}
 	]);
+};
+
+// Buscar multas por usuário
+exports.getFinesByUser = async (req, res) => {
+	try {
+		const fines = await listFinesUC.execute({ usuarioId: req.params.userId });
+		res.json(fines);
+	} catch (e) {
+		res.status(400).json({ message: e.message });
+	}
 };

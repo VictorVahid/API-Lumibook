@@ -68,4 +68,19 @@ router.put("/usuarios/:id/estatisticas/:statKey", (req, res) => {
   res.json({ success: true, statKey: req.params.statKey, newValue: req.body.value });
 });
 
+router.get("/stats/system", (req, res) => {
+  // Implementação real deve buscar dados do sistema
+  res.json({ totalObras: 1000, usuariosAtivos: 200, emprestimosHoje: 10 });
+});
+
+router.get("/stats/user/:userId", (req, res) => {
+  // Implementação real deve buscar dados do usuário
+  res.json({ emprestimos: 5, reservas: 2, multas: 0 });
+});
+
+router.get("/stats/book/:bookId", (req, res) => {
+  // Implementação real deve buscar dados do livro
+  res.json({ emprestimos: 20, reservas: 3 });
+});
+
 module.exports = router; 

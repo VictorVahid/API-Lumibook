@@ -5,9 +5,6 @@ const jwt = require('jsonwebtoken');
 const userRepo = new MongooseUserRepo();
 
 exports.login = async (req, res) => {
-  // Certifique-se de que o body parser está habilitado no app.js/server.js
-  // app.use(express.json());
-
   const { identificador, senha } = req.body;
   if (!identificador || !senha) {
     return res.status(400).json({ message: "Identificador e senha são obrigatórios" });
@@ -29,15 +26,15 @@ exports.login = async (req, res) => {
     return res.status(400).json({ message: "Senha inválida" });
   }
 
-  const token = jwt.sign({ id: user.id || user._id, papel: user.role || user.papel }, process.env.JWT_SECRET || "segredo", { expiresIn: "7d" });
+  const token = jwt.sign({ id: user.id || user._id, papel: user.papel || user.role }, process.env.JWT_SECRET || "segredo", { expiresIn: "7d" });
 
-  // Retorne os dados do usuário (adicione token JWT se desejar)
   return res.json({
-    id: user.id || user._id,
-    nome: user.nome,
-    email: user.email,
-    papel: user.role || user.papel,
-    matricula: user.matricula,
-    token
+    token,
+    usuario: {
+      id: user.id || user._id,
+      nome: user.nome,
+      email: user.email,
+      papel: user.papel || user.role
+    }
   });
 }; 

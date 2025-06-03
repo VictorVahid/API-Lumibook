@@ -1,5 +1,7 @@
+// Casos de uso (usecases) para operações de exemplares de livros
 const Exemplar = require("../domain/models/Exemplar");
 
+// Criação de um novo exemplar com validação de campos obrigatórios
 class CreateExemplar {
 	constructor(repo) {
 		this.repo = repo;
@@ -13,6 +15,7 @@ class CreateExemplar {
 	}
 }
 
+// Listagem de exemplares com filtros opcionais
 class ListExemplars {
 	constructor(repo) {
 		this.repo = repo;
@@ -23,6 +26,7 @@ class ListExemplars {
 	}
 }
 
+// Busca de um exemplar por ID
 class GetExemplar {
 	constructor(repo) {
 		this.repo = repo;
@@ -34,6 +38,7 @@ class GetExemplar {
 	}
 }
 
+// Atualização do status do exemplar (ex: disponível, emprestado)
 class ChangeExemplarStatus {
 	constructor(repo) {
 		this.repo = repo;
@@ -47,6 +52,7 @@ class ChangeExemplarStatus {
 	}
 }
 
+// Remoção de um exemplar
 class DeleteExemplar {
 	constructor(repo) {
 		this.repo = repo;

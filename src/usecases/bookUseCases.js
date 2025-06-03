@@ -1,5 +1,7 @@
+// Casos de uso (usecases) para operações de livros
 const Book = require("../domain/models/Book");
 
+// Criação de um novo livro com validação de campos obrigatórios
 class CreateBook {
 	constructor(repo) {
 		this.repo = repo;
@@ -28,6 +30,7 @@ class CreateBook {
 	}
 }
 
+// Listagem de livros com filtros opcionais
 class ListBooks {
 	constructor(repo) {
 		this.repo = repo;
@@ -41,6 +44,7 @@ class ListBooks {
 	}
 }
 
+// Busca de um livro por ID
 class GetBook {
 	constructor(repo) {
 		this.repo = repo;
@@ -56,6 +60,7 @@ class GetBook {
 	}
 }
 
+// Substituição completa dos dados de um livro
 class ReplaceBook {
 	constructor(repo) {
 		this.repo = repo;
@@ -77,6 +82,7 @@ class ReplaceBook {
 	}
 }
 
+// Atualização parcial dos dados de um livro
 class PatchBook {
 	constructor(repo) {
 		this.repo = repo;
@@ -95,6 +101,7 @@ class PatchBook {
 	}
 }
 
+// Remoção de um livro
 class DeleteBook {
 	constructor(repo) {
 		this.repo = repo;
