@@ -1,68 +1,81 @@
-const ExemplarRepository = require("../../../domain/repositories/ExemplarRepository");
-const ExemplarModel = require("../models/ExemplarSchema");
+// src/infrastructure/mongoose/repositories/MongooseExemplarRepository.js
+
+const ExemplarModel = require("../models/Exemplar");
+const Exemplar = require("../../../domain/models/Exemplar");
 const mongoose = require("mongoose");
 
-class MongooseExemplarRepository extends ExemplarRepository {
-	async create(exemplar) {
-		const doc = await ExemplarModel.create(exemplar);
-		return {
-			id: doc._id,
-			livroId: doc.livroId,
-			status: doc.status,
-			localizacao: doc.localizacao,
+class MongooseExemplarRepository {
+	async create(exemplarEntity) {
+		const exemplarData = {
+			livro: exemplarEntity.livro,
+			codigo: exemplarEntity.codigo,
+			status: exemplarEntity.status,
 		};
-	}
 
-	async findByFilters({ livroId, status }) {
-		const query = {};
-		if (livroId) query.livroId = livroId;
-		if (status) query.status = status;
-		const docs = await ExemplarModel.find(query).exec();
-		return docs.map((doc) => ({
-			id: doc._id,
-			livroId: doc.livroId,
-			status: doc.status,
-			localizacao: doc.localizacao,
-		}));
+		const created = await ExemplarModel.create(exemplarData);
+		return new Exemplar({
+			id: created._id,
+			livro: created.livro,
+			codigo: created.codigo,
+			status: created.status,
+		});
 	}
 
 	async findById(id) {
-		if (!mongoose.Types.ObjectId.isValid(id)) {
-			return null;
-		}
-		const doc = await ExemplarModel.findById(id).exec();
-		if (!doc) return null;
-		return {
-			id: doc._id,
-			livroId: doc.livroId,
-			status: doc.status,
-			localizacao: doc.localizacao,
-		};
+		if (!mongoose.Types.ObjectId.isValid(id)) return null;
+		const found = await ExemplarModel.findById(id);
+		if (!found) return null;
+		return new Exemplar({
+			id: found._id,
+			livro: found.livro,
+			codigo: found.codigo,
+			status: found.status,
+		});
 	}
 
-	async updateStatus(id, { status }) {
-		if (!mongoose.Types.ObjectId.isValid(id)) {
-			return null;
-		}
-		const doc = await ExemplarModel.findByIdAndUpdate(
-			id,
-			{ status },
-			{ new: true }
-		).exec();
-		if (!doc) return null;
-		return {
-			id: doc._id,
-			livroId: doc.livroId,
-			status: doc.status,
-			localizacao: doc.localizacao,
-		};
+	async findByLivroId(livroId) {
+		const exemplares = await ExemplarModel.find({ livro: livroId });
+		return exemplares.map(
+			(ex) =>
+				new Exemplar({
+					id: ex._id,
+					livro: ex.livro,
+					codigo: ex.codigo,
+					status: ex.status,
+				})
+		);
+	}
+
+	async update(id, data) {
+		if (!mongoose.Types.ObjectId.isValid(id)) return null;
+		const updated = await ExemplarModel.findByIdAndUpdate(id, data, {
+			new: true,
+		});
+		if (!updated) return null;
+		return new Exemplar({
+			id: updated._id,
+			livro: updated.livro,
+			codigo: updated.codigo,
+			status: updated.status,
+		});
 	}
 
 	async delete(id) {
-		if (!mongoose.Types.ObjectId.isValid(id)) {
-			return null;
-		}
-		await ExemplarModel.findByIdAndDelete(id).exec();
+		if (!mongoose.Types.ObjectId.isValid(id)) return null;
+		return await ExemplarModel.findByIdAndDelete(id);
+	}
+
+	async findAll() {
+		const exemplares = await ExemplarModel.find();
+		return exemplares.map(
+			(ex) =>
+				new Exemplar({
+					id: ex._id,
+					livro: ex.livro,
+					codigo: ex.codigo,
+					status: ex.status,
+				})
+		);
 	}
 }
 

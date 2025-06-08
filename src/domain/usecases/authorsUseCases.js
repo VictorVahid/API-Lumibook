@@ -1,5 +1,5 @@
 // Casos de uso (usecases) para operações de autores
-const Author = require("../domain/models/Author");
+const Author = require("../models/Author");
 
 // Criação de um novo autor com validação de campos obrigatórios
 class CreateAuthor {

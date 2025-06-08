@@ -1,6 +1,6 @@
 // src/infrastructure/mongoose/repositories/MongooseAuthorRepository.js
 const AuthorRepository = require("../../../domain/repositories/AuthorRepository");
-const AuthorModel = require("../models/AuthorSchema");
+const AuthorModel = require("../models/Author");
 const mongoose = require("mongoose");
 
 class MongooseAuthorRepository extends AuthorRepository {

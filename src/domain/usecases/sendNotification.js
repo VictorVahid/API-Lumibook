@@ -1,9 +1,9 @@
 // src/usecases/sendNotification.js
 
 // Caso de uso para envio de notificações por e-mail
-const EmailService = require("../infrastructure/services/EmailService");
+const EmailService = require("../../infrastructure/services/EmailService");
 // Importa o modelo de domínio Notification
-const Notification = require("../domain/models/Notification");
+const Notification = require("../models/Notification");
 
 class SendNotification {
 	/**

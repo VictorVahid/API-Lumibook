@@ -1,8 +1,8 @@
 // src/presentation/controllers/NotificationController.js
 
 // Controller responsável por notificações e lembretes relacionados a empréstimos
-const SendReminder = require("../../usecases/sendReminder");
-const SendNotification = require("../../usecases/sendNotification");
+const SendReminder = require("../../domain/usecases/sendReminder.js");
+const SendNotification = require("../../domain/usecases/sendNotification.js");
 const LoanService = require("../../infrastructure/services/LoanService.js");
 
 class NotificationController {

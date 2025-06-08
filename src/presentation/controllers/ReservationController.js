@@ -5,7 +5,7 @@ const {
 	GetReservation,
 	UpdateReservationStatus,
 	CancelReservation,
-} = require("../../usecases/reservationUseCases");
+} = require("../../domain/usecases/reservationUseCases");
 const MongooseReservationRepo = require("../../infrastructure/mongoose/repositories/MongooseReservationRepository");
 
 // Instancia os casos de uso com o repositório de reservas
@@ -21,10 +21,12 @@ function padronizarReserva(reserva) {
 	return {
 		id: reserva.id || null,
 		usuarioId: reserva.usuarioId || null,
+		salaId: reserva.salaId || null,
+		descricao: reserva.descricao || null,
 		livroId: reserva.livroId || null,
 		exemplarId: reserva.exemplarId || null,
 		dataReserva: reserva.dataReserva || null,
-		status: reserva.status || null
+		status: reserva.status || null,
 	};
 }
 
@@ -32,31 +34,26 @@ function padronizarReserva(reserva) {
 exports.createReservation = async (req, res) => {
 	try {
 		const result = await createResUC.execute(req.body);
-		res.status(201).json({
-			id: result.id || result._id,
-			userId: result.usuarioId,
-			bookId: result.livroId,
-			status: result.status
-		});
+		res
+			.status(201)
+			.json({ success: true, data: padronizarReserva(result), error: null });
 	} catch (e) {
-		res.status(400).json({ message: e.message });
+		res.status(400).json({ success: false, data: null, error: e.message });
 	}
 };
 
 // Listagem de reservas com filtros opcionais
 exports.listReservations = async (req, res) => {
-	const filters = {
-		usuarioId: req.query.userId || req.query.usuarioId,
-		livroId: req.query.bookId || req.query.livroId,
-		status: req.query.status,
-	};
-	const ress = await listResUC.execute(filters);
-	res.json(ress.map(r => ({
-		id: r.id || r._id,
-		userId: r.usuarioId,
-		bookId: r.livroId,
-		status: r.status
-	})));
+	try {
+		const results = await listResUC.execute();
+		res.json({
+			success: true,
+			data: results.map(padronizarReserva),
+			error: null,
+		});
+	} catch (e) {
+		res.status(500).json({ success: false, data: null, error: e.message });
+	}
 };
 
 // Busca de uma reserva por ID
@@ -67,7 +64,7 @@ exports.getReservation = async (req, res) => {
 			id: resv.id || resv._id,
 			userId: resv.usuarioId,
 			bookId: resv.livroId,
-			status: resv.status
+			status: resv.status,
 		});
 	} catch (e) {
 		res.status(404).json({ message: e.message });
@@ -77,7 +74,9 @@ exports.getReservation = async (req, res) => {
 // Atualização do status da reserva (ex: ativa, cancelada)
 exports.patchReservationStatus = async (req, res) => {
 	try {
-		const updated = await updateResUC.execute(req.params.id, { status: req.body.status });
+		const updated = await updateResUC.execute(req.params.id, {
+			status: req.body.status,
+		});
 		res.json({ id: updated.id || updated._id, status: updated.status });
 	} catch (e) {
 		res.status(400).json({ message: e.message });
@@ -98,7 +97,7 @@ exports.deleteReservation = async (req, res) => {
 exports.getReservationHistory = async (req, res) => {
 	res.json([
 		{ id: "1", userId: "1", bookId: "l1", status: "finalizada" },
-		{ id: "2", userId: "1", bookId: "l2", status: "cancelada" }
+		{ id: "2", userId: "1", bookId: "l2", status: "cancelada" },
 	]);
 };
 
@@ -106,12 +105,14 @@ exports.getReservationHistory = async (req, res) => {
 exports.getReservationsByUser = async (req, res) => {
 	try {
 		const ress = await listResUC.execute({ usuarioId: req.params.userId });
-		res.json(ress.map(r => ({
-			id: r.id || r._id,
-			userId: r.usuarioId,
-			bookId: r.livroId,
-			status: r.status
-		})));
+		res.json(
+			ress.map((r) => ({
+				id: r.id || r._id,
+				userId: r.usuarioId,
+				bookId: r.livroId,
+				status: r.status,
+			}))
+		);
 	} catch (e) {
 		res.status(400).json({ message: e.message });
 	}
@@ -121,12 +122,14 @@ exports.getReservationsByUser = async (req, res) => {
 exports.getReservationsByBook = async (req, res) => {
 	try {
 		const ress = await listResUC.execute({ livroId: req.params.bookId });
-		res.json(ress.map(r => ({
-			id: r.id || r._id,
-			userId: r.usuarioId,
-			bookId: r.livroId,
-			status: r.status
-		})));
+		res.json(
+			ress.map((r) => ({
+				id: r.id || r._id,
+				userId: r.usuarioId,
+				bookId: r.livroId,
+				status: r.status,
+			}))
+		);
 	} catch (e) {
 		res.status(400).json({ message: e.message });
 	}

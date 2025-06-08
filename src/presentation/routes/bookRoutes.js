@@ -1,21 +1,36 @@
 const express = require("express");
-const bookCtrl = require("../controllers/BookController");
+const router = express.Router();
+const BookController = require("../controllers/BookController");
 const requireAuth = require("../../middlewares/requireAuth");
-const requireBibliotecarioOuAdmin = require("../../middlewares/requireBibliotecarioOuAdmin");
-const bookRouter = express.Router();
 
-// Listagem e busca de livros (acesso público)
-bookRouter.get("/books", bookCtrl.listBooks);
-bookRouter.get("/books/recentes", bookCtrl.getRecentBooks);
-bookRouter.get("/books/relacionados/:bookId", bookCtrl.getRelatedBooks);
-bookRouter.get("/books/isbn/:isbn", bookCtrl.getBookByISBN);
-bookRouter.get("/books/search", bookCtrl.searchBooks);
-bookRouter.get("/books/:id", bookCtrl.getBook);
+// Listar todos os livros
+router.get("/livros", BookController.listBooks);
 
-// Rotas protegidas: apenas admin ou bibliotecário pode cadastrar, editar ou excluir livros
-bookRouter.post("/books", requireAuth, requireBibliotecarioOuAdmin, bookCtrl.createBook);
-bookRouter.put("/books/:id", requireAuth, requireBibliotecarioOuAdmin, bookCtrl.replaceBook);
-bookRouter.patch("/books/:id", requireAuth, requireBibliotecarioOuAdmin, bookCtrl.patchBook);
-bookRouter.delete("/books/:id", requireAuth, requireBibliotecarioOuAdmin, bookCtrl.deleteBook);
+// Criar um novo livro
+router.post("/livros", requireAuth, BookController.createBook);
 
-module.exports = bookRouter;
+// Buscar livro por ID
+router.get("/livros/:id", BookController.getBook);
+
+// Atualizar livro (PATCH parcial)
+router.patch("/livros/:id", requireAuth, BookController.updateBook);
+
+// Atualizar livro (PUT completo)
+router.put("/livros/:id", requireAuth, BookController.updateBook);
+
+// Deletar livro
+router.delete("/livros/:id", requireAuth, BookController.deleteBook);
+
+// Buscar livro por ISBN
+router.get("/livros/isbn/:isbn", BookController.getBookByISBN);
+
+// Buscar livros relacionados
+router.get("/livros/relacionados/:bookId", BookController.getRelatedBooks);
+
+// Buscar livros mais recentes
+router.get("/livros/recentes", BookController.getRecentBooks);
+
+// Busca por termo
+router.get("/livros/buscar", BookController.searchBooks);
+
+module.exports = router;

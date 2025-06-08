@@ -6,7 +6,6 @@ describe("Books API", () => {
 		const payload = {
 			title: "Node.js CA",
 			author: "Fulano",
-			price: 50,
 			stock: 5,
 		};
 		const res = await requestBook(appBook)

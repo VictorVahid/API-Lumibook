@@ -1,5 +1,14 @@
 class User {
-	constructor({ id, nome, email, senhaHash, role, ativo, telefone, matricula }) {
+	constructor({
+		id,
+		nome,
+		email,
+		senhaHash,
+		role,
+		ativo,
+		telefone,
+		matricula,
+	}) {
 		this.id = id;
 		this.nome = nome;
 		this.email = email;
@@ -13,9 +22,10 @@ class User {
 
 	validate() {
 		if (!this.nome || this.nome.trim() === "")
-			throw new Error("Nome do usuário é obrigatório");
+			throw new Error("Nome do usuário é obrigatório"); // linha corrigida
 		if (!this.email || this.email.trim() === "")
 			throw new Error("Email é obrigatório");
 	}
 }
+
 module.exports = User;

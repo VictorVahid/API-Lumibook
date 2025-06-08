@@ -1,5 +1,5 @@
 const ReservationRepository = require("../../../domain/repositories/ReservationRepository");
-const ReservationModel = require("../models/ReservationSchema");
+const ReservationModel = require("../models/Reservation");
 const mongoose = require("mongoose");
 
 class MongooseReservationRepository extends ReservationRepository {

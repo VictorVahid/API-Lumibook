@@ -1,5 +1,5 @@
 const PublisherRepository = require("../../../domain/repositories/PublisherRepository");
-const PublisherModel = require("../models/PublisherSchema");
+const PublisherModel = require("../models/Publisher");
 const mongoose = require("mongoose");
 
 class MongoosePublisherRepository extends PublisherRepository {

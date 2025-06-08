@@ -7,7 +7,7 @@ const app = require("./app");
 const PORT = process.env.PORT || 3000;
 
 mongoose
-	.connect(process.env.MONGO_URI) // sem flags depreceadas
+	.connect(process.env.MONGO_URI)
 	.then(() => {
 		console.log("MongoDB conectado");
 		app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));

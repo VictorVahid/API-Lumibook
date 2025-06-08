@@ -9,7 +9,7 @@ describe("Reservation API", () => {
 			.send({ nome: "U", email: "u@instituicao.edu", senha: "Senha@123" });
 		const b = await requestRes(appRes)
 			.post("/api/books")
-			.send({ title: "T", author: "A", price: 10, stock: 1 });
+			.send({ title: "T", author: "A", stock: 1 });
 		const payload = { usuarioId: u.body.id, livroId: b.body.id, exemplarId: "ex1", dataReserva: new Date().toISOString() };
 		const res = await requestRes(appRes)
 			.post("/api/reservas")

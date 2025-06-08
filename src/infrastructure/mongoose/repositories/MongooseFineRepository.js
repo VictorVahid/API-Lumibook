@@ -1,5 +1,5 @@
 const FineRepository = require("../../../domain/repositories/FineRepository");
-const FineModel = require("../models/FineSchema");
+const FineModel = require("../models/Fine");
 const mongoose = require("mongoose");
 
 class MongooseFineRepository extends FineRepository {

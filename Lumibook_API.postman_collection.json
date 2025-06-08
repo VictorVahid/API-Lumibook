@@ -1,0 +1,617 @@
+{
+  "info": {
+    "_postman_id": "b1e7e1e0-1234-4c1a-9e1a-collection-lumibook",
+    "name": "Lumibook API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Collection completa para popular o banco de dados do Lumibook com dados variados. Inclui login automático e uso de JWT."
+  },
+  "item": [
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"adminVictor@universitas.edu.br\",\n  \"password\": \"admin123!\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/usuarios/login",
+          "host": ["{{base_url}}"],
+          "path": ["usuarios", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var data = pm.response.json();",
+              "if(data.data && data.data.token){",
+              "    pm.environment.set(\"jwt_token\", data.data.token);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Livros",
+      "item": [
+        {
+          "name": "Criar Livro",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"O Senhor dos Anéis\",\n  \"autor\": \"J.R.R. Tolkien\",\n  \"isbn\": \"978-8578270698\",\n  \"ano\": 1954,\n  \"tipo\": \"Livro\",\n  \"categoria\": \"Fantasia\",\n  \"editora\": \"HarperCollins\",\n  \"idioma\": \"Português\",\n  \"paginas\": 1200,\n  \"resumo\": \"Uma aventura épica pela Terra Média.\",\n  \"localizacao\": \"Estante A\",\n  \"exemplares\": []\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/books",
+              "host": ["{{base_url}}"],
+              "path": ["books"]
+            }
+          }
+        },
+        {
+          "name": "Listar Livros",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/books",
+              "host": ["{{base_url}}"],
+              "path": ["books"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Livro por ISBN",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/books/isbn/978-8578270698",
+              "host": ["{{base_url}}"],
+              "path": ["books", "isbn", "978-8578270698"]
+            }
+          }
+        },
+        {
+          "name": "Editar Livro (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoria\": \"Aventura\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/books/1",
+              "host": ["{{base_url}}"],
+              "path": ["books", "1"]
+            }
+          }
+        },
+        {
+          "name": "Excluir Livro",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/books/1",
+              "host": ["{{base_url}}"],
+              "path": ["books", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Autores",
+      "item": [
+        {
+          "name": "Criar Autor",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"J.K. Rowling\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/autores",
+              "host": ["{{base_url}}"],
+              "path": ["autores"]
+            }
+          }
+        },
+        {
+          "name": "Listar Autores",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/autores",
+              "host": ["{{base_url}}"],
+              "path": ["autores"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuários",
+      "item": [
+        {
+          "name": "Criar Usuário Aluno",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Maria Aluna\",\n  \"email\": \"maria.aluna@exemplo.com\",\n  \"password\": \"senha123\",\n  \"papel\": \"aluno\",\n  \"matricula\": \"2023123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/usuarios/register",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios", "register"]
+            }
+          }
+        },
+        {
+          "name": "Criar Usuário Professor",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"João Professor\",\n  \"email\": \"joao.professor@universitas.edu.br\",\n  \"password\": \"senha123\",\n  \"papel\": \"professor\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/usuarios/register",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios", "register"]
+            }
+          }
+        },
+        {
+          "name": "Listar Usuários",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/usuarios",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios"]
+            }
+          }
+        },
+        {
+          "name": "Editar Usuário (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telefone\": \"11999999999\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/usuarios/1",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios", "1"]
+            }
+          }
+        },
+        {
+          "name": "Excluir Usuário",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/usuarios/1",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reservas",
+      "item": [
+        {
+          "name": "Criar Reserva",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuarioId\": \"1\",\n  \"livroId\": \"1\",\n  \"dataReserva\": \"2024-06-01\",\n  \"status\": \"pendente\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["reservations"]
+            }
+          }
+        },
+        {
+          "name": "Listar Reservas",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["reservations"]
+            }
+          }
+        },
+        {
+          "name": "Histórico de Reservas",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservations/historico",
+              "host": ["{{base_url}}"],
+              "path": ["reservations", "historico"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Multas",
+      "item": [
+        {
+          "name": "Criar Multa",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"1\",\n  \"valor\": 10.5,\n  \"motivo\": \"Atraso na devolução\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/fines",
+              "host": ["{{base_url}}"],
+              "path": ["fines"]
+            }
+          }
+        },
+        {
+          "name": "Listar Multas",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fines",
+              "host": ["{{base_url}}"],
+              "path": ["fines"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Editoras",
+      "item": [
+        {
+          "name": "Criar Editora",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Editora Exemplo\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/editoras",
+              "host": ["{{base_url}}"],
+              "path": ["editoras"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Editora por Nome",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/editoras/buscar?q=Exemplo",
+              "host": ["{{base_url}}"],
+              "path": ["editoras", "buscar"],
+              "query": [
+                { "key": "q", "value": "Exemplo" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Exemplares",
+      "item": [
+        {
+          "name": "Criar Exemplar",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"livroId\": \"1\",\n  \"codigo\": \"EX123\",\n  \"status\": \"disponivel\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/exemplares",
+              "host": ["{{base_url}}"],
+              "path": ["exemplares"]
+            }
+          }
+        },
+        {
+          "name": "Listar Exemplares",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/exemplares",
+              "host": ["{{base_url}}"],
+              "path": ["exemplares"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Catalogar Obra",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Obra Nova\",\n  \"autor\": \"Autor Novo\",\n  \"isbn\": \"1234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/obras/catalogar",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "obras", "catalogar"]
+            }
+          }
+        },
+        {
+          "name": "Stats Admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/stats",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "stats"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Salas",
+      "item": [
+        {
+          "name": "Listar Salas Disponíveis",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/salas/disponiveis",
+              "host": ["{{base_url}}"],
+              "path": ["salas", "disponiveis"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Empréstimos",
+      "item": [
+        {
+          "name": "Criar Empréstimo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuarioId\": \"1\",\n  \"livroId\": \"1\",\n  \"dataEmprestimo\": \"2024-06-01\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/emprestimos",
+              "host": ["{{base_url}}"],
+              "path": ["emprestimos"]
+            }
+          }
+        },
+        {
+          "name": "Listar Empréstimos",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/emprestimos",
+              "host": ["{{base_url}}"],
+              "path": ["emprestimos"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Estatísticas",
+      "item": [
+        {
+          "name": "Estatísticas do Aluno",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/alunos/1/estatisticas",
+              "host": ["{{base_url}}"],
+              "path": ["alunos", "1", "estatisticas"]
+            }
+          }
+        },
+        {
+          "name": "Estatísticas do Sistema",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/stats/system",
+              "host": ["{{base_url}}"],
+              "path": ["stats", "system"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auditoria",
+      "item": [
+        {
+          "name": "Listar Logs de Auditoria",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auditoria/logs",
+              "host": ["{{base_url}}"],
+              "path": ["auditoria", "logs"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notificações",
+      "item": [
+        {
+          "name": "Enviar Lembrete de Empréstimo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mensagem\": \"Não se esqueça de devolver o livro!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/loans/1/reminder",
+              "host": ["{{base_url}}"],
+              "path": ["loans", "1", "reminder"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Histórico",
+      "item": [
+        {
+          "name": "Histórico de Empréstimos do Aluno",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/alunos/1/historico-emprestimos",
+              "host": ["{{base_url}}"],
+              "path": ["alunos", "1", "historico-emprestimos"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "event": [],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3001/api" },
+    { "key": "jwt_token", "value": "" }
+  ]
+}

@@ -1,66 +1,65 @@
-// Controller responsável pelas operações relacionadas a exemplares de livros
 const {
 	CreateExemplar,
-	ListExemplars,
-	GetExemplar,
-	ChangeExemplarStatus,
+	GetExemplarById,
+	UpdateExemplar,
 	DeleteExemplar,
-} = require("../../usecases/exemplarUseCases");
+	ListExemplares,
+} = require("../../domain/usecases/exemplarUseCases");
+
 const MongooseExemplarRepo = require("../../infrastructure/mongoose/repositories/MongooseExemplarRepository");
+const exemplarRepo = new MongooseExemplarRepo();
 
-// Instancia os casos de uso com o repositório de exemplares
-const repoEx = new MongooseExemplarRepo();
-const createExUC = new CreateExemplar(repoEx);
-const listExUC = new ListExemplars(repoEx);
-const getExUC = new GetExemplar(repoEx);
-const changeExUC = new ChangeExemplarStatus(repoEx);
-const deleteExUC = new DeleteExemplar(repoEx);
-
-// Criação de um novo exemplar
+// Criação de exemplar
 exports.createExemplar = async (req, res) => {
 	try {
-		const result = await createExUC.execute(req.body);
+		const result = await new CreateExemplar(exemplarRepo).execute(req.body);
 		res.status(201).json(result);
-	} catch (e) {
-		res.status(400).json({ message: e.message });
+	} catch (error) {
+		res.status(400).json({ message: error.message });
 	}
 };
 
-// Listagem de exemplares com filtros opcionais
-exports.listExemplars = async (req, res) => {
-	const filters = { livroId: req.query.livroId, status: req.query.status };
-	const exs = await listExUC.execute(filters);
-	res.json(exs);
-};
-
-// Busca de um exemplar por ID
-exports.getExemplar = async (req, res) => {
+// Listagem de exemplares
+exports.listExemplares = async (req, res) => {
 	try {
-		const ex = await getExUC.execute(req.params.id);
-		res.json(ex);
-	} catch (e) {
-		res.status(404).json({ message: e.message });
+		const exemplares = await new ListExemplares(exemplarRepo).execute();
+		res.json(exemplares);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
 	}
 };
 
-// Atualização do status do exemplar (ex: disponível, emprestado)
-exports.patchExemplarStatus = async (req, res) => {
+// Buscar exemplar por ID
+exports.getExemplarById = async (req, res) => {
 	try {
-		const updated = await changeExUC.execute(req.params.id, {
-			status: req.body.status,
-		});
-		res.json(updated);
-	} catch (e) {
-		res.status(400).json({ message: e.message });
+		const exemplar = await new GetExemplarById(exemplarRepo).execute(
+			req.params.id
+		);
+		res.json(exemplar);
+	} catch (error) {
+		res.status(404).json({ message: error.message });
 	}
 };
 
-// Remoção de um exemplar
+// Atualizar exemplar
+exports.updateExemplar = async (req, res) => {
+	try {
+		const atualizado = await new UpdateExemplar(exemplarRepo).execute(
+			req.params.id,
+			req.body
+		);
+		res.json(atualizado);
+	} catch (error) {
+		res.status(400).json({ message: error.message });
+	}
+};
+
+// Deletar exemplar
 exports.deleteExemplar = async (req, res) => {
 	try {
-		const result = await deleteExUC.execute(req.params.id);
-		res.json(result);
-	} catch (e) {
-		res.status(404).json({ message: e.message });
+		await new DeleteExemplar(exemplarRepo).execute(req.params.id);
+		res.json({ message: "Exemplar excluído com sucesso." });
+	} catch (error) {
+		res.status(404).json({ message: error.message });
 	}
 };

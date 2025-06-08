@@ -1,5 +1,5 @@
 // Casos de uso (usecases) para operações de reservas
-const Reservation = require("../domain/models/Reservation");
+const Reservation = require("../models/Reservation");
 
 // Criação de uma nova reserva com validação de campos obrigatórios
 class CreateReservation {

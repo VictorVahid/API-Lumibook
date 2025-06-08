@@ -1,5 +1,5 @@
 const AuditLogRepository = require("../../../domain/repositories/AuditLogRepository");
-const AuditLogModel = require("../models/AuditLogSchema");
+const AuditLogModel = require("../models/AuditLog");
 const mongoose = require("mongoose");
 
 class MongooseAuditLogRepository extends AuditLogRepository {

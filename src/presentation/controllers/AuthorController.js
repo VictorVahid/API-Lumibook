@@ -6,8 +6,9 @@ const {
 	ReplaceAuthor,
 	PatchAuthor,
 	DeleteAuthor,
-} = require("../../usecases/authorsUseCases");
+} = require("../../domain/usecases/authorsUseCases");
 const MongooseAuthorRepo = require("../../infrastructure/mongoose/repositories/MongooseAuthorRepository");
+const BookModel = require("../../infrastructure/mongoose/models/Book");
 
 // Instancia os casos de uso com o repositório de autores
 const repo = new MongooseAuthorRepo();
@@ -24,7 +25,7 @@ exports.createAuthor = async (req, res) => {
 		const result = await createUC.execute(req.body);
 		res.status(201).json({
 			id: result.id || result._id,
-			nome: result.nome
+			nome: result.nome,
 		});
 	} catch (e) {
 		res.status(400).json({ message: e.message });
@@ -33,8 +34,19 @@ exports.createAuthor = async (req, res) => {
 
 // Listagem de todos os autores
 exports.listAuthors = async (_req, res) => {
+	// Buscar todos os livros e extrair os IDs dos autores
+	const livros = await BookModel.find({}, "authors").lean();
+	const idsAutores = new Set();
+	livros.forEach((livro) => {
+		if (Array.isArray(livro.authors)) {
+			livro.authors.forEach((id) => idsAutores.add(String(id)));
+		}
+	});
 	const authors = await listUC.execute();
-	res.json(authors.map(a => ({ id: a.id || a._id, nome: a.nome })));
+	const autoresComLivros = authors.filter((a) =>
+		idsAutores.has(String(a.id || a._id))
+	);
+	res.json(autoresComLivros.map((a) => ({ id: a.id || a._id, nome: a.nome })));
 };
 
 // Busca de um autor por ID
@@ -62,7 +74,10 @@ exports.patchAuthor = async (req, res) => {
 	try {
 		const patched = await patchUC.execute(req.params.id, req.body);
 		if (req.body.biografia) {
-			return res.json({ id: patched.id || patched._id, biografia: req.body.biografia });
+			return res.json({
+				id: patched.id || patched._id,
+				biografia: req.body.biografia,
+			});
 		}
 		if (req.body.nome) {
 			return res.json({ id: patched.id || patched._id, nome: patched.nome });
@@ -87,6 +102,8 @@ exports.deleteAuthor = async (req, res) => {
 exports.searchAuthors = async (req, res) => {
 	const termo = (req.query.q || "").toLowerCase();
 	const authors = await listUC.execute();
-	const filtrados = authors.filter(a => a.nome && a.nome.toLowerCase().includes(termo));
-	res.json(filtrados.map(a => ({ id: a.id || a._id, nome: a.nome })));
+	const filtrados = authors.filter(
+		(a) => a.nome && a.nome.toLowerCase().includes(termo)
+	);
+	res.json(filtrados.map((a) => ({ id: a.id || a._id, nome: a.nome })));
 };

@@ -1,10 +1,29 @@
 // Modelo de domínio para Livro
 class Book {
-	constructor({ id, title, author, price, stock, isbn, ano, tipo, categoria, edicao, idioma, paginas, resumo, localizacao, exemplares, adminId, dataCatalogacao, status, disponivel }) {
+	constructor({
+		id,
+		title,
+		authors,
+		stock,
+		isbn,
+		ano,
+		tipo,
+		categoria,
+		edicao,
+		idioma,
+		paginas,
+		resumo,
+		localizacao,
+		exemplares,
+		adminId,
+		dataCatalogacao,
+		status,
+		disponivel,
+		editora,
+	}) {
 		this.id = id;
 		this.title = title;
-		this.author = author;
-		this.price = price;
+		this.authors = authors;
 		this.stock = stock;
 		this.isbn = isbn;
 		this.ano = ano;
@@ -20,6 +39,7 @@ class Book {
 		this.dataCatalogacao = dataCatalogacao;
 		this.status = status;
 		this.disponivel = disponivel;
+		this.editora = editora; // ← Adicionado aqui
 		this.validate();
 	}
 
@@ -27,8 +47,12 @@ class Book {
 	validate() {
 		if (!this.title || this.title.trim() === "")
 			throw new Error("Título do livro é obrigatório");
-		if (!this.author || this.author.trim() === "")
-			throw new Error("Autor do livro é obrigatório");
+		if (
+			!this.authors ||
+			!Array.isArray(this.authors) ||
+			this.authors.length === 0
+		)
+			throw new Error("Pelo menos um autor é obrigatório");
 	}
 }
 module.exports = Book;

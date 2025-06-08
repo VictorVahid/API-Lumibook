@@ -1,11 +1,13 @@
 const express = require("express");
-const exCtrl = require("../controllers/ExemplarController");
-const exemplarRouter = express.Router();
+const router = express.Router();
 
-exemplarRouter.get("/exemplares", exCtrl.listExemplars);
-exemplarRouter.post("/exemplares", exCtrl.createExemplar);
-exemplarRouter.get("/exemplares/:id", exCtrl.getExemplar);
-exemplarRouter.patch("/exemplares/:id/status", exCtrl.patchExemplarStatus);
-exemplarRouter.delete("/exemplares/:id", exCtrl.deleteExemplar);
+const ExemplarController = require("../controllers/ExemplarController");
 
-module.exports = exemplarRouter;
+// Rotas para exemplares
+router.post("/exemplares", ExemplarController.createExemplar);
+router.get("/exemplares", ExemplarController.listExemplares);
+router.get("/exemplares/:id", ExemplarController.getExemplarById);
+router.put("/exemplares/:id", ExemplarController.updateExemplar);
+router.delete("/exemplares/:id", ExemplarController.deleteExemplar);
+
+module.exports = router;

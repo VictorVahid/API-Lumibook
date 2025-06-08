@@ -1,5 +1,5 @@
 // Casos de uso (usecases) para operações de editoras
-const Publisher = require("../domain/models/Publisher");
+const Publisher = require("../models/Publisher");
 
 // Criação de uma nova editora com validação de campos obrigatórios
 class CreatePublisher {

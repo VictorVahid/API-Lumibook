@@ -1,14 +1,15 @@
 const mongoose = require("mongoose");
+const UserSchema = new mongoose.Schema(
+	{
+		nome: { type: String, required: true },
+		email: { type: String, required: true, unique: true },
+		senhaHash: { type: String, required: true },
+		role: { type: String, default: "usuario" },
+		ativo: { type: Boolean, default: true },
+		telefone: { type: String },
+		matricula: { type: String },
+	},
+	{ collection: "usuarios" }
+);
 
-const UserSchema = new mongoose.Schema({
-  nome: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  matricula: { type: String, unique: true, sparse: true },
-  papel: { type: String, enum: ["aluno", "professor", "admin"], required: true },
-  avatar: { type: String },
-  statusConta: { type: String, enum: ["ativa", "bloqueada"], default: "ativa" },
-  membroDesde: { type: Date, default: Date.now },
-  senha: { type: String, required: true }
-}, { timestamps: true });
-
-module.exports = mongoose.model("User", UserSchema); 
+module.exports = mongoose.model("User", UserSchema);

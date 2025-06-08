@@ -1,5 +1,5 @@
 // Casos de uso (usecases) para operações de multas
-const Fine = require("../domain/models/Fine");
+const Fine = require("../models/Fine");
 
 // Criação de uma nova multa com validação de campos obrigatórios
 class IssueFine {

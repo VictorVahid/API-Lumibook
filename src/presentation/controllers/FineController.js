@@ -4,7 +4,7 @@ const {
 	ListFines,
 	GetFine,
 	UpdateFineStatus,
-} = require("../../usecases/fineUseCases");
+} = require("../../domain/usecases/fineUseCases");
 const MongooseFineRepo = require("../../infrastructure/mongoose/repositories/MongooseFineRepository");
 
 // Instancia os casos de uso com o repositório de multas
@@ -18,9 +18,9 @@ const updateFineUC = new UpdateFineStatus(repoFine);
 exports.createFine = async (req, res) => {
 	try {
 		const result = await issueFineUC.execute(req.body);
-		res.status(201).json(result);
+		res.status(201).json({ success: true, data: result, error: null });
 	} catch (e) {
-		res.status(400).json({ message: e.message });
+		res.status(400).json({ success: false, data: null, error: e.message });
 	}
 };
 
@@ -28,16 +28,16 @@ exports.createFine = async (req, res) => {
 exports.listFines = async (req, res) => {
 	const filters = { usuarioId: req.query.usuarioId, status: req.query.status };
 	const fines = await listFinesUC.execute(filters);
-	res.json(fines);
+	res.json({ success: true, data: fines, error: null });
 };
 
 // Busca de uma multa por ID
 exports.getFine = async (req, res) => {
 	try {
 		const fine = await getFineUC.execute(req.params.id);
-		res.json(fine);
+		res.json({ success: true, data: fine, error: null });
 	} catch (e) {
-		res.status(404).json({ message: e.message });
+		res.status(404).json({ success: false, data: null, error: e.message });
 	}
 };
 
@@ -47,19 +47,23 @@ exports.patchFineStatus = async (req, res) => {
 		const updated = await updateFineUC.execute(req.params.id, {
 			status: req.body.status,
 		});
-		res.json(updated);
+		res.json({ success: true, data: updated, error: null });
 	} catch (e) {
-		res.status(400).json({ message: e.message });
+		res.status(400).json({ success: false, data: null, error: e.message });
 	}
 };
 
 // Pagamento de multa (altera status para 'paga')
 exports.payFine = async (req, res) => {
 	try {
-		const updated = await updateFineUC.execute(req.params.id, { status: 'paga' });
-		return res.status(200).json(updated);
+		const updated = await updateFineUC.execute(req.params.id, {
+			status: "paga",
+		});
+		return res.status(200).json({ success: true, data: updated, error: null });
 	} catch (e) {
-		return res.status(400).json({ message: e.message });
+		return res
+			.status(400)
+			.json({ success: false, data: null, error: e.message });
 	}
 };
 
@@ -70,14 +74,14 @@ exports.getFineHistory = async (req, res) => {
 			id: "1",
 			descricao: "Atraso na devolução",
 			valor: 10,
-			status: "paga"
+			status: "paga",
 		},
 		{
 			id: "2",
 			descricao: "Livro danificado",
 			valor: 20,
-			status: "pendente"
-		}
+			status: "pendente",
+		},
 	]);
 };
 
@@ -85,8 +89,8 @@ exports.getFineHistory = async (req, res) => {
 exports.getFinesByUser = async (req, res) => {
 	try {
 		const fines = await listFinesUC.execute({ usuarioId: req.params.userId });
-		res.json(fines);
+		res.json({ success: true, data: fines, error: null });
 	} catch (e) {
-		res.status(400).json({ message: e.message });
+		res.status(400).json({ success: false, data: null, error: e.message });
 	}
 };

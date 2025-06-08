@@ -6,7 +6,7 @@ describe("Exemplar API", () => {
 		// assume a book exists
 		const bookRes = await requestEx(appEx)
 			.post("/api/books")
-			.send({ title: "Teste", author: "X", price: 10, stock: 1 });
+			.send({ title: "Teste", author: "X", stock: 1 });
 		const bookId = bookRes.body.id;
 		const payload = { livroId: bookId, status: "disponível" };
 		const res = await requestEx(appEx)

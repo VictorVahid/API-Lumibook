@@ -1,79 +1,38 @@
-// src/infrastructure/mongoose/repositories/MongooseUserRepository.js
-const UserRepository = require("../../../domain/repositories/UserRepository");
-const UserModel = require("../models/UserSchema");
-const mongoose = require("mongoose");
+const UserModel = require("../models/User");
+const { toDomain, toPersistence } = require("../mappers/userMapper");
 
-class MongooseUserRepository extends UserRepository {
-	async create(user) {
-		const doc = await UserModel.create(user);
-		return {
-			id: doc._id,
-			nome: doc.nome,
-			email: doc.email,
-			role: doc.role,
-			ativo: doc.ativo,
-		};
+class MongooseUserRepository {
+	async create(userEntity) {
+		const userData = toPersistence(userEntity);
+		const createdUser = await UserModel.create(userData);
+		return toDomain(createdUser);
 	}
 
 	async findById(id) {
-		if (!mongoose.Types.ObjectId.isValid(id)) {
-			return null;
-		}
-		const doc = await UserModel.findById(id).exec();
-		if (!doc) return null;
-		return {
-			id: doc._id,
-			nome: doc.nome,
-			email: doc.email,
-			role: doc.role,
-			ativo: doc.ativo,
-		};
-	}
-
-	async update(id, data) {
-		if (!mongoose.Types.ObjectId.isValid(id)) {
-			return null;
-		}
-		const doc = await UserModel.findByIdAndUpdate(id, data, {
-			new: true,
-		}).exec();
-		if (!doc) return null;
-		return {
-			id: doc._id,
-			nome: doc.nome,
-			email: doc.email,
-			role: doc.role,
-			ativo: doc.ativo,
-		};
-	}
-
-	async delete(id) {
-		if (!mongoose.Types.ObjectId.isValid(id)) {
-			return null;
-		}
-		const doc = await UserModel.findByIdAndDelete(id).exec();
-		if (!doc) return null;
-		return {
-			id: doc._id,
-			nome: doc.nome,
-			email: doc.email,
-		};
-	}
-
-	async findAll() {
-		return await UserModel.find({}, { senhaHash: 0, senha: 0 });
+		const found = await UserModel.findById(id);
+		return toDomain(found);
 	}
 
 	async findByEmail(email) {
-		const doc = await UserModel.findOne({ email }).exec();
-		if (!doc) return null;
-		return doc.toObject();
+		const found = await UserModel.findOne({ email });
+		return toDomain(found);
 	}
 
-	async findByMatricula(matricula) {
-		const doc = await UserModel.findOne({ matricula }).exec();
-		if (!doc) return null;
-		return doc.toObject();
+	async update(id, data) {
+		if (data.name) data.nome = data.name;
+		if (data.password) data.senhaHash = data.password;
+
+		const updated = await UserModel.findByIdAndUpdate(id, data, { new: true });
+		return toDomain(updated);
+	}
+
+	async delete(id) {
+		return await UserModel.findByIdAndDelete(id);
+	}
+
+	async findAll() {
+		const users = await UserModel.find();
+		return users.map(toDomain);
 	}
 }
 
