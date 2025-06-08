@@ -1,29 +1,12 @@
 const express = require("express");
+const BookController = require("../controllers/BookController");
 const router = express.Router();
 
-// Catalogar nova obra
-router.post("/admin/obras/catalogar", (req, res) => {
-  // Aqui você salvaria no banco, por enquanto só retorna sucesso
-  res.json({ success: true, data: req.body, message: "Obra catalogada com sucesso!" });
-});
-
-router.get("/admin/stats", (req, res) => {
-	res.json({
-		usuarios: 100,
-		livros: 500,
-		exemplares: 1200,
-		reservas: 30,
-		multas: 5,
-		emprestimos: 80,
-		atualizadoEm: new Date().toISOString()
-	});
-});
-
-router.get("/admin/activities", (req, res) => {
-	res.json([
-		{ acao: "login", usuario: "admin", data: new Date().toISOString() },
-		{ acao: "cadastro_livro", usuario: "admin", data: new Date().toISOString() }
-	]);
-});
+// Catalog work (admin)
+router.post("/admin/works/catalog", BookController.createBook);
+// Admin stats (mock)
+router.get("/admin/stats", (req, res) => res.json({ users: 100, books: 500, loans: 80 }));
+// Admin activities (mock)
+router.get("/admin/activities", (req, res) => res.json([{ action: "login", user: "admin", date: new Date().toISOString() }]));
 
 module.exports = router; 

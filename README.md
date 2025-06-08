@@ -126,6 +126,18 @@ npm test
 
 ---
 
+## 🧪 Testando a API com o Postman
+
+Uma Collection Postman completa está disponível no repositório para facilitar o teste e integração com a API.
+
+### Como usar:
+1. Baixe o arquivo `Lumibook_API.postman_collection.json` na raiz do projeto.
+2. Abra o Postman e clique em **Import**.
+3. Selecione o arquivo baixado.
+4. Configure a variável `baseUrl` para o endereço da sua API (ex: `http://localhost:3001/api`).
+5. Preencha as variáveis de ambiente (token, userId, etc) conforme for autenticando e criando entidades.
+6. Execute as requisições desejadas!
+
 ## 🔒 Segurança
 
 - Hash de senhas com bcrypt

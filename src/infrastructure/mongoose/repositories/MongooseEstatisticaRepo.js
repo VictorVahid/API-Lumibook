@@ -1,5 +1,5 @@
-
 const Estatistica = require("../../../domain/models/Estatistica");
+const EstatisticaModel = require("../models/Estatistica");
 
 class MongooseEstatisticaRepo {
 	async findByUserId(userId) {

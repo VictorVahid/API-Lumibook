@@ -1,137 +1,177 @@
 # 📘 Documentação de Endpoints - API Lumibook
 
-> Esta documentação lista todos os endpoints REST disponíveis na API Lumibook, organizados por domínio funcional.
+> Esta documentação lista todos os endpoints REST disponíveis na API Lumibook, organizados por domínio funcional, com exemplos de payloads.
 
 ---
 
-## 🔎 Status
+## 🔎 Health Check
 
 ```
-GET     /api/status              # Verifica se a API está online
-```
-
-## 📚 Livros
-
-```
-GET     /api/livros
-POST    /api/livros
-GET     /api/livros/:id
-PUT     /api/livros/:id
-PATCH   /api/livros/:id
-DELETE  /api/livros/:id
-```
-
-## 📦 Exemplares
-
-```
-GET     /api/exemplares
-POST    /api/exemplares
-GET     /api/exemplares/:id
-PATCH   /api/exemplares/:id/status
-DELETE  /api/exemplares/:id
+GET     /api/           # Verifica se a API está online
 ```
 
 ## 👤 Usuários
 
 ```
-GET     /api/usuarios
-POST    /api/usuarios
-GET     /api/usuarios/:id
-PUT     /api/usuarios/:id
-PATCH   /api/usuarios/:id
-DELETE  /api/usuarios/:id
+POST    /api/users/register         # Cadastro de usuário (aluno/professor)
+POST    /api/users/login            # Login
+GET     /api/users/profile          # Perfil autenticado (token)
+GET     /api/users                  # Listar todos os usuários
+GET     /api/users/:id              # Buscar usuário por ID
 ```
 
-## 📕 Empréstimos
-
-```
-GET     /api/emprestimos
-POST    /api/emprestimos
-GET     /api/emprestimos/:id
-PUT     /api/emprestimos/:id
-DELETE  /api/emprestimos/:id
-```
-
-## 🧾 Itens de Empréstimo
-
-```
-GET     /api/itensEmprestimo
-POST    /api/itensEmprestimo
-GET     /api/itensEmprestimo/:id
-PATCH   /api/itensEmprestimo/:id
-DELETE  /api/itensEmprestimo/:id
+**Exemplo de cadastro (aluno):**
+```json
+{
+  "nome": "João Aluno",
+  "email": "joao@instituicao.edu",
+  "senha": "Senha@123",
+  "papel": "aluno",
+  "matricula": "1234567"
+}
 ```
 
-## 📌 Reservas
-
-```
-GET     /api/reservas
-POST    /api/reservas
-GET     /api/reservas/:id
-DELETE  /api/reservas/:id
-```
-
-## 💸 Multas
-
-```
-GET     /api/multas
-POST    /api/multas
-GET     /api/multas/:id
-PUT     /api/multas/:id
-DELETE  /api/multas/:id
-```
-
-## ✍️ Autores
-
-```
-GET     /api/autores
-POST    /api/autores
-GET     /api/autores/:id
-PUT     /api/autores/:id
-DELETE  /api/autores/:id
-```
-
-## 🏢 Editoras
-
-```
-GET     /api/editoras
-POST    /api/editoras
-GET     /api/editoras/:id
-PUT     /api/editoras/:id
-DELETE  /api/editoras/:id
-```
-
-## 👨‍💼 Funcionários
-
-```
-GET     /api/funcionarios
-POST    /api/funcionarios
-GET     /api/funcionarios/:id
-PUT     /api/funcionarios/:id
-DELETE  /api/funcionarios/:id
-```
-
-## 🔗 Livro–Autor
-
-```
-GET     /api/livrosAutores
-POST    /api/livrosAutores
-DELETE  /api/livrosAutores/:id
-```
-
-## 📋 Auditoria
-
-```
-GET     /api/auditoria/logs
-GET     /api/auditoria/logs/:id
-```
-
-## 📨 Notificações por E-mail
-
-```
-POST    /api/notificacoes/emprestimos/:loanId  # Envia lembrete de empréstimo por e-mail
+**Exemplo de login:**
+```json
+{
+  "email": "joao@instituicao.edu",
+  "senha": "Senha@123"
+}
 ```
 
 ---
 
-> Para exemplos de payloads JSON, consulte a Collection Postman disponível no repositório.
+## 👨‍💼 Admins
+
+```
+POST    /api/admin                  # Cadastro de admin
+GET     /api/admin                  # Listar admins
+```
+
+---
+
+## 👩‍💼 Bibliotecários
+
+```
+POST    /api/librarians             # Cadastro de bibliotecário
+GET     /api/librarians             # Listar bibliotecários
+```
+
+---
+
+## 📚 Livros
+
+```
+POST    /api/books                  # Cadastro de livro
+GET     /api/books                  # Listar livros
+GET     /api/books/:id              # Buscar livro por ID
+PATCH   /api/books/:id              # Atualizar livro
+DELETE  /api/books/:id              # Deletar livro
+```
+
+**Exemplo de cadastro:**
+```json
+{
+  "title": "Dom Casmurro",
+  "authors": ["<authorId>"],
+  "isbn": "9788533615540",
+  "ano": 1899,
+  "categoria": "Romance",
+  "editora": "<publisherId>",
+  "stock": 5
+}
+```
+
+---
+
+## 📦 Exemplares
+
+```
+POST    /api/copies                 # Cadastro de exemplar
+GET     /api/copies                 # Listar exemplares
+```
+
+---
+
+## ✍️ Autores
+
+```
+POST    /api/authors                # Cadastro de autor
+GET     /api/authors                # Listar autores
+```
+
+---
+
+## 🏢 Editoras
+
+```
+POST    /api/publishers             # Cadastro de editora
+GET     /api/publishers             # Listar editoras
+```
+
+---
+
+## 📋 Reservas
+
+```
+POST    /api/reservations           # Criar reserva
+GET     /api/reservations           # Listar reservas (filtros: userId, bookId)
+GET     /api/reservations/:id       # Buscar reserva por ID
+DELETE  /api/reservations/:id       # Cancelar reserva
+```
+
+**Exemplo de criação:**
+```json
+{
+  "userId": "<userId>",
+  "bookId": "<bookId>",
+  "copyId": "<copyId>"
+}
+```
+
+---
+
+## 💸 Multas
+
+```
+POST    /api/fines                  # Criar multa
+GET     /api/fines                  # Listar multas
+POST    /api/fines/:id/pay          # Pagar multa
+```
+
+**Exemplo de criação:**
+```json
+{
+  "userId": "<userId>",
+  "value": 10.0,
+  "reason": "Atraso na devolução"
+}
+```
+
+---
+
+## 📊 Estatísticas
+
+```
+GET     /api/stats/user/:userId     # Buscar estatísticas do usuário (token)
+PUT     /api/stats/user/:userId/:statKey   # Atualizar estatística do usuário
+```
+
+**Exemplo de atualização:**
+```json
+{
+  "valor": 5
+}
+```
+
+---
+
+## 📝 Auditoria
+
+```
+GET     /api/audit                  # Listar logs de auditoria
+```
+
+---
+
+> Para exemplos completos de payloads e testes, consulte a Collection Postman no repositório.

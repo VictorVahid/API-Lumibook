@@ -24,25 +24,45 @@ const deleteBookUC = new DeleteBook(repoBook);
 async function traduzirLivro(livro) {
 	if (!livro) return null;
 	const obj = livro.toObject ? livro.toObject() : livro;
-	obj.id = obj._id;
+	obj.id = obj._id || obj.id || null;
 
-	if (obj.title) {
-		obj.titulo = obj.title;
-		delete obj.title;
-	}
+	// Título
+	obj.titulo = obj.titulo || obj.title || "";
+	delete obj.title;
 
+	// Autores (array de strings)
 	if (obj.authors) {
 		obj.autores = Array.isArray(obj.authors)
-			? obj.authors.map((a) =>
-					a.nome ? { id: a.id || a._id, nome: a.nome } : a
-			  )
-			: obj.authors;
+			? obj.authors.map((a) => (typeof a === "object" && a.nome ? a.nome : (typeof a === "string" ? a : "")))
+			: [];
 		delete obj.authors;
+	} else if (!obj.autores) {
+		obj.autores = [];
 	}
 
-	obj.exemplares = await ExemplarModel.countDocuments({ livro: obj.id });
-	const exemplares = await ExemplarModel.find({ livro: obj.id });
-	obj.disponivel = exemplares.some((ex) => ex.status === "disponível");
+	// ISBN
+	obj.isbn = obj.isbn || "";
+	// Ano
+	obj.ano = obj.ano || null;
+	// Tipo
+	obj.tipo = obj.tipo || "";
+	// Categoria
+	obj.categoria = obj.categoria || "";
+	// Editora
+	obj.editora = obj.editora || "";
+
+	// Exemplares (número)
+	if (obj.exemplares === undefined) {
+		obj.exemplares = 0;
+	}
+	// Disponível
+	if (obj.disponivel === undefined) {
+		obj.disponivel = false;
+	}
+	// Capa
+	obj.capa = obj.capa || "";
+	// Resumo
+	obj.resumo = obj.resumo || "";
 
 	return obj;
 }
@@ -52,6 +72,10 @@ exports.createBook = async (req, res) => {
 		if (!req.body.authors && typeof req.body.author === "string") {
 			req.body.authors = [req.body.author];
 			delete req.body.author;
+		}
+		// Preencher capa automaticamente se não vier
+		if ((!req.body.capa || req.body.capa === "") && req.body.isbn) {
+			req.body.capa = `https://covers.openlibrary.org/b/isbn/${req.body.isbn}-L.jpg`;
 		}
 		const book = await createBookUC.execute(req.body);
 		const obj = await traduzirLivro(book);
@@ -73,43 +97,55 @@ exports.getBook = async (req, res) => {
 
 exports.listBooks = async (req, res) => {
 	try {
-		const { search, category, available } = req.query;
-		let books = await listBooksUC.execute();
-		const traduzidos = await Promise.all(books.map(traduzirLivro));
+		const { search, category, available, limit, sort } = req.query;
+		let booksQuery = BookModel.find();
 
-		let filtrados = traduzidos;
+		// Excluir livros removidos (exclusão lógica)
+		if (BookModel.schema.paths.removido || BookModel.schema.paths.deleted || BookModel.schema.paths.ativo) {
+			if (BookModel.schema.paths.removido) {
+				booksQuery = booksQuery.find({ removido: { $ne: true } });
+			}
+			if (BookModel.schema.paths.deleted) {
+				booksQuery = booksQuery.find({ deleted: { $ne: true } });
+			}
+			if (BookModel.schema.paths.ativo) {
+				booksQuery = booksQuery.find({ ativo: { $ne: false } });
+			}
+		}
 
 		if (search) {
-			filtrados = filtrados.filter((livro) => {
-				const texto = [
-					livro.titulo,
-					(livro.autores || []).map((a) => a.nome).join(", "),
-					livro.isbn,
-					livro.categoria,
-					livro.tipo,
-					livro.resumo,
-				]
-					.map((x) => (x || "").toLowerCase())
-					.join(" ");
-				return texto.includes(search.toLowerCase());
+			booksQuery = booksQuery.find({
+				$or: [
+					{ title: { $regex: new RegExp(search, "i") } },
+					{ isbn: { $regex: new RegExp(search, "i") } },
+					{ categoria: { $regex: new RegExp(search, "i") } },
+				],
 			});
 		}
 
 		if (category) {
-			filtrados = filtrados.filter(
-				(livro) =>
-					(livro.categoria || "").toLowerCase() === category.toLowerCase()
-			);
+			booksQuery = booksQuery.find({ categoria: category });
 		}
 
 		if (available !== undefined) {
 			const availableBool = available === "true" || available === true;
-			filtrados = filtrados.filter(
-				(livro) => livro.disponivel === availableBool
-			);
+			booksQuery = booksQuery.find({ disponivel: availableBool });
 		}
 
-		res.json(filtrados);
+		// Ordenação
+		if (sort === "recentes" || !sort) {
+			booksQuery = booksQuery.sort({ createdAt: -1 });
+		}
+
+		// Limite
+		let limitNum = parseInt(limit);
+		if (!isNaN(limitNum) && limitNum > 0) {
+			booksQuery = booksQuery.limit(limitNum);
+		}
+
+		const books = await booksQuery.exec();
+		const traduzidos = await Promise.all(books.map(traduzirLivro));
+		res.json(traduzidos);
 	} catch (e) {
 		res.status(500).json({ message: e.message });
 	}
@@ -176,6 +212,10 @@ exports.getBookByISBN = async (req, res) => {
 
 exports.updateBook = async (req, res) => {
 	try {
+		// Preencher capa automaticamente se não vier
+		if ((!req.body.capa || req.body.capa === "") && req.body.isbn) {
+			req.body.capa = `https://covers.openlibrary.org/b/isbn/${req.body.isbn}-L.jpg`;
+		}
 		const updated = await updateBookUC.execute(req.params.id, req.body);
 		const obj = await traduzirLivro(updated);
 		res.json({ id: obj.id, titulo: obj.titulo });
@@ -196,22 +236,33 @@ exports.deleteBook = async (req, res) => {
 exports.searchBooks = async (req, res) => {
 	try {
 		const termo = typeof req.query.q === "string" ? req.query.q.trim() : "";
-		const books = await listBooksUC.execute();
-		const traduzidos = await Promise.all(books.map(traduzirLivro));
-		const filtrados = traduzidos.filter((livro) => {
+		if (!termo) {
+			return res.json([]);
+		}
+		const books = await BookModel.find({
+			$or: [
+				{ title: { $regex: new RegExp(termo, "i") } },
+				{ categoria: { $regex: new RegExp(termo, "i") } },
+				{ authors: { $exists: true, $not: { $size: 0 } } },
+			],
+		}).populate("authors");
+
+		// Filtrar por autores (nome)
+		const filtrados = books.filter((livro) => {
+			const autores = livro.authors || [];
+			const autoresStr = Array.isArray(autores)
+				? autores.map((a) => (a.nome ? a.nome : a)).join(", ")
+				: autores;
 			const texto = [
-				livro.titulo,
-				(livro.autores || []).map((a) => a.nome).join(", "),
-				livro.isbn,
+				livro.title,
+				autoresStr,
 				livro.categoria,
-				livro.tipo,
-				livro.resumo,
-			]
-				.map((x) => (x || "").toLowerCase())
-				.join(" ");
+			].map((x) => (x || "").toLowerCase()).join(" ");
 			return texto.includes(termo.toLowerCase());
 		});
-		res.json(filtrados);
+
+		const traduzidos = await Promise.all(filtrados.map(traduzirLivro));
+		res.json(traduzidos);
 	} catch (e) {
 		res.status(500).json({ message: e.message });
 	}

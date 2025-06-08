@@ -20,10 +20,10 @@ const cancelResUC = new CancelReservation(repoRes);
 function padronizarReserva(reserva) {
 	return {
 		id: reserva.id || null,
-		usuarioId: reserva.usuarioId || null,
+		userId: reserva.usuarioId || null,
 		salaId: reserva.salaId || null,
 		descricao: reserva.descricao || null,
-		livroId: reserva.livroId || null,
+		bookId: reserva.livroId || null,
 		exemplarId: reserva.exemplarId || null,
 		dataReserva: reserva.dataReserva || null,
 		status: reserva.status || null,
@@ -45,7 +45,11 @@ exports.createReservation = async (req, res) => {
 // Listagem de reservas com filtros opcionais
 exports.listReservations = async (req, res) => {
 	try {
-		const results = await listResUC.execute();
+		const filters = {};
+		if (req.query.userId) filters.usuarioId = req.query.userId;
+		if (req.query.bookId) filters.livroId = req.query.bookId;
+		if (req.query.status) filters.status = req.query.status;
+		const results = await listResUC.execute(filters);
 		res.json({
 			success: true,
 			data: results.map(padronizarReserva),
@@ -60,12 +64,7 @@ exports.listReservations = async (req, res) => {
 exports.getReservation = async (req, res) => {
 	try {
 		const resv = await getResUC.execute(req.params.id);
-		res.json({
-			id: resv.id || resv._id,
-			userId: resv.usuarioId,
-			bookId: resv.livroId,
-			status: resv.status,
-		});
+		res.json(padronizarReserva(resv));
 	} catch (e) {
 		res.status(404).json({ message: e.message });
 	}
@@ -105,14 +104,7 @@ exports.getReservationHistory = async (req, res) => {
 exports.getReservationsByUser = async (req, res) => {
 	try {
 		const ress = await listResUC.execute({ usuarioId: req.params.userId });
-		res.json(
-			ress.map((r) => ({
-				id: r.id || r._id,
-				userId: r.usuarioId,
-				bookId: r.livroId,
-				status: r.status,
-			}))
-		);
+		res.json(ress.map(padronizarReserva));
 	} catch (e) {
 		res.status(400).json({ message: e.message });
 	}
@@ -122,14 +114,7 @@ exports.getReservationsByUser = async (req, res) => {
 exports.getReservationsByBook = async (req, res) => {
 	try {
 		const ress = await listResUC.execute({ livroId: req.params.bookId });
-		res.json(
-			ress.map((r) => ({
-				id: r.id || r._id,
-				userId: r.usuarioId,
-				bookId: r.livroId,
-				status: r.status,
-			}))
-		);
+		res.json(ress.map(padronizarReserva));
 	} catch (e) {
 		res.status(400).json({ message: e.message });
 	}

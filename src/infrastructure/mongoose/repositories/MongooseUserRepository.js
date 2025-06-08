@@ -1,29 +1,27 @@
 const UserModel = require("../models/User");
-const { toDomain, toPersistence } = require("../mappers/userMapper");
 
 class MongooseUserRepository {
 	async create(userEntity) {
-		const userData = toPersistence(userEntity);
-		const createdUser = await UserModel.create(userData);
-		return toDomain(createdUser);
+		const createdUser = await UserModel.create(userEntity);
+		return this._toDTO(createdUser);
 	}
 
 	async findById(id) {
-		const found = await UserModel.findById(id);
-		return toDomain(found);
+		const found = await UserModel.findById(id).select('+senhaHash');
+		return this._toDTO(found);
 	}
 
 	async findByEmail(email) {
-		const found = await UserModel.findOne({ email });
-		return toDomain(found);
+		const found = await UserModel.findOne({ email }).select('+senhaHash');
+		return this._toDTO(found);
 	}
 
 	async update(id, data) {
 		if (data.name) data.nome = data.name;
 		if (data.password) data.senhaHash = data.password;
 
-		const updated = await UserModel.findByIdAndUpdate(id, data, { new: true });
-		return toDomain(updated);
+		const updated = await UserModel.findByIdAndUpdate(id, data, { new: true }).select('+senhaHash');
+		return this._toDTO(updated);
 	}
 
 	async delete(id) {
@@ -31,8 +29,23 @@ class MongooseUserRepository {
 	}
 
 	async findAll() {
-		const users = await UserModel.find();
-		return users.map(toDomain);
+		const users = await UserModel.find().select('+senhaHash');
+		return users.map(this._toDTO);
+	}
+
+	_toDTO(user) {
+		if (!user) return null;
+		const obj = user.toObject ? user.toObject() : user;
+		return {
+			id: obj._id,
+			nome: obj.nome,
+			email: obj.email,
+			role: obj.role,
+			ativo: obj.ativo,
+			telefone: obj.telefone,
+			matricula: obj.matricula,
+			senhaHash: obj.senhaHash,
+		};
 	}
 }
 

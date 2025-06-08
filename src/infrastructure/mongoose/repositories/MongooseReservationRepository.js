@@ -14,7 +14,7 @@ class MongooseReservationRepository extends ReservationRepository {
 		};
 	}
 
-	async findByFilters({ usuarioId, livroId, status }) {
+	async findByFilters({ usuarioId, livroId, status } = {}) {
 		const query = {};
 		if (usuarioId) query.usuarioId = usuarioId;
 		if (livroId) query.livroId = livroId;

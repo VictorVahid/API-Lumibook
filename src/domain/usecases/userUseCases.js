@@ -22,6 +22,8 @@ class CreateUser {
 		if (data.role && papelMap[data.role]) {
 			data.role = papelMap[data.role];
 		}
+		if (!data.name && data.nome) data.name = data.nome;
+		if (!data.nome && data.name) data.nome = data.name;
 		if (!data.name || typeof data.name !== "string" || data.name.trim() === "")
 			throw new Error("Name é obrigatório e deve ser uma string");
 		if (

@@ -1,23 +1,30 @@
 const express = require("express");
 const router = express.Router();
 
-router.use(require("./auditoriaRoutes"));
-router.use(require("./authorRoutes"));
-router.use(require("./bookRoutes"));
-router.use(require("./publisherRoutes"));
-router.use(require("./exemplarRoutes"));
-router.use(require("./reservationRoutes"));
-router.use(require("./fineRoutes"));
-router.use(require("./notificationsRoutes"));
-router.use(require("./userRoutes"));
-router.use(require("./obrasRoutes"));
-router.use(require("./adminRoutes"));
-router.use(require("./editorasRoutes"));
-router.use(require("./emprestimosRoutes"));
-router.use(require("./estatisticasRoutes"));
-router.use(require("./historicoRoutes"));
-router.use(require("./bibliotecarioRoutes"));
+// Users
+router.use(require("./usersRoutes"));
+// Librarians
+router.use(require("./librariansRoutes"));
+// Audit
+router.use(require("./auditRoutes"));
+// Books
+router.use(require("./booksRoutes"));
+// Works
+router.use(require("./worksRoutes"));
+// Copies
+router.use(require("./copiesRoutes"));
+// Authors
+router.use(require("./authorsRoutes"));
+// Publishers
+router.use(require("./publishersRoutes"));
+// Reservations
+router.use(require("./reservationsRoutes"));
+// Fines
+router.use(require("./finesRoutes"));
+// Stats
 router.use(require("./statsRoutes"));
+// Admin
+router.use(require("./adminRoutes"));
 
 // Rota de health check para testar conexão com o backend
 router.get("/", (req, res) => {

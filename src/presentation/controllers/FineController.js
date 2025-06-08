@@ -89,7 +89,14 @@ exports.getFineHistory = async (req, res) => {
 exports.getFinesByUser = async (req, res) => {
 	try {
 		const fines = await listFinesUC.execute({ usuarioId: req.params.userId });
-		res.json({ success: true, data: fines, error: null });
+		const padronizadas = (fines || []).map(f => ({
+			id: f.id || f._id,
+			userId: f.usuarioId || f.userId || null,
+			valor: f.valor,
+			descricao: f.descricao,
+			status: f.status,
+		}));
+		res.json({ success: true, data: padronizadas, error: null });
 	} catch (e) {
 		res.status(400).json({ success: false, data: null, error: e.message });
 	}

@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema(
 		telefone: { type: String },
 		matricula: { type: String },
 	},
-	{ collection: "usuarios" }
+	{ collection: "usuarios", timestamps: true }
 );
 
 module.exports = mongoose.model("User", UserSchema);

@@ -31,10 +31,37 @@ function padronizarUsuario(user) {
 	};
 }
 
+function calcularMembroDesde(user) {
+	try {
+		let date;
+		if (user && user.createdAt) {
+			date = new Date(user.createdAt);
+		} else if (user && user._id && typeof user._id === 'string' && user._id.length === 24) {
+			date = new Date(parseInt(user._id.substring(0, 8), 16) * 1000);
+		} else {
+			return "Desconhecido";
+		}
+		const meses = [
+			"Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+			"Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+		];
+		return `${meses[date.getMonth()]} ${date.getFullYear()}`;
+	} catch (e) {
+		return "Desconhecido";
+	}
+}
+
 exports.createUser = async (req, res) => {
 	try {
-		const { nome, email, senha, papel, role, telefone, matricula } = req.body;
-		const papelFinal = (papel || role || "").toLowerCase();
+		// Aceitar tanto português quanto inglês
+		const nome = req.body.nome || req.body.name;
+		const senha = req.body.senha || req.body.password;
+		const papel = req.body.papel || req.body.role;
+		const email = req.body.email;
+		const telefone = req.body.telefone || req.body.phone;
+		const matricula = req.body.matricula;
+
+		const papelFinal = (papel || "").toLowerCase();
 
 		if (papelFinal === "aluno") {
 			if (!matricula || !/^\d{7,}$/.test(matricula)) {
@@ -82,16 +109,17 @@ exports.createUser = async (req, res) => {
 
 		const senhaHash = await bcrypt.hash(senha, 10);
 
-		const dadosAdaptados = {
-			name: result.nome,
+		// Montar payload padronizado para o use case
+		const payload = {
+			name: nome,
 			email,
-			senhaHash,
+			password: senha,
 			role: papelFinal,
 			telefone,
 			matricula,
 		};
 
-		const result = await createUserUC.execute(req.body);
+		const result = await createUserUC.execute(payload);
 		return res.status(201).json({
 			success: true,
 			data: {
@@ -112,18 +140,27 @@ exports.createUser = async (req, res) => {
 exports.getUser = async (req, res) => {
 	try {
 		let user;
-		if (req.user && req.path === "/perfil") {
+		// Se req.user existir (rota autenticada), retorna o usuário do token
+		if (req.user && req.originalUrl.endsWith("/profile")) {
 			user = await getUserUC.execute(req.user.id);
 			return res.status(200).json({
 				id: user.id || user._id,
 				nome: user.nome,
 				email: user.email,
-				papel: user.papel || user.role,
+				matricula: user.matricula || null,
 				statusConta: user.statusConta || "ativa",
+				membroDesde: calcularMembroDesde(user)
 			});
 		} else {
 			user = await getUserUC.execute(req.params.id);
-			return res.status(200).json(padronizarUsuario(user));
+			return res.status(200).json({
+				id: user.id || user._id || null,
+				nome: user.nome || user.name || null,
+				email: user.email || null,
+				matricula: user.matricula || null,
+				statusConta: user.statusConta || "ativa",
+				membroDesde: calcularMembroDesde(user)
+			});
 		}
 	} catch (e) {
 		return res.status(404).json({ message: e.message });
@@ -164,12 +201,13 @@ exports.deleteUser = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-	const { email, password } = req.body;
+	const email = req.body.email || req.body.identificador;
+	const password = req.body.password || req.body.senha;
 	if (!email || !password) {
 		return res.status(400).json({
 			success: false,
 			data: null,
-			error: "Email e password são obrigatórios",
+			error: "Email/identificador e senha são obrigatórios",
 		});
 	}
 	let user = await userRepo.findByEmail(email);
@@ -177,6 +215,13 @@ exports.login = async (req, res) => {
 		return res
 			.status(400)
 			.json({ success: false, data: null, error: "Usuário não encontrado" });
+	}
+	if (!user.senhaHash) {
+		return res.status(400).json({
+			success: false,
+			data: null,
+			error: "Usuário sem senha cadastrada ou cadastro inconsistente"
+		});
 	}
 	const senhaCorreta = await bcrypt.compare(password, user.senhaHash);
 	if (!senhaCorreta) {
@@ -197,8 +242,6 @@ exports.login = async (req, res) => {
 			email: user.email,
 			papel: user.papel || user.role,
 			matricula: user.matricula || null,
-			tipoLogin: "email",
-			avatarUrl: user.avatarUrl || user.avatar || null,
 			token,
 		},
 		error: null,
