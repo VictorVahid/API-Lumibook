@@ -33,6 +33,11 @@ class MongooseUserRepository {
 		return users.map(this._toDTO);
 	}
 
+	async findByMatricula(matricula) {
+		const found = await UserModel.findOne({ matricula }).select('+senhaHash');
+		return this._toDTO(found);
+	}
+
 	_toDTO(user) {
 		if (!user) return null;
 		const obj = user.toObject ? user.toObject() : user;

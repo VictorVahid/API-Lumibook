@@ -67,6 +67,11 @@ async function traduzirLivro(livro) {
 	return obj;
 }
 
+// Função utilitária para normalizar ISBN
+function normalizarIsbn(isbn) {
+	return isbn ? isbn.replace(/[-\s]/g, '') : '';
+}
+
 exports.createBook = async (req, res) => {
 	try {
 		if (!req.body.authors && typeof req.body.author === "string") {
@@ -75,7 +80,8 @@ exports.createBook = async (req, res) => {
 		}
 		// Preencher capa automaticamente se não vier
 		if ((!req.body.capa || req.body.capa === "") && req.body.isbn) {
-			req.body.capa = `https://covers.openlibrary.org/b/isbn/${req.body.isbn}-L.jpg`;
+			const isbnLimpo = normalizarIsbn(req.body.isbn);
+			req.body.capa = `https://covers.openlibrary.org/b/isbn/${isbnLimpo}-L.jpg`;
 		}
 		const book = await createBookUC.execute(req.body);
 		const obj = await traduzirLivro(book);
@@ -89,7 +95,9 @@ exports.getBook = async (req, res) => {
 	try {
 		const book = await getBookUC.execute(req.params.id);
 		const obj = await traduzirLivro(book);
-		res.json(obj);
+		const exemplares = Array.isArray(book.exemplares) ? book.exemplares : [];
+		const stock = exemplares.filter(e => e.status === 'disponivel' || e.status === 'available').length;
+		res.json({ ...obj, stock });
 	} catch (e) {
 		res.status(404).json({ message: e.message });
 	}
@@ -204,6 +212,7 @@ exports.getBookByISBN = async (req, res) => {
 			titulo: obj.titulo,
 			isbn: obj.isbn,
 			disponivel: obj.disponivel,
+			capa: obj.capa
 		});
 	} catch (e) {
 		res.status(500).json({ message: e.message });
@@ -214,7 +223,8 @@ exports.updateBook = async (req, res) => {
 	try {
 		// Preencher capa automaticamente se não vier
 		if ((!req.body.capa || req.body.capa === "") && req.body.isbn) {
-			req.body.capa = `https://covers.openlibrary.org/b/isbn/${req.body.isbn}-L.jpg`;
+			const isbnLimpo = normalizarIsbn(req.body.isbn);
+			req.body.capa = `https://covers.openlibrary.org/b/isbn/${isbnLimpo}-L.jpg`;
 		}
 		const updated = await updateBookUC.execute(req.params.id, req.body);
 		const obj = await traduzirLivro(updated);
@@ -263,6 +273,58 @@ exports.searchBooks = async (req, res) => {
 
 		const traduzidos = await Promise.all(filtrados.map(traduzirLivro));
 		res.json(traduzidos);
+	} catch (e) {
+		res.status(500).json({ message: e.message });
+	}
+};
+
+exports.getRelatedBooksInteligente = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const LIMITE = 8;
+		const livro = await BookModel.findById(id);
+		if (!livro) return res.status(404).json({ message: "Livro não encontrado" });
+
+		// 1. Livros da mesma categoria e mesmo autor (excluindo o próprio)
+		let relacionados = await BookModel.find({
+			_id: { $ne: id },
+			categoria: livro.categoria,
+			authors: { $in: livro.authors }
+		}).limit(LIMITE);
+
+		// 2. Se não houver suficientes, buscar mais da mesma categoria (outros autores)
+		if (relacionados.length < LIMITE) {
+			const maisCategoria = await BookModel.find({
+				_id: { $ne: id },
+				categoria: livro.categoria,
+				authors: { $nin: livro.authors }
+			}).limit(LIMITE - relacionados.length);
+			relacionados = relacionados.concat(maisCategoria);
+		}
+
+		// 3. Se ainda faltar, buscar livros do mesmo autor em outras categorias
+		if (relacionados.length < LIMITE) {
+			const maisAutor = await BookModel.find({
+				_id: { $ne: id },
+				categoria: { $ne: livro.categoria },
+				authors: { $in: livro.authors }
+			}).limit(LIMITE - relacionados.length);
+			relacionados = relacionados.concat(maisAutor);
+		}
+
+		// 4. Completar até 8 livros
+		relacionados = relacionados.slice(0, LIMITE);
+
+		// 5. Retornar campos principais
+		const resultado = relacionados.map(livro => ({
+			id: livro._id,
+			title: livro.title || livro.titulo,
+			capa: livro.capa,
+			categoria: livro.categoria,
+			authors: livro.authors,
+		}));
+
+		res.json(resultado);
 	} catch (e) {
 		res.status(500).json({ message: e.message });
 	}

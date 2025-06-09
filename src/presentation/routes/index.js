@@ -25,6 +25,8 @@ router.use(require("./finesRoutes"));
 router.use(require("./statsRoutes"));
 // Admin
 router.use(require("./adminRoutes"));
+// Categories
+router.use(require("./categoriesRoutes"));
 
 // Rota de health check para testar conexão com o backend
 router.get("/", (req, res) => {

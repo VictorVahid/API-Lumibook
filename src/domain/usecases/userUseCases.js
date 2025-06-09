@@ -32,11 +32,15 @@ class CreateUser {
 			data.email.trim() === ""
 		)
 			throw new Error("Email é obrigatório e deve ser uma string");
-		const dominiosPermitidos = ["@instituicao.edu", "@universitas.edu.br"];
-		if (!dominiosPermitidos.some((dominio) => data.email.endsWith(dominio))) {
-			throw new Error(
-				"Email deve ser institucional (" + dominiosPermitidos.join(" ou ") + ")"
-			);
+
+		// Validação de e-mail institucional apenas para professor
+		if (data.role === "professor") {
+			const dominiosPermitidos = ["@instituicao.edu", "@universitas.edu.br"];
+			if (!dominiosPermitidos.some((dominio) => data.email.endsWith(dominio))) {
+				throw new Error(
+					"Email deve ser institucional (" + dominiosPermitidos.join(" ou ") + ") para professor"
+				);
+			}
 		}
 		// Validação de senha forte
 		if (!data.password || typeof data.password !== "string")

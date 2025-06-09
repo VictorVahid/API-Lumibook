@@ -72,8 +72,10 @@ exports.createUser = async (req, res) => {
 						"Matrícula obrigatória e deve conter ao menos 7 dígitos numéricos para aluno.",
 				});
 			}
+			// Para aluno, qualquer e-mail é aceito
 		} else if (papelFinal === "professor") {
-			if (!email || !/^[^@]+@universitas\.edu\.br$/.test(email)) {
+			const dominiosPermitidos = ["@instituicao.edu", "@universitas.edu.br"];
+			if (!email || !dominiosPermitidos.some((dominio) => email.endsWith(dominio))) {
 				return res.status(400).json({
 					success: false,
 					data: null,
@@ -201,16 +203,25 @@ exports.deleteUser = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-	const email = req.body.email || req.body.identificador;
+	const email = req.body.email;
+	const matricula = req.body.matricula;
 	const password = req.body.password || req.body.senha;
-	if (!email || !password) {
+
+	if ((!email && !matricula) || !password) {
 		return res.status(400).json({
 			success: false,
 			data: null,
-			error: "Email/identificador e senha são obrigatórios",
+			error: "Email ou matrícula e senha são obrigatórios",
 		});
 	}
-	let user = await userRepo.findByEmail(email);
+
+	let user;
+	if (email) {
+		user = await userRepo.findByEmail(email);
+	} else if (matricula) {
+		user = await userRepo.findByMatricula(matricula);
+	}
+
 	if (!user) {
 		return res
 			.status(400)

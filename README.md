@@ -116,13 +116,16 @@ TEST_EMAIL=<email_teste>
 
 ## 🧪 Testes Automatizados
 
-```bash
-npm test
-```
-
-- Banco em memória (isolado)
-- Verificação de rotas e serviços
-- Cobertura de lógica de domínio e envio de e-mails
+### Testes da API (Jest + Supertest)
+1. Certifique-se de que o MongoDB está rodando e o .env tem a variável MONGO_URI correta.
+2. Execute:
+   ```bash
+   npm test
+   ```
+   ou
+   ```bash
+   npx jest
+   ```
 
 ---
 
