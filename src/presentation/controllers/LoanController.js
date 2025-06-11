@@ -1,6 +1,9 @@
 const jwt = require("jsonwebtoken");
 const LoanModel = require("../../infrastructure/mongoose/models/Loan");
 const BookModel = require("../../infrastructure/mongoose/models/Book");
+const calcularDataDevolucao = require("../../utils/dateUtils");
+const { Router } = require("express");
+const Loan = require("../../infrastructure/mongoose/models/Loan");
 
 // Criação de um novo empréstimo
 exports.createLoan = async (req, res) => {
@@ -17,13 +20,18 @@ exports.createLoan = async (req, res) => {
 			.json({ message: "dataPrevistaDevolucao é obrigatória" });
 
 	try {
+		const dataEmprestimo = new Date();
+		const dataPrevistaDevolucao = calcularDataDevolucao(dataEmprestimo);
+
 		const novoEmprestimo = await LoanModel.create({
 			usuario: usuarioId,
 			livro: livroId,
 			tituloLivro,
 			dataEmprestimo: dataEmprestimo || new Date(),
+			dataPrevistaDevolucao, //Campo calculado
 			dataDevolucao: null,
-			status: "ativo"
+			status: "ativo",
+			renovacoes: 0
 		});
 		res.status(201).json({ success: true, data: novoEmprestimo });
 	} catch (e) {
@@ -41,8 +49,10 @@ exports.listLoans = async (req, res) => {
 			livro: l.livro,
 			tituloLivro: l.tituloLivro,
 			dataEmprestimo: l.dataEmprestimo,
+			dataPrevistaDevolucao: l.dataPrevistaDevolucao,
 			dataDevolucao: l.dataDevolucao,
-			status: l.status
+			status: l.status,
+			renovacoes: l.renovacoes
 		}));
 		res.json(result);
 	} catch (e) {
@@ -71,7 +81,47 @@ exports.getLoan = async (req, res) => {
 
 // Devolução de empréstimo (mock)
 exports.returnLoan = async (req, res) => {
-	res.json({ id: req.params.id, status: "devolvido" });
+	try {
+		const { id } = req.params;
+		const emprestimo = await LoanModel.findByIdAndUpdate(id, {
+			status: "devolvido",
+			dataDevolucao: new Date(),
+		}, {
+			new: true,
+			runValidators: true,
+		});
+
+		if (!emprestimo) return res.status(404).json({ message: "Empréstimo nao encontrado" });
+		if (emprestimo.status !== "ativo") return res.status(400).json({ message: "Empréstimo nao pode ser devolvido" });
+
+		res.json({ success: true, data: { id: emprestimo._id.toString(), status: emprestimo.status } });
+	} catch (e) {
+		res.status(500).json({ message: e.message });
+	}
+};
+
+// Renovação de empréstimo
+exports.renovarEmprestimo = async (req, res) => {
+	try {
+		const emprestimo = await LoanModel.findById(req.params.id);
+
+		//Validações
+		if (!emprestimo) return res.status(404).json({ message: "Empréstimo nao encontrado" });
+		if (emprestimo.renovacoes >= 2) return res.status(400).json({ message: "Limite de renovacoes atingido" });
+
+		//Verificar reservas ativas
+		const reservaAtiva = await verificarReservaAtiva(emprestimo.livro);
+		if (reservaAtiva) return res.status(400).json({message: "Existe uma reserva ativa para este livro"});
+		
+		//Calcular nova data
+		emprestimo.dataPrevistaDevolucao = novaDataPrevista;
+		emprestimo.renovacoes += 1;
+		await emprestimo.save();
+
+		res.json(emprestimo);
+	} catch (error) {
+		res.status(500).json({ success: false, error: error.message });
+	}
 };
 
 exports.cancelLoan = async (req, res) => {
