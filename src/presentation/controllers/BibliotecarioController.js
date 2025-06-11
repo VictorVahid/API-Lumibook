@@ -19,6 +19,12 @@ function padronizarUsuario(user) {
 	};
 }
 
+function papelFrontEnd(papel) {
+	if (papel === 'leitor') return 'aluno';
+	if (papel === 'funcionario') return 'professor';
+	return papel;
+}
+
 exports.createBibliotecario = async (req, res) => {
 	try {
 		// Força o papel para bibliotecario independentemente do que vier no body
@@ -30,7 +36,7 @@ exports.createBibliotecario = async (req, res) => {
 			id: result.id || result._id,
 			nome: result.nome,
 			email: result.email,
-			papel: "bibliotecario",
+			papel: papelFrontEnd(result.papel || result.role),
 		});
 	} catch (e) {
 		return res.status(400).json({ message: e.message });

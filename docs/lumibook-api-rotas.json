@@ -1,0 +1,262 @@
+{
+  "routes": [
+    {
+      "method": "POST",
+      "endpoint": "/api/users/register",
+      "payload": { "nome": "João", "email": "joao@email.com", "senha": "Senha@123" },
+      "response": { "id": "...", "nome": "...", "email": "..." }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/users/login",
+      "payload": { "email": "joao@email.com", "senha": "Senha@123" },
+      "response": { "success": true, "data": { "id": "...", "nome": "...", "token": "..." }, "error": null }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/users",
+      "response": [ { "id": "...", "nome": "...", "email": "..." } ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/users/:id",
+      "response": { "id": "...", "nome": "...", "email": "..." }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/users/profile",
+      "headers": { "Authorization": "Bearer <token>" },
+      "response": { "id": "...", "nome": "...", "email": "..." }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/users/:id/reservas-ativas",
+      "response": [ { "id": "...", "tituloLivro": "...", "dataReserva": "...", "status": "pendente" } ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/users/:id/reservas-historico",
+      "response": [ { "id": "...", "tituloLivro": "...", "dataReserva": "...", "status": "finalizada" } ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/users/:id/multas",
+      "response": [ { "id": "...", "valor": 10.0, "motivo": "Atraso" } ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/users/:id/multas-historico",
+      "response": [ { "id": "...", "valor": 10.0, "motivo": "Atraso" } ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/books",
+      "response": [ { "id": "...", "titulo": "...", "isbn": "..." } ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/books/:id",
+      "response": { "id": "...", "titulo": "...", "isbn": "..." }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/books/recentes",
+      "response": [ { "id": "...", "titulo": "...", "isbn": "..." } ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/books/isbn/:isbn",
+      "response": { "id": "...", "titulo": "...", "isbn": "..." }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/books/relacionados/:id",
+      "response": [ { "id": "...", "titulo": "..." } ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/books/search?query=palavra",
+      "response": [ { "id": "...", "titulo": "..." } ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/books",
+      "payload": { "title": "Dom Casmurro", "authors": ["idAutor"], "isbn": "9781234567890", "ano": 1899, "categoria": "Romance" },
+      "response": { "id": "...", "titulo": "...", "isbn": "..." }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/authors",
+      "response": [ { "id": "...", "nome": "..." } ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/authors",
+      "payload": { "nome": "Nome do Autor" },
+      "response": { "id": "...", "nome": "..." }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/authors/:id",
+      "response": { "id": "...", "nome": "..." }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/authors/search?query=palavra",
+      "response": [ { "id": "...", "nome": "..." } ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/publishers",
+      "response": [ { "id": "...", "nome": "..." } ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/publishers",
+      "payload": { "nome": "Editora Exemplo" },
+      "response": { "id": "...", "nome": "..." }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/publishers/:id",
+      "response": { "id": "...", "nome": "..." }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/publishers/search?query=palavra",
+      "response": [ { "id": "...", "nome": "..." } ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "response": { "categorias": [ { "_id": "...", "nome": "..." } ] }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/categories",
+      "payload": { "nome": "Nova Categoria" },
+      "response": { "_id": "...", "nome": "..." }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories/:id",
+      "response": { "_id": "...", "nome": "..." }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/reservations",
+      "response": [ { "id": "...", "usuarioId": "...", "livroId": "...", "status": "pendente" } ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/reservations",
+      "payload": { "usuarioId": "...", "livroId": "...", "status": "pendente" },
+      "response": { "id": "...", "usuarioId": "...", "livroId": "...", "status": "pendente" }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/reservations/:id",
+      "response": { "id": "...", "usuarioId": "...", "livroId": "...", "status": "pendente" }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/reservations/user/:userId",
+      "response": [ { "id": "...", "usuarioId": "...", "livroId": "..." } ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/reservations/book/:bookId",
+      "response": [ { "id": "...", "usuarioId": "...", "livroId": "..." } ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/reservations/history",
+      "response": [ { "id": "...", "usuarioId": "...", "livroId": "..." } ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/reservations/:id/retirar",
+      "response": { "id": "...", "usuario": "...", "livro": "...", "tituloLivro": "...", "dataEmprestimo": "...", "status": "ativo" }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/loans",
+      "response": [ { "id": "...", "usuario": "...", "livro": "...", "tituloLivro": "...", "dataEmprestimo": "...", "status": "ativo" } ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/loans",
+      "payload": { "usuarioId": "...", "livroId": "...", "tituloLivro": "...", "dataPrevistaDevolucao": "2024-07-01T12:00:00Z" },
+      "response": { "success": true, "data": { "id": "...", "usuario": "...", "livro": "...", "tituloLivro": "...", "dataEmprestimo": "...", "status": "ativo" } }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/loans/ativos",
+      "headers": { "Authorization": "Bearer <token>" },
+      "response": [ { "id": "...", "tituloLivro": "...", "autor": "...", "capa": "...", "isbn": "...", "dataEmprestimo": "...", "dataPrevistaDevolucao": "..." } ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/loans/:id",
+      "response": { "id": "...", "usuario": "...", "livro": "...", "tituloLivro": "...", "dataEmprestimo": "...", "status": "ativo" }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/fines",
+      "response": [ { "id": "...", "usuarioId": "...", "valor": 10.0, "motivo": "Atraso" } ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/fines",
+      "payload": { "usuarioId": "...", "valor": 10.0, "motivo": "Atraso" },
+      "response": { "id": "...", "usuarioId": "...", "valor": 10.0, "motivo": "Atraso" }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/fines/:id",
+      "response": { "id": "...", "usuarioId": "...", "valor": 10.0, "motivo": "Atraso" }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/fines/user/:userId",
+      "response": [ { "id": "...", "usuarioId": "...", "valor": 10.0, "motivo": "Atraso" } ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/fines/history/:userId",
+      "response": [ { "id": "...", "usuarioId": "...", "valor": 10.0, "motivo": "Atraso" } ]
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/fines/:id/pay",
+      "response": { "id": "...", "usuarioId": "...", "valor": 10.0, "motivo": "Atraso", "status": "paga" }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/librarians",
+      "payload": { "nome": "Maria", "email": "maria@exemplo.com", "senha": "Senha@123" },
+      "response": { "id": "...", "nome": "Maria", "email": "maria@exemplo.com" }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/admin/works/catalog",
+      "payload": { "title": "Dom Casmurro", "authors": ["idAutor"], "isbn": "9781234567890", "ano": 1899, "categoria": "Romance" },
+      "response": { "id": "...", "titulo": "...", "isbn": "..." }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/admin/stats",
+      "response": { "users": 100, "books": 500, "loans": 80 }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/admin/activities",
+      "response": [ { "action": "login", "user": "admin", "date": "2024-06-12T10:00:00Z" } ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/audit/logs",
+      "response": [ { "id": "...", "acao": "login", "usuarioId": "...", "timestamp": "..." } ]
+    }
+  ]
+} 

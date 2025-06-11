@@ -3,16 +3,16 @@ const PublisherController = require("../controllers/PublisherController");
 const router = express.Router();
 
 // List all publishers
-router.get("/publishers", PublisherController.listPublishers);
+router.get("/", PublisherController.listPublishers);
 // Create publisher
-router.post("/publishers", PublisherController.createPublisher);
+router.post("/", PublisherController.createPublisher);
 // Get publisher by ID
-router.get("/publishers/:id", PublisherController.getPublisher);
+router.get("/:id", PublisherController.getPublisher);
 // Update publisher
-router.patch("/publishers/:id", PublisherController.patchPublisher);
+router.patch("/:id", PublisherController.patchPublisher);
 // Delete publisher
-router.delete("/publishers/:id", PublisherController.deletePublisher);
+router.delete("/:id", PublisherController.deletePublisher);
 // Search publishers
-router.get("/publishers/search", PublisherController.searchPublishers);
+router.get("/search", PublisherController.searchPublishers);
 
 module.exports = router; 

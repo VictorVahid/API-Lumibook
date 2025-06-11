@@ -23,7 +23,7 @@ const BookSchema = new mongoose.Schema(
 		exemplares: { type: [Object], default: [] },
 		disponivel: { type: Boolean, default: true },
 	},
-	{ collection: "livros" }
+	{ collection: "livros", timestamps: true }
 );
 
 module.exports = mongoose.model("Book", BookSchema);

@@ -7,6 +7,8 @@ const {
 	CancelReservation,
 } = require("../../domain/usecases/reservationUseCases");
 const MongooseReservationRepo = require("../../infrastructure/mongoose/repositories/MongooseReservationRepository");
+const LoanModel = require("../../infrastructure/mongoose/models/Loan");
+const ReservationModel = require("../../infrastructure/mongoose/models/Reservation");
 
 // Instancia os casos de uso com o repositório de reservas
 const repoRes = new MongooseReservationRepo();
@@ -20,7 +22,7 @@ const cancelResUC = new CancelReservation(repoRes);
 function padronizarReserva(reserva) {
 	return {
 		id: reserva.id || null,
-		userId: reserva.usuarioId || null,
+		usuarioId: reserva.usuarioId || null,
 		salaId: reserva.salaId || null,
 		descricao: reserva.descricao || null,
 		bookId: reserva.livroId || null,
@@ -46,7 +48,7 @@ exports.createReservation = async (req, res) => {
 exports.listReservations = async (req, res) => {
 	try {
 		const filters = {};
-		if (req.query.userId) filters.usuarioId = req.query.userId;
+		if (req.query.usuarioId) filters.usuarioId = req.query.usuarioId;
 		if (req.query.bookId) filters.livroId = req.query.bookId;
 		if (req.query.status) filters.status = req.query.status;
 		const results = await listResUC.execute(filters);
@@ -95,15 +97,15 @@ exports.deleteReservation = async (req, res) => {
 // Histórico simulado de reservas do usuário (mock)
 exports.getReservationHistory = async (req, res) => {
 	res.json([
-		{ id: "1", userId: "1", bookId: "l1", status: "finalizada" },
-		{ id: "2", userId: "1", bookId: "l2", status: "cancelada" },
+		{ id: "1", usuarioId: "1", bookId: "l1", status: "finalizada" },
+		{ id: "2", usuarioId: "1", bookId: "l2", status: "cancelada" },
 	]);
 };
 
 // Buscar reservas por usuário
 exports.getReservationsByUser = async (req, res) => {
 	try {
-		const ress = await listResUC.execute({ usuarioId: req.params.userId });
+		const ress = await listResUC.execute({ usuarioId: req.params.usuarioId });
 		res.json(ress.map(padronizarReserva));
 	} catch (e) {
 		res.status(400).json({ message: e.message });
@@ -117,5 +119,29 @@ exports.getReservationsByBook = async (req, res) => {
 		res.json(ress.map(padronizarReserva));
 	} catch (e) {
 		res.status(400).json({ message: e.message });
+	}
+};
+
+// Endpoint para retirar livro reservado (transformar reserva em empréstimo)
+exports.retirarReserva = async (req, res) => {
+	try {
+		const reserva = await ReservationModel.findById(req.params.id).populate("livroId");
+		if (!reserva || !["pendente", "ativa"].includes(reserva.status)) {
+			return res.status(400).json({ message: "Reserva não encontrada ou já atendida." });
+		}
+		// Atualiza status da reserva
+		reserva.status = "finalizada";
+		await reserva.save();
+		// Cria empréstimo
+		const novoEmprestimo = await LoanModel.create({
+			usuario: reserva.usuarioId,
+			livro: reserva.livroId._id,
+			tituloLivro: reserva.livroId.title,
+			dataEmprestimo: new Date(),
+			status: "ativo"
+		});
+		return res.status(201).json({ success: true, data: novoEmprestimo });
+	} catch (e) {
+		return res.status(500).json({ message: e.message });
 	}
 };

@@ -10,6 +10,7 @@ const jwt = require("jsonwebtoken");
 const LoanModel = require("../../infrastructure/mongoose/models/Loan");
 const FineModel = require("../../infrastructure/mongoose/models/Fine");
 const ReservationModel = require("../../infrastructure/mongoose/models/Reservation");
+const BookModel = require("../../infrastructure/mongoose/models/Book");
 
 const userRepo = new MongooseUserRepo();
 const createUserUC = new CreateUser(userRepo);
@@ -22,7 +23,7 @@ function padronizarUsuario(user) {
 		id: user.id || user._id || null,
 		nome: user.nome || user.name || null,
 		email: user.email || null,
-		papel: user.papel || user.role || null,
+		papel: papelFrontEnd(user.papel || user.role || null),
 		matricula: user.matricula || null,
 		tipoLogin: user.tipoLogin || null,
 		avatarUrl: user.avatarUrl || user.avatar || null,
@@ -49,6 +50,12 @@ function calcularMembroDesde(user) {
 	} catch (e) {
 		return "Desconhecido";
 	}
+}
+
+function papelFrontEnd(papel) {
+	if (papel === 'leitor') return 'aluno';
+	if (papel === 'funcionario') return 'professor';
+	return papel;
 }
 
 exports.createUser = async (req, res) => {
@@ -142,28 +149,21 @@ exports.createUser = async (req, res) => {
 exports.getUser = async (req, res) => {
 	try {
 		let user;
-		// Se req.user existir (rota autenticada), retorna o usuário do token
 		if (req.user && req.originalUrl.endsWith("/profile")) {
 			user = await getUserUC.execute(req.user.id);
-			return res.status(200).json({
-				id: user.id || user._id,
-				nome: user.nome,
-				email: user.email,
-				matricula: user.matricula || null,
-				statusConta: user.statusConta || "ativa",
-				membroDesde: calcularMembroDesde(user)
-			});
 		} else {
 			user = await getUserUC.execute(req.params.id);
-			return res.status(200).json({
-				id: user.id || user._id || null,
-				nome: user.nome || user.name || null,
-				email: user.email || null,
-				matricula: user.matricula || null,
-				statusConta: user.statusConta || "ativa",
-				membroDesde: calcularMembroDesde(user)
-			});
 		}
+		return res.status(200).json({
+			id: user.id || user._id,
+			nome: user.nome || user.name,
+			email: user.email,
+			matricula: user.matricula || null,
+			papel: papelFrontEnd(user.papel || user.role || null),
+			avatar: user.avatarUrl || user.avatar || null,
+			statusConta: user.statusConta || "ativa",
+			membroDesde: calcularMembroDesde(user)
+		});
 	} catch (e) {
 		return res.status(404).json({ message: e.message });
 	}
@@ -218,8 +218,24 @@ exports.login = async (req, res) => {
 	let user;
 	if (email) {
 		user = await userRepo.findByEmail(email);
+		// Só permite login de admin, professor ou bibliotecário por email
+		if (user && !["admin", "professor", "bibliotecario"].includes(user.role)) {
+			return res.status(403).json({
+				success: false,
+				data: null,
+				error: "Login por e-mail permitido apenas para admin, professor ou bibliotecário"
+			});
+		}
 	} else if (matricula) {
 		user = await userRepo.findByMatricula(matricula);
+		// Só permite login de aluno por matrícula
+		if (user && user.role !== "aluno") {
+			return res.status(403).json({
+				success: false,
+				data: null,
+				error: "Login por matrícula permitido apenas para alunos"
+			});
+		}
 	}
 
 	if (!user) {
@@ -240,8 +256,9 @@ exports.login = async (req, res) => {
 			.status(400)
 			.json({ success: false, data: null, error: "Password inválido" });
 	}
+	const papelFront = (user.papel || user.role) === 'leitor' ? 'aluno' : (user.papel || user.role) === 'funcionario' ? 'professor' : (user.papel || user.role);
 	const token = jwt.sign(
-		{ id: user.id || user._id, papel: user.papel || user.role },
+		{ id: user.id || user._id, papel: papelFront },
 		process.env.JWT_SECRET || "segredo",
 		{ expiresIn: "7d" }
 	);
@@ -251,7 +268,7 @@ exports.login = async (req, res) => {
 			id: user.id || user._id,
 			nome: user.nome || user.name,
 			email: user.email,
-			papel: user.papel || user.role,
+			papel: papelFront,
 			matricula: user.matricula || null,
 			token,
 		},
@@ -278,16 +295,72 @@ exports.getAvatar = async (req, res) => {
 };
 
 exports.getUserStats = async (req, res) => {
-	res.json({
-		livrosEmprestados: 2,
-		livrosDisponiveis: 10,
-		limiteConcorrente: 3,
-		devolucoesPendentes: 0,
-		reservasAtivas: 1,
-		historicoEmprestimos: 5,
-		ultimaAtualizacao: new Date().toISOString(),
-		tipoUsuario: "aluno",
-	});
+	try {
+		const userId = req.params.id;
+		const user = await getUserUC.execute(userId);
+		const papel = user.papel || user.role;
+		// Exemplo de obtenção dos dados (ajuste conforme sua lógica real):
+		const limiteConcorrente = 3;
+		const livrosDisponiveis = await BookModel.countDocuments({ disponivel: true });
+		const livrosEmprestados = await LoanModel.countDocuments({ usuario: userId, status: { $in: ["ativo", "atrasado"] } });
+		const reservasDocs = await ReservationModel.find({ usuarioId: userId }).populate("livroId");
+		const reservas = reservasDocs.map(r => ({
+			id: r._id.toString(),
+			status: r.status,
+			dataReserva: r.dataReserva ? new Date(r.dataReserva).toISOString() : null,
+			tituloLivro: r.livroId && r.livroId.title ? r.livroId.title : null
+		}));
+		const reservasRealizadas = reservas.length;
+		const atrasos = await LoanModel.countDocuments({ usuario: userId, status: "atrasado" });
+		const emprestimosAtrasadosDocs = await LoanModel.find({ usuario: userId, status: "atrasado" }).populate("livroId");
+		const emprestimosAtrasados = emprestimosAtrasadosDocs.map(e => ({
+			id: e._id.toString(),
+			status: e.status,
+			dataEmprestimo: e.dataEmprestimo ? new Date(e.dataEmprestimo).toISOString() : null,
+			dataDevolucao: e.dataDevolucao ? new Date(e.dataDevolucao).toISOString() : null,
+			tituloLivro: e.livroId && e.livroId.title ? e.livroId.title : null
+		}));
+		const multasPendentes = await FineModel.countDocuments({ usuarioId: userId, status: "pendente" });
+		const bibliografiasGerenciadas = papel === "professor" ? (user.bibliografiasGerenciadas || 0) : undefined;
+		const fonte = "Sistema Lumibook";
+		const ultimaAtualizacao = new Date().toISOString();
+		// Monta o objeto final, garantindo todos os campos obrigatórios
+		const stats = {
+			livrosDisponiveis: Number(livrosDisponiveis),
+			livrosEmprestados: Number(livrosEmprestados),
+			reservasRealizadas: Number(reservasRealizadas),
+			reservas: reservas,
+			atrasos: Number(atrasos),
+			emprestimosAtrasados: Array.isArray(emprestimosAtrasados) ? emprestimosAtrasados : [],
+			multasPendentes: Number(multasPendentes),
+			limiteConcorrente: Number(limiteConcorrente),
+			fonte,
+			ultimaAtualizacao
+		};
+		if (papel === "professor") {
+			stats.bibliografiasGerenciadas = Number(bibliografiasGerenciadas || 0);
+		}
+		// Garante que todos os campos obrigatórios estejam presentes
+		[
+			"livrosDisponiveis",
+			"livrosEmprestados",
+			"reservasRealizadas",
+			"reservas",
+			"atrasos",
+			"emprestimosAtrasados",
+			"multasPendentes",
+			"limiteConcorrente",
+			"fonte",
+			"ultimaAtualizacao"
+		].forEach(campo => {
+			if (typeof stats[campo] === "undefined") {
+				stats[campo] = campo === "reservas" || campo === "emprestimosAtrasados" ? [] : 0;
+			}
+		});
+		return res.status(200).json(stats);
+	} catch (e) {
+		return res.status(500).json({ message: e.message });
+	}
 };
 
 exports.getUserActivities = async (req, res) => {

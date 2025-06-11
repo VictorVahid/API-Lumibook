@@ -1,5 +1,8 @@
 const MongooseEstatisticaRepo = require("../../infrastructure/mongoose/repositories/MongooseEstatisticaRepo");
 const UpdateUserStats = require("../../domain/usecases/UpdateUserStats");
+const LoanModel = require("../../infrastructure/mongoose/models/Loan");
+const ReservationModel = require("../../infrastructure/mongoose/models/Reservation");
+const FineModel = require("../../infrastructure/mongoose/models/Fine");
 
 const repo = new MongooseEstatisticaRepo();
 const updateUserStatsUC = new UpdateUserStats(repo);
@@ -19,28 +22,58 @@ exports.atualizarEstatistica = async (req, res) => {
 exports.getUserStats = async (req, res) => {
 	const { userId } = req.params;
 	try {
-		const stats = await repo.findByUserId(userId);
-		const data = {
-			usuario: stats?.usuario || userId,
-			livrosLidos: stats?.valores?.livrosLidos ?? 0,
-			reservasRealizadas: stats?.valores?.reservasRealizadas ?? 0,
-			atrasos: stats?.valores?.atrasos ?? 0,
-			livrosEmprestados: stats?.valores?.livrosEmprestados ?? 0,
-			livrosDisponiveis: stats?.valores?.livrosDisponiveis ?? 0,
-			limiteConcorrente: stats?.valores?.limiteConcorrente ?? 3,
-			devolucoesPendentes: stats?.valores?.devolucoesPendentes ?? 0,
-			reservasAtivas: stats?.valores?.reservasAtivas ?? 0,
-			historicoEmprestimos: stats?.valores?.historicoEmprestimos ?? 0,
-			ultimaAtualizacao: stats?.valores?.ultimaAtualizacao || new Date().toISOString(),
-			fonte: stats?.valores?.fonte || 'api',
-			tipoUsuario: stats?.valores?.tipoUsuario || 'aluno',
-			multasPendentes: stats?.valores?.multasPendentes ?? 0,
-			pontosUsuario: stats?.valores?.pontosUsuario ?? 0,
-			bibliografiasGerenciadas: stats?.valores?.bibliografiasGerenciadas ?? 0,
-			turmasAtivas: stats?.valores?.turmasAtivas ?? 0,
-			livrosSolicitados: stats?.valores?.livrosSolicitados ?? 0
-		};
-		res.json({ success: true, data });
+		// Buscar reservas ativas e popular o livro
+		const reservas = await ReservationModel.find({
+			usuarioId: userId,
+			status: 'pendente'
+		}).populate('livroId');
+
+		const reservasRealizadas = reservas.length;
+
+		// Buscar empréstimos atrasados e popular o livro
+		const emprestimosAtrasadosArr = await LoanModel.find({
+			usuarioId: userId,
+			status: 'atrasado'
+		}).populate('livro');
+
+		const atrasos = emprestimosAtrasadosArr.length;
+
+		// Contar empréstimos ativos ou atrasados
+		const livrosLidos = await LoanModel.countDocuments({
+			usuarioId: userId,
+			status: { $in: ['ativo', 'atrasado'] }
+		});
+
+		// Contar multas pendentes
+		const multasPendentes = await FineModel.countDocuments({
+			usuarioId: userId,
+			status: 'pendente'
+		});
+
+		res.json({
+			success: true,
+			data: {
+				livrosLidos,
+				reservasRealizadas,
+				reservas: reservas.map(r => ({
+					id: r._id,
+					status: r.status,
+					dataReserva: r.dataReserva,
+					livro: r.livroId
+				})),
+				atrasos,
+				emprestimosAtrasados: emprestimosAtrasadosArr.map(e => ({
+					id: e._id,
+					status: e.status,
+					dataEmprestimo: e.dataEmprestimo,
+					dataDevolucao: e.dataDevolucao,
+					livro: e.livro
+				})),
+				multasPendentes,
+				limiteConcorrente: 3,
+				ultimaAtualizacao: new Date().toISOString()
+			}
+		});
 	} catch (error) {
 		res.status(500).json({ success: false, error: error.message });
 	}

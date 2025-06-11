@@ -11,6 +11,12 @@ const generateToken = (user) =>
 		{ expiresIn: "7d" }
 	);
 
+function papelFrontEnd(papel) {
+	if (papel === 'leitor') return 'aluno';
+	if (papel === 'funcionario') return 'professor';
+	return papel;
+}
+
 exports.login = async (req, res) => {
 	const { email, password } = req.body;
 
@@ -39,6 +45,7 @@ exports.login = async (req, res) => {
 				.json({ success: false, data: null, error: "Senha incorreta" });
 		}
 
+		const papel = papelFrontEnd(user.papel ?? user.role);
 		const token = generateToken(user);
 
 		return res.json({
@@ -47,7 +54,7 @@ exports.login = async (req, res) => {
 				id: user.id ?? user._id,
 				name: user.name,
 				email: user.email,
-				papel: user.papel ?? user.role,
+				papel,
 				matricula: user.matricula ?? null,
 				tipoLogin: "email",
 				avatarUrl: user.avatarUrl ?? user.avatar ?? null,

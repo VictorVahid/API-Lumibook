@@ -3,16 +3,16 @@ const AuthorController = require("../controllers/AuthorController");
 const router = express.Router();
 
 // List all authors
-router.get("/authors", AuthorController.listAuthors);
+router.get("/", AuthorController.listAuthors);
 // Create author
-router.post("/authors", AuthorController.createAuthor);
+router.post("/", AuthorController.createAuthor);
 // Get author by ID
-router.get("/authors/:id", AuthorController.getAuthor);
+router.get("/:id", AuthorController.getAuthor);
 // Update author
-router.patch("/authors/:id", AuthorController.patchAuthor);
+router.patch("/:id", AuthorController.patchAuthor);
 // Delete author
-router.delete("/authors/:id", AuthorController.deleteAuthor);
+router.delete("/:id", AuthorController.deleteAuthor);
 // Search authors
-router.get("/authors/search", AuthorController.searchAuthors);
+router.get("/search", AuthorController.searchAuthors);
 
 module.exports = router; 

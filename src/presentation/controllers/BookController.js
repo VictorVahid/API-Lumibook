@@ -105,7 +105,7 @@ exports.getBook = async (req, res) => {
 
 exports.listBooks = async (req, res) => {
 	try {
-		const { search, category, available, limit, sort } = req.query;
+		const { q, category, available, limit, sort } = req.query;
 		let booksQuery = BookModel.find();
 
 		// Excluir livros removidos (exclusão lógica)
@@ -121,13 +121,13 @@ exports.listBooks = async (req, res) => {
 			}
 		}
 
-		if (search) {
+		if (q) {
+			// Filtro inicial: título e ISBN (apenas campos string)
 			booksQuery = booksQuery.find({
 				$or: [
-					{ title: { $regex: new RegExp(search, "i") } },
-					{ isbn: { $regex: new RegExp(search, "i") } },
-					{ categoria: { $regex: new RegExp(search, "i") } },
-				],
+					{ title: { $regex: q, $options: 'i' } },
+					{ isbn: { $regex: q, $options: 'i' } },
+				]
 			});
 		}
 
@@ -151,8 +151,27 @@ exports.listBooks = async (req, res) => {
 			booksQuery = booksQuery.limit(limitNum);
 		}
 
-		const books = await booksQuery.exec();
-		const traduzidos = await Promise.all(books.map(traduzirLivro));
+		// Popula autores para filtrar por nome
+		const books = await booksQuery.populate("authors").exec();
+
+		let filtrados = books;
+		if (q) {
+			const termo = q.toLowerCase();
+			filtrados = books.filter((livro) => {
+				const autores = livro.authors || [];
+				const autoresStr = Array.isArray(autores)
+					? autores.map((a) => (a.nome ? a.nome : a)).join(", ")
+					: autores;
+				return (
+					(livro.title && livro.title.toLowerCase().includes(termo)) ||
+					(livro.isbn && livro.isbn.toLowerCase().includes(termo)) ||
+					(livro.ano && String(livro.ano).includes(termo)) ||
+					(autoresStr && autoresStr.toLowerCase().includes(termo))
+				);
+			});
+		}
+
+		const traduzidos = await Promise.all(filtrados.map(traduzirLivro));
 		res.json(traduzidos);
 	} catch (e) {
 		res.status(500).json({ message: e.message });
@@ -245,33 +264,34 @@ exports.deleteBook = async (req, res) => {
 
 exports.searchBooks = async (req, res) => {
 	try {
-		const termo = typeof req.query.q === "string" ? req.query.q.trim() : "";
-		if (!termo) {
+		const { q, tipo, categoria, ano, editora, idioma } = req.query;
+		const filtro = {};
+
+		if (q) {
+			// Busca textual ampla
+			filtro.$or = [
+				{ title: { $regex: new RegExp(q, "i") } },
+				{ categoria: { $regex: new RegExp(q, "i") } },
+				{ tipo: { $regex: new RegExp(q, "i") } },
+				{ editora: { $regex: new RegExp(q, "i") } },
+				{ idioma: { $regex: new RegExp(q, "i") } },
+				{ resumo: { $regex: new RegExp(q, "i") } },
+				{ isbn: { $regex: new RegExp(q, "i") } },
+			];
+		}
+		if (tipo) filtro.tipo = tipo;
+		if (categoria) filtro.categoria = categoria;
+		if (ano) filtro.ano = isNaN(Number(ano)) ? ano : Number(ano);
+		if (editora) filtro.editora = editora;
+		if (idioma) filtro.idioma = idioma;
+
+		// Se nenhum filtro foi passado, retorna array vazio
+		if (!q && !tipo && !categoria && !ano && !editora && !idioma) {
 			return res.json([]);
 		}
-		const books = await BookModel.find({
-			$or: [
-				{ title: { $regex: new RegExp(termo, "i") } },
-				{ categoria: { $regex: new RegExp(termo, "i") } },
-				{ authors: { $exists: true, $not: { $size: 0 } } },
-			],
-		}).populate("authors");
 
-		// Filtrar por autores (nome)
-		const filtrados = books.filter((livro) => {
-			const autores = livro.authors || [];
-			const autoresStr = Array.isArray(autores)
-				? autores.map((a) => (a.nome ? a.nome : a)).join(", ")
-				: autores;
-			const texto = [
-				livro.title,
-				autoresStr,
-				livro.categoria,
-			].map((x) => (x || "").toLowerCase()).join(" ");
-			return texto.includes(termo.toLowerCase());
-		});
-
-		const traduzidos = await Promise.all(filtrados.map(traduzirLivro));
+		const books = await BookModel.find(filtro).populate("authors");
+		const traduzidos = await Promise.all(books.map(traduzirLivro));
 		res.json(traduzidos);
 	} catch (e) {
 		res.status(500).json({ message: e.message });
@@ -327,5 +347,30 @@ exports.getRelatedBooksInteligente = async (req, res) => {
 		res.json(resultado);
 	} catch (e) {
 		res.status(500).json({ message: e.message });
+	}
+};
+
+// Endpoint para listar livros mais recentes
+exports.listRecentBooks = async (req, res) => {
+	try {
+		const livros = await BookModel.find({})
+			.sort({ createdAt: -1 })
+			.limit(4)
+			.populate("authors")
+			.exec();
+		const result = livros.map(l => ({
+			id: l._id.toString(),
+			titulo: l.title,
+			autor: l.authors && l.authors.length > 0
+				? (typeof l.authors[0] === "object" ? l.authors[0].nome || l.authors[0].name : l.authors[0])
+				: null,
+			capa: l.coverUrl || null,
+			isbn: l.isbn || null,
+			dataCadastro: l.createdAt ? l.createdAt.toISOString() : null,
+			disponivel: typeof l.disponivel !== "undefined" ? l.disponivel : true
+		}));
+		return res.json(result);
+	} catch (e) {
+		return res.status(500).json({ message: e.message });
 	}
 };

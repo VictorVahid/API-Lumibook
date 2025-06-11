@@ -8,7 +8,7 @@ const ReservationSchema = new mongoose.Schema(
 		status: {
 			type: String,
 			required: true,
-			enum: ["pendente", "atendida", "cancelada"],
+			enum: ["pendente", "atendida", "cancelada", "ativa", "finalizada"],
 		},
 		dataReserva: { type: Date, default: Date.now },
 	},

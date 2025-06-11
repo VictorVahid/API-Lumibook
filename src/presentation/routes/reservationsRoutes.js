@@ -3,20 +3,22 @@ const ReservationController = require("../controllers/ReservationController");
 const router = express.Router();
 
 // List all reservations
-router.get("/reservations", ReservationController.listReservations);
+router.get("/", ReservationController.listReservations);
 // Create reservation
-router.post("/reservations", ReservationController.createReservation);
+router.post("/", ReservationController.createReservation);
 // Get reservation by ID
-router.get("/reservations/:id", ReservationController.getReservation);
+router.get("/:id", ReservationController.getReservation);
 // Update reservation
-router.patch("/reservations/:id", ReservationController.patchReservationStatus);
+router.patch("/:id", ReservationController.patchReservationStatus);
 // Delete reservation
-router.delete("/reservations/:id", ReservationController.deleteReservation);
+router.delete("/:id", ReservationController.deleteReservation);
 // Get reservations by user
-router.get("/reservations/user/:userId", ReservationController.getReservationsByUser);
+router.get("/user/:userId", ReservationController.getReservationsByUser);
 // Get reservations by book
-router.get("/reservations/book/:bookId", ReservationController.getReservationsByBook);
+router.get("/book/:bookId", ReservationController.getReservationsByBook);
 // Reservation history
-router.get("/reservations/history", ReservationController.getReservationHistory);
+router.get("/history", ReservationController.getReservationHistory);
+// Retirar reserva
+router.post("/:id/retirar", ReservationController.retirarReserva);
 
 module.exports = router; 

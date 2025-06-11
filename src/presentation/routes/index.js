@@ -2,31 +2,33 @@ const express = require("express");
 const router = express.Router();
 
 // Users
-router.use(require("./usersRoutes"));
+router.use("/users", require("./usersRoutes"));
 // Librarians
-router.use(require("./librariansRoutes"));
+router.use("/librarians", require("./librariansRoutes"));
 // Audit
-router.use(require("./auditRoutes"));
+router.use("/audit", require("./auditRoutes"));
 // Books
-router.use(require("./booksRoutes"));
+router.use("/books", require("./booksRoutes"));
 // Works
 router.use(require("./worksRoutes"));
 // Copies
 router.use(require("./copiesRoutes"));
 // Authors
-router.use(require("./authorsRoutes"));
+router.use("/authors", require("./authorsRoutes"));
 // Publishers
-router.use(require("./publishersRoutes"));
+router.use("/publishers", require("./publishersRoutes"));
 // Reservations
-router.use(require("./reservationsRoutes"));
+router.use("/reservations", require("./reservationsRoutes"));
+// Loans
+router.use("/loans", require("./loansRoutes"));
 // Fines
-router.use(require("./finesRoutes"));
+router.use("/fines", require("./finesRoutes"));
 // Stats
 router.use(require("./statsRoutes"));
 // Admin
-router.use(require("./adminRoutes"));
+router.use("/admin", require("./adminRoutes"));
 // Categories
-router.use(require("./categoriesRoutes"));
+router.use("/categories", require("./categoriesRoutes"));
 
 // Rota de health check para testar conexão com o backend
 router.get("/", (req, res) => {

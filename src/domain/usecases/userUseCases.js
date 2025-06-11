@@ -13,15 +13,7 @@ class CreateUser {
 		if (data.papel && !data.role) {
 			data.role = data.papel;
 		}
-		// Mapeamento automático de papel para role (ex: aluno -> leitor)
-		const papelMap = {
-			aluno: "leitor",
-			professor: "funcionario",
-			admin: "admin",
-		};
-		if (data.role && papelMap[data.role]) {
-			data.role = papelMap[data.role];
-		}
+		// Não mapear mais para 'leitor' ou 'funcionario', manter 'aluno', 'professor', 'admin'
 		if (!data.name && data.nome) data.name = data.nome;
 		if (!data.nome && data.name) data.nome = data.name;
 		if (!data.name || typeof data.name !== "string" || data.name.trim() === "")
