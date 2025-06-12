@@ -9,6 +9,8 @@ const {
 const MongooseReservationRepo = require("../../infrastructure/mongoose/repositories/MongooseReservationRepository");
 const LoanModel = require("../../infrastructure/mongoose/models/Loan");
 const ReservationModel = require("../../infrastructure/mongoose/models/Reservation");
+const ExemplarModel = require("../../infrastructure/mongoose/models/Exemplar");
+const BookModel = require("../../infrastructure/mongoose/models/Book");
 
 // Instancia os casos de uso com o repositório de reservas
 const repoRes = new MongooseReservationRepo();
@@ -35,6 +37,18 @@ function padronizarReserva(reserva) {
 // Criação de uma nova reserva
 exports.createReservation = async (req, res) => {
 	try {
+		const { livroId } = req.body;
+		if (!livroId) {
+			return res.status(400).json({ success: false, error: "livroId é obrigatório" });
+		}
+		// Verifica se há exemplares disponíveis pelo stock
+		const livro = await BookModel.findById(livroId);
+		if (!livro) {
+			return res.status(404).json({ success: false, error: "Livro não encontrado" });
+		}
+		if (livro.stock > 0) {
+			return res.status(400).json({ success: false, error: "Ainda há exemplares disponíveis para empréstimo. Não é possível reservar." });
+		}
 		const result = await createResUC.execute(req.body);
 		res
 			.status(201)
@@ -87,7 +101,12 @@ exports.patchReservationStatus = async (req, res) => {
 // Cancelamento de uma reserva
 exports.deleteReservation = async (req, res) => {
 	try {
-		await cancelResUC.execute(req.params.id);
+		const reserva = await ReservationModel.findById(req.params.id);
+		if (!reserva) {
+			return res.status(404).json({ message: "Reserva não encontrada" });
+		}
+		reserva.status = "cancelada";
+		await reserva.save();
 		res.json({ message: "Reserva cancelada com sucesso" });
 	} catch (e) {
 		res.status(404).json({ message: e.message });

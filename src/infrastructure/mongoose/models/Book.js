@@ -6,8 +6,8 @@ const BookSchema = new mongoose.Schema(
 		authors: [
 			{ type: mongoose.Schema.Types.ObjectId, ref: "Author", required: true },
 		],
-		price: { type: Number },
 		stock: { type: Number, default: 0 },
+		price: { type: Number },
 		genero: { type: String },
 		ano: { type: Number },
 		tipo: { type: String },
@@ -19,8 +19,7 @@ const BookSchema = new mongoose.Schema(
 		sinopse: { type: String },
 		paginas: { type: Number },
 		resumo: { type: String },
-		editora: { type: String },
-		exemplares: { type: [Object], default: [] },
+		editora: { type: mongoose.Schema.Types.ObjectId, ref: "Publisher" },
 		disponivel: { type: Boolean, default: true },
 	},
 	{ collection: "livros", timestamps: true }

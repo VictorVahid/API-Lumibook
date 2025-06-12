@@ -27,7 +27,7 @@ function padronizarUsuario(user) {
 		matricula: user.matricula || null,
 		tipoLogin: user.tipoLogin || null,
 		avatarUrl: user.avatarUrl || user.avatar || null,
-		statusConta: user.statusConta || null,
+		statusConta: user.statusConta != null ? user.statusConta : "ativa",
 		telefone: user.telefone || null,
 	};
 }

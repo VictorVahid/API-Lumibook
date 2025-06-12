@@ -59,6 +59,10 @@ class MongoosePublisherRepository extends PublisherRepository {
 		}
 		await PublisherModel.findByIdAndDelete(id).exec();
 	}
+
+	async findByName(nome) {
+		return await PublisherModel.findOne({ nome: { $regex: `^${nome}$`, $options: 'i' } });
+	}
 }
 
 module.exports = MongoosePublisherRepository;

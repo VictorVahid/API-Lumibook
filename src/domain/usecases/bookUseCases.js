@@ -55,40 +55,19 @@ class CreateBook {
 		if (data.isbn) {
 			const livros = await this.repo.findByFilters({ isbn: data.isbn });
 			if (livros.length > 0) {
-				// Já existe, incrementa o stock e adiciona exemplar
+				// Já existe, incrementa o stock
 				const livroExistente = livros[0];
 				const novoStock = (livroExistente.stock || 0) + (data.stock || 1);
-
-				// Gera novo exemplar
-				const novoExemplar = {
-					codigo: `EX${Date.now()}`,
-					status: "disponivel",
-				};
-
-				// Atualiza o array de exemplares
-				const exemplaresAtualizados = Array.isArray(livroExistente.exemplares)
-					? [...livroExistente.exemplares, novoExemplar]
-					: [novoExemplar];
-
 				const atualizado = await this.repo.update(livroExistente.id, {
-					stock: novoStock,
-					exemplares: exemplaresAtualizados,
+					stock: novoStock
 				});
 				return atualizado;
 			}
 		}
 
-		// Se não existe, cria normalmente (com pelo menos 1 exemplar)
-		const novoExemplar = {
-			codigo: `EX${Date.now()}`,
-			status: "disponivel",
-		};
-		const exemplares =
-			data.exemplares && data.exemplares.length > 0
-				? data.exemplares
-				: [novoExemplar];
-
-		const book = new Book({ ...data, authors: authorIds, exemplares });
+		// Se não existe, cria normalmente
+		const stock = typeof data.stock === "number" ? data.stock : 1;
+		const book = new Book({ ...data, authors: authorIds, stock });
 		return await this.repo.create(book);
 	}
 }
@@ -143,6 +122,7 @@ class ReplaceBook {
 		) {
 			throw new Error("Pelo menos um autor é obrigatório");
 		}
+		if (data.exemplares) delete data.exemplares;
 		const updated = await this.repo.update(id, data);
 		if (!updated) throw new Error("Livro não encontrado");
 		return updated;
@@ -162,6 +142,7 @@ class PatchBook {
 		if (data.title !== undefined && data.title.trim() === "") {
 			throw new Error("O título do livro não pode ficar vazio");
 		}
+		if (data.exemplares) delete data.exemplares;
 		const patched = await this.repo.update(id, data);
 		if (!patched) throw new Error("Livro não encontrado");
 		return patched;

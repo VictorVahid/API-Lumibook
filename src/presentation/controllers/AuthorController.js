@@ -28,6 +28,13 @@ exports.createAuthor = async (req, res) => {
 			nome: result.nome,
 		});
 	} catch (e) {
+		if (e.code === "ALREADY_EXISTS" && e.data) {
+			return res.status(409).json({
+				success: false,
+				message: e.message,
+				data: e.data
+			});
+		}
 		res.status(400).json({ message: e.message });
 	}
 };

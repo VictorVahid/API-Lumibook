@@ -18,6 +18,14 @@ class CreateAuthor {
 		if (!nome || typeof nome !== "string" || nome.trim() === "") {
 			throw new Error("O nome do autor é obrigatório");
 		}
+		// Verifica duplicidade (case insensitive)
+		const existente = await this.repo.findByName(nome);
+		if (existente) {
+			const err = new Error("Autor já existe");
+			err.code = "ALREADY_EXISTS";
+			err.data = { id: existente._id || existente.id, nome: existente.nome };
+			throw err;
+		}
 		const author = new Author({ ...data });
 		return await this.repo.create(author);
 	}

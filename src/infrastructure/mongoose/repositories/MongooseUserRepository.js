@@ -50,6 +50,11 @@ class MongooseUserRepository {
 			telefone: obj.telefone,
 			matricula: obj.matricula,
 			senhaHash: obj.senhaHash,
+			avatarUrl: obj.avatarUrl || obj.avatar || null,
+			statusConta: obj.statusConta || null,
+			tipoLogin: obj.tipoLogin || null,
+			createdAt: obj.createdAt,
+			updatedAt: obj.updatedAt,
 		};
 	}
 }

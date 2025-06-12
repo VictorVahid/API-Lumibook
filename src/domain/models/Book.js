@@ -14,7 +14,6 @@ class Book {
 		paginas,
 		resumo,
 		localizacao,
-		exemplares,
 		adminId,
 		dataCatalogacao,
 		status,
@@ -34,12 +33,11 @@ class Book {
 		this.paginas = paginas;
 		this.resumo = resumo;
 		this.localizacao = localizacao;
-		this.exemplares = exemplares;
 		this.adminId = adminId;
 		this.dataCatalogacao = dataCatalogacao;
 		this.status = status;
 		this.disponivel = disponivel;
-		this.editora = editora; // ← Adicionado aqui
+		this.editora = editora;
 		this.validate();
 	}
 

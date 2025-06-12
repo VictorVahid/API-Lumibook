@@ -12,6 +12,8 @@ const {
 const MongooseBookRepo = require("../../infrastructure/mongoose/repositories/MongooseBookRepository");
 const BookModel = require("../../infrastructure/mongoose/models/Book");
 const ExemplarModel = require("../../infrastructure/mongoose/models/Exemplar");
+const MongooseAuthorRepo = require("../../infrastructure/mongoose/repositories/MongooseAuthorRepository");
+const MongoosePublisherRepo = require("../../infrastructure/mongoose/repositories/MongoosePublisherRepository");
 
 const repoBook = new MongooseBookRepo();
 const createBookUC = new CreateBook(repoBook);
@@ -24,52 +26,30 @@ const deleteBookUC = new DeleteBook(repoBook);
 async function traduzirLivro(livro) {
 	if (!livro) return null;
 	const obj = livro.toObject ? livro.toObject() : livro;
-	obj.id = obj._id || obj.id || null;
-
-	// Título
-	obj.titulo = obj.titulo || obj.title || "";
-	delete obj.title;
-
-	// Autores (array de strings)
-	if (obj.authors) {
-		obj.autores = Array.isArray(obj.authors)
-			? obj.authors.map((a) => (typeof a === "object" && a.nome ? a.nome : (typeof a === "string" ? a : "")))
-			: [];
-		delete obj.authors;
-	} else if (!obj.autores) {
-		obj.autores = [];
-	}
-
-	// ISBN
-	obj.isbn = obj.isbn || "";
-	// Ano
-	obj.ano = obj.ano || null;
-	// Tipo
-	obj.tipo = obj.tipo || "";
-	// Categoria
-	obj.categoria = obj.categoria || "";
-	// Editora
-	obj.editora = obj.editora || "";
-
-	// Exemplares (número)
-	if (obj.exemplares === undefined) {
-		obj.exemplares = 0;
-	}
-	// Disponível
-	if (obj.disponivel === undefined) {
-		obj.disponivel = false;
-	}
-	// Capa
-	obj.capa = obj.capa || "";
-	// Resumo
-	obj.resumo = obj.resumo || "";
-
-	return obj;
+	return {
+		id: obj._id || obj.id || null,
+		titulo: obj.title || obj.titulo || "",
+		autores: Array.isArray(obj.authors)
+			? obj.authors.map(a => (typeof a === "object" && a.nome ? a.nome : a))
+			: [],
+		stock: obj.stock,
+		isbn: obj.isbn || "",
+		ano: obj.ano || null,
+		tipo: obj.tipo || "",
+		categoria: obj.categoria || "",
+		editora: obj.editora && typeof obj.editora === 'object' && obj.editora.nome ? obj.editora.nome : (typeof obj.editora === 'string' ? obj.editora : ""),
+		paginas: obj.paginas || null,
+		resumo: obj.resumo || "",
+		localizacao: obj.localizacao || "",
+		idioma: obj.idioma || "",
+		disponivel: typeof obj.disponivel === 'boolean' ? obj.disponivel : true,
+		capa: obj.capa || ""
+	};
 }
 
 // Função utilitária para normalizar ISBN
 function normalizarIsbn(isbn) {
-	return isbn ? isbn.replace(/[-\s]/g, '') : '';
+	return isbn ? isbn.replace(/[^\dXx]/g, '') : '';
 }
 
 exports.createBook = async (req, res) => {
@@ -80,10 +60,59 @@ exports.createBook = async (req, res) => {
 		}
 		// Preencher capa automaticamente se não vier
 		if ((!req.body.capa || req.body.capa === "") && req.body.isbn) {
-			const isbnLimpo = normalizarIsbn(req.body.isbn);
+			if (req.body.isbn) req.body.isbn = normalizarIsbn(req.body.isbn);
 			req.body.capa = `https://covers.openlibrary.org/b/isbn/${isbnLimpo}-L.jpg`;
 		}
-		const book = await createBookUC.execute(req.body);
+		// Usar apenas stock
+		if (req.body.exemplares) delete req.body.exemplares;
+		if (typeof req.body.stock !== "number") req.body.stock = 1;
+
+		// --- NOVA LÓGICA: autores e editora por nome ---
+		const AuthorRepo = new MongooseAuthorRepo();
+		const PublisherRepo = new MongoosePublisherRepo();
+
+		// Processa autores (array de nomes ou IDs)
+		let authorIds = [];
+		if (Array.isArray(req.body.authors)) {
+			for (const autor of req.body.authors) {
+				if (typeof autor === "string") {
+					let found = await AuthorRepo.findByName(autor);
+					if (!found) {
+						found = await AuthorRepo.create({ nome: autor });
+					}
+					authorIds.push(found.id || found._id);
+				} else if (typeof autor === "object" && autor.id) {
+					authorIds.push(autor.id);
+				} else if (typeof autor === "string" && autor.match(/^[a-f\d]{24}$/i)) {
+					authorIds.push(autor);
+				}
+			}
+		}
+
+		// Processa editora (nome ou ID)
+		let publisherId = req.body.publisher;
+		if (typeof req.body.publisher === "string" && req.body.publisher.trim() !== "") {
+			let found = await PublisherRepo.findByName(req.body.publisher);
+			if (!found) {
+				found = await PublisherRepo.create({ nome: req.body.publisher });
+			}
+			publisherId = found.id || found._id;
+		}
+
+		// Garante que ano é número
+		let ano = req.body.ano;
+		if (typeof ano === "string") {
+			ano = parseInt(ano, 10);
+		}
+
+		const payload = {
+			...req.body,
+			authors: authorIds,
+			publisher: publisherId,
+			ano,
+		};
+
+		const book = await createBookUC.execute(payload);
 		const obj = await traduzirLivro(book);
 		res.status(201).json(obj);
 	} catch (e) {
@@ -93,13 +122,11 @@ exports.createBook = async (req, res) => {
 
 exports.getBook = async (req, res) => {
 	try {
-		const book = await getBookUC.execute(req.params.id);
-		const obj = await traduzirLivro(book);
-		const exemplares = Array.isArray(book.exemplares) ? book.exemplares : [];
-		const stock = exemplares.filter(e => e.status === 'disponivel' || e.status === 'available').length;
-		res.json({ ...obj, stock });
+		const book = await BookModel.findById(req.params.id);
+		if (!book) return res.status(404).json({ message: "Livro não encontrado" });
+		res.json(book);
 	} catch (e) {
-		res.status(404).json({ message: e.message });
+		res.status(500).json({ message: e.message });
 	}
 };
 
@@ -222,8 +249,8 @@ exports.getRelatedBooks = async (req, res) => {
 
 exports.getBookByISBN = async (req, res) => {
 	try {
-		const isbn = req.params.isbn;
-		const book = await BookModel.findOne({ isbn });
+		const isbnLimpo = normalizarIsbn(req.params.isbn);
+		const book = await BookModel.findOne({ isbn: isbnLimpo });
 		if (!book) return res.status(404).json({ message: "Livro não encontrado" });
 		const obj = await traduzirLivro(book);
 		res.json({
@@ -240,12 +267,73 @@ exports.getBookByISBN = async (req, res) => {
 
 exports.updateBook = async (req, res) => {
 	try {
-		// Preencher capa automaticamente se não vier
 		if ((!req.body.capa || req.body.capa === "") && req.body.isbn) {
 			const isbnLimpo = normalizarIsbn(req.body.isbn);
 			req.body.capa = `https://covers.openlibrary.org/b/isbn/${isbnLimpo}-L.jpg`;
 		}
-		const updated = await updateBookUC.execute(req.params.id, req.body);
+		if (req.body.exemplares) delete req.body.exemplares;
+
+		// --- NOVA LÓGICA: autores e editora por nome ---
+		const AuthorRepo = new MongooseAuthorRepo();
+		const PublisherRepo = new MongoosePublisherRepo();
+
+		// Processa autores (array de nomes ou IDs)
+		let authorIds = [];
+		if (Array.isArray(req.body.authors)) {
+			for (const autor of req.body.authors) {
+				if (typeof autor === "string") {
+					let found = await AuthorRepo.findByName(autor);
+					if (!found) {
+						found = await AuthorRepo.create({ nome: autor });
+					}
+					authorIds.push(found.id || found._id);
+				} else if (typeof autor === "object" && autor.id) {
+					authorIds.push(autor.id);
+				} else if (typeof autor === "string" && autor.match(/^[a-f\d]{24}$/i)) {
+					authorIds.push(autor);
+				}
+			}
+		}
+
+		// Processa editora (nome ou ID)
+		let publisherId = req.body.publisher;
+		if (typeof req.body.publisher === "string" && req.body.publisher.trim() !== "") {
+			let found = await PublisherRepo.findByName(req.body.publisher);
+			if (!found) {
+				found = await PublisherRepo.create({ nome: req.body.publisher });
+			}
+			publisherId = found.id || found._id;
+		}
+
+		// Garante que ano é número
+		let ano = req.body.ano;
+		if (typeof ano === "string") {
+			ano = parseInt(ano, 10);
+		}
+
+		const payload = {
+			...req.body,
+			authors: authorIds,
+			publisher: publisherId,
+			ano,
+		};
+
+		const updated = await replaceBookUC.execute(req.params.id, payload);
+		const obj = await traduzirLivro(updated);
+		res.json({ id: obj.id, titulo: obj.titulo });
+	} catch (e) {
+		res.status(400).json({ message: e.message });
+	}
+};
+
+exports.patchBook = async (req, res) => {
+	try {
+		if ((!req.body.capa || req.body.capa === "") && req.body.isbn) {
+			const isbnLimpo = normalizarIsbn(req.body.isbn);
+			req.body.capa = `https://covers.openlibrary.org/b/isbn/${isbnLimpo}-L.jpg`;
+		}
+		if (req.body.exemplares) delete req.body.exemplares;
+		const updated = await patchBookUC.execute(req.params.id, req.body);
 		const obj = await traduzirLivro(updated);
 		res.json({ id: obj.id, titulo: obj.titulo });
 	} catch (e) {
@@ -267,22 +355,34 @@ exports.searchBooks = async (req, res) => {
 		const { q, tipo, categoria, ano, editora, idioma } = req.query;
 		const filtro = {};
 
+		// Busca textual ampla (apenas em campos string)
 		if (q) {
-			// Busca textual ampla
 			filtro.$or = [
 				{ title: { $regex: new RegExp(q, "i") } },
 				{ categoria: { $regex: new RegExp(q, "i") } },
 				{ tipo: { $regex: new RegExp(q, "i") } },
-				{ editora: { $regex: new RegExp(q, "i") } },
 				{ idioma: { $regex: new RegExp(q, "i") } },
 				{ resumo: { $regex: new RegExp(q, "i") } },
 				{ isbn: { $regex: new RegExp(q, "i") } },
 			];
 		}
+
 		if (tipo) filtro.tipo = tipo;
 		if (categoria) filtro.categoria = categoria;
 		if (ano) filtro.ano = isNaN(Number(ano)) ? ano : Number(ano);
-		if (editora) filtro.editora = editora;
+
+		// Busca por nome da editora (se editora for string)
+		if (editora) {
+			const PublisherRepo = new MongoosePublisherRepo();
+			const found = await PublisherRepo.findByName(editora);
+			if (found) {
+				filtro.editora = found.id || found._id;
+			} else {
+				// Se não encontrar editora, retorna vazio
+				return res.json([]);
+			}
+		}
+
 		if (idioma) filtro.idioma = idioma;
 
 		// Se nenhum filtro foi passado, retorna array vazio
@@ -290,7 +390,7 @@ exports.searchBooks = async (req, res) => {
 			return res.json([]);
 		}
 
-		const books = await BookModel.find(filtro).populate("authors");
+		const books = await BookModel.find(filtro).populate(["authors", "editora"]);
 		const traduzidos = await Promise.all(books.map(traduzirLivro));
 		res.json(traduzidos);
 	} catch (e) {
@@ -372,5 +472,19 @@ exports.listRecentBooks = async (req, res) => {
 		return res.json(result);
 	} catch (e) {
 		return res.status(500).json({ message: e.message });
+	}
+};
+
+exports.debugBookStock = async (req, res) => {
+	try {
+		const book = await BookModel.findById(req.params.id);
+		if (!book) return res.status(404).json({ message: "Livro não encontrado" });
+		res.json({
+			id: book._id,
+			stock: book.stock,
+			raw: book
+		});
+	} catch (e) {
+		res.status(500).json({ message: e.message });
 	}
 };

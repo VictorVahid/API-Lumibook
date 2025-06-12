@@ -60,6 +60,10 @@ class MongooseAuthorRepository extends AuthorRepository {
 		}
 		await AuthorModel.findByIdAndDelete(id).exec();
 	}
+
+	async findByName(nome) {
+		return await AuthorModel.findOne({ nome: { $regex: `^${nome}$`, $options: 'i' } });
+	}
 }
 
 module.exports = MongooseAuthorRepository;

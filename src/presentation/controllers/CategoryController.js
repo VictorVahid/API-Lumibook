@@ -2,7 +2,8 @@ const CategoryModel = require("../../infrastructure/mongoose/models/Category");
 
 exports.listCategories = async (req, res) => {
   try {
-    const categorias = await CategoryModel.find().sort({ nome: 1 });
+    const categoriasDocs = await CategoryModel.find().sort({ nome: 1 });
+    const categorias = categoriasDocs.map(cat => cat.nome);
     res.json({ categorias });
   } catch (e) {
     res.status(500).json({ message: e.message });

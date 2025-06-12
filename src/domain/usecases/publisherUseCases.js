@@ -18,6 +18,14 @@ class CreatePublisher {
 		) {
 			throw new Error("Nome da editora é obrigatório");
 		}
+		// Verifica duplicidade (case insensitive)
+		const existente = await this.repo.findByName(data.nome);
+		if (existente) {
+			const err = new Error("Editora já existe");
+			err.code = "ALREADY_EXISTS";
+			err.data = { id: existente._id || existente.id, nome: existente.nome };
+			throw err;
+		}
 		const publisher = new Publisher({ ...data });
 		return await this.repo.create(publisher);
 	}

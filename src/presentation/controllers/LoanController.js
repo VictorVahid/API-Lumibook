@@ -4,38 +4,71 @@ const BookModel = require("../../infrastructure/mongoose/models/Book");
 const calcularDataDevolucao = require("../../utils/dateUtils");
 const { Router } = require("express");
 const Loan = require("../../infrastructure/mongoose/models/Loan");
+const ExemplarModel = require("../../infrastructure/mongoose/models/Exemplar");
+const mongoose = require("mongoose");
 
 // Criação de um novo empréstimo
 exports.createLoan = async (req, res) => {
-	const { usuarioId, livroId, tituloLivro, dataEmprestimo, dataPrevistaDevolucao } = req.body;
+	const { usuarioId, livroId, tituloLivro } = req.body;
 	if (!usuarioId)
 		return res.status(400).json({ message: "usuarioId é obrigatório" });
 	if (!livroId)
 		return res.status(400).json({ message: "livroId é obrigatório" });
 	if (!tituloLivro)
 		return res.status(400).json({ message: "tituloLivro é obrigatório" });
-	if (!dataPrevistaDevolucao)
-		return res
-			.status(400)
-			.json({ message: "dataPrevistaDevolucao é obrigatória" });
 
+	const session = await mongoose.startSession();
+	session.startTransaction();
 	try {
+		// Busca o livro e verifica stock
+		const livro = await BookModel.findById(livroId).session(session);
+		if (!livro) {
+			await session.abortTransaction();
+			return res.status(404).json({ message: "Livro não encontrado" });
+		}
+		if (livro.stock <= 0) {
+			await session.abortTransaction();
+			return res.status(400).json({ message: "Não há exemplares disponíveis. Deseja reservar?" });
+		}
+		// Decrementa o stock
+		livro.stock -= 1;
+		await livro.save({ session });
+
 		const dataEmprestimo = new Date();
 		const dataPrevistaDevolucao = calcularDataDevolucao(dataEmprestimo);
 
-		const novoEmprestimo = await LoanModel.create({
-			usuario: usuarioId,
-			livro: livroId,
-			tituloLivro,
-			dataEmprestimo: dataEmprestimo || new Date(),
-			dataPrevistaDevolucao, //Campo calculado
-			dataDevolucao: null,
-			status: "ativo",
-			renovacoes: 0
+		const novoEmprestimo = await LoanModel.create([
+			{
+				usuario: usuarioId,
+				livro: livroId,
+				tituloLivro,
+				dataEmprestimo,
+				dataPrevistaDevolucao,
+				dataDevolucao: null,
+				status: "ativo",
+				renovacoes: 0
+			}
+		], { session });
+
+		await session.commitTransaction();
+		// Retornar o estado atualizado do livro
+		const livroAtualizado = await BookModel.findById(livroId).populate("authors");
+		res.status(201).json({
+			success: true,
+			data: {
+				empresitmo: novoEmprestimo[0],
+				livro: {
+					id: livroAtualizado._id,
+					titulo: livroAtualizado.title,
+					stock: livroAtualizado.stock
+				}
+			}
 		});
-		res.status(201).json({ success: true, data: novoEmprestimo });
 	} catch (e) {
+		await session.abortTransaction();
 		res.status(500).json({ success: false, error: e.message });
+	} finally {
+		session.endSession();
 	}
 };
 
@@ -81,22 +114,72 @@ exports.getLoan = async (req, res) => {
 
 // Devolução de empréstimo (mock)
 exports.returnLoan = async (req, res) => {
+	const session = await mongoose.startSession();
+	session.startTransaction();
 	try {
 		const { id } = req.params;
-		const emprestimo = await LoanModel.findByIdAndUpdate(id, {
-			status: "devolvido",
-			dataDevolucao: new Date(),
-		}, {
-			new: true,
-			runValidators: true,
+		// Busca o empréstimo
+		const emprestimo = await LoanModel.findById(id).session(session);
+		if (!emprestimo) {
+			await session.abortTransaction();
+			return res.status(404).json({ message: "Empréstimo nao encontrado" });
+		}
+		if (emprestimo.status !== "ativo") {
+			await session.abortTransaction();
+			return res.status(400).json({ message: "Empréstimo nao pode ser devolvido" });
+		}
+
+		// Atualiza status do empréstimo
+		emprestimo.status = "devolvido";
+		emprestimo.dataDevolucao = new Date();
+		await emprestimo.save({ session });
+
+		// Busca reservas pendentes para o livro, ordenadas por dataReserva
+		const ReservationModel = require("../../infrastructure/mongoose/models/Reservation");
+		const reservasPendentes = await ReservationModel.find({
+			livroId: emprestimo.livro,
+			status: "pendente"
+		}).sort({ dataReserva: 1 }).session(session);
+
+		let stockIncrementado = false;
+		if (reservasPendentes.length > 0) {
+			// Há reservas pendentes: não incrementa stock, reserva exemplar para o próximo
+			const proximaReserva = reservasPendentes[0];
+			proximaReserva.status = "ativa";
+			await proximaReserva.save({ session });
+		} else {
+			// Não há reservas: incrementa stock
+			await BookModel.findByIdAndUpdate(
+				emprestimo.livro,
+				{ $inc: { stock: 1 } },
+				{ session }
+			);
+			stockIncrementado = true;
+		}
+
+		await session.commitTransaction();
+
+		// Retornar o estado atualizado do livro
+		const livroAtualizado = await BookModel.findById(emprestimo.livro).populate("authors");
+		res.json({
+			success: true,
+			data: {
+				id: emprestimo._id.toString(),
+				status: emprestimo.status,
+				stock: livroAtualizado.stock,
+				stockIncrementado,
+				livro: {
+					id: livroAtualizado._id,
+					titulo: livroAtualizado.title,
+					stock: livroAtualizado.stock
+				}
+			}
 		});
-
-		if (!emprestimo) return res.status(404).json({ message: "Empréstimo nao encontrado" });
-		if (emprestimo.status !== "ativo") return res.status(400).json({ message: "Empréstimo nao pode ser devolvido" });
-
-		res.json({ success: true, data: { id: emprestimo._id.toString(), status: emprestimo.status } });
 	} catch (e) {
+		await session.abortTransaction();
 		res.status(500).json({ message: e.message });
+	} finally {
+		session.endSession();
 	}
 };
 

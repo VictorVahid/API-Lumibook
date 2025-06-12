@@ -9,6 +9,7 @@ const LoanSchema = new mongoose.Schema({
   dataDevolucao: { type: Date },
   status: { type: String, enum: ["ativo", "devolvido", "atrasado"], default: "ativo" },
   renovacoes: { type: Number, default: 0 },
+  exemplar: { type: mongoose.Schema.Types.ObjectId, ref: "Exemplar" },
 }, { timestamps: true });
 
 module.exports = mongoose.model("Loan", LoanSchema); 

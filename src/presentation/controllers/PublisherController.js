@@ -24,6 +24,13 @@ exports.createPublisher = async (req, res) => {
 		const result = await createPubUC.execute(req.body);
 		res.status(201).json({ success: true, data: result, error: null });
 	} catch (e) {
+		if (e.code === "ALREADY_EXISTS" && e.data) {
+			return res.status(409).json({
+				success: false,
+				message: e.message,
+				data: e.data
+			});
+		}
 		res.status(400).json({ success: false, data: null, error: e.message });
 	}
 };

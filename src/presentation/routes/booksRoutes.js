@@ -29,5 +29,7 @@ router.put("/:id", BookController.updateBook);
 router.delete("/:id", BookController.deleteBook);
 // Get book by ID (sempre por último)
 router.get("/:id", BookController.getBook);
+// Endpoint de debug para consultar o stock direto do banco
+router.get("/:id/debug-stock", BookController.debugBookStock);
 
 module.exports = router; 
