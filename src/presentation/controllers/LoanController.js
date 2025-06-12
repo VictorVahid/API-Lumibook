@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const LoanModel = require("../../infrastructure/mongoose/models/Loan");
 const BookModel = require("../../infrastructure/mongoose/models/Book");
-const calcularDataDevolucao = require("../../utils/dateUtils");
+const { calcularDataDevolucao } = require("../../utils/dateUtils");
 const { Router } = require("express");
 const Loan = require("../../infrastructure/mongoose/models/Loan");
 const ExemplarModel = require("../../infrastructure/mongoose/models/Exemplar");

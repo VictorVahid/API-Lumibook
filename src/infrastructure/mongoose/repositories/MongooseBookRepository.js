@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 class MongooseBookRepository extends BookRepository {
 	async create(book) {
 		const doc = await BookModel.create(book);
-		await doc.populate(["authors", "editora"]);
+		await doc.populate(["authors"]);
 		return this._toDTO(doc);
 	}
 
@@ -15,13 +15,13 @@ class MongooseBookRepository extends BookRepository {
 		if (filters.title) query.title = { $regex: filters.title, $options: "i" };
 		if (filters.authors) query.authors = { $in: filters.authors };
 
-		const docs = await BookModel.find(query).populate(["authors", "editora"]).exec();
+		const docs = await BookModel.find(query).populate(["authors"]).exec();
 		return docs.map(this._toDTO);
 	}
 
 	async findById(id) {
 		if (!mongoose.Types.ObjectId.isValid(id)) return null;
-		const doc = await BookModel.findById(id).populate(["authors", "editora"]).exec();
+		const doc = await BookModel.findById(id).populate(["authors"]).exec();
 		return doc ? this._toDTO(doc) : null;
 	}
 
@@ -30,7 +30,7 @@ class MongooseBookRepository extends BookRepository {
 		const doc = await BookModel.findByIdAndUpdate(id, data, {
 			new: true,
 		})
-			.populate(["authors", "editora"])
+			.populate(["authors"])
 			.exec();
 		return doc ? this._toDTO(doc) : null;
 	}
@@ -60,7 +60,7 @@ class MongooseBookRepository extends BookRepository {
 			sinopse: obj.sinopse,
 			paginas: obj.paginas,
 			resumo: obj.resumo,
-			editora: obj.editora && typeof obj.editora === 'object' ? { id: obj.editora._id || obj.editora.id, nome: obj.editora.nome } : obj.editora,
+			editora: obj.editora || "",
 			exemplares: obj.exemplares,
 			disponivel: obj.disponivel,
 		};

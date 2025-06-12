@@ -297,68 +297,82 @@ exports.getAvatar = async (req, res) => {
 exports.getUserStats = async (req, res) => {
 	try {
 		const userId = req.params.id;
+		
+		// Verificar se o usuário existe
 		const user = await getUserUC.execute(userId);
-		const papel = user.papel || user.role;
-		// Exemplo de obtenção dos dados (ajuste conforme sua lógica real):
-		const limiteConcorrente = 3;
-		const livrosDisponiveis = await BookModel.countDocuments({ disponivel: true });
-		const livrosEmprestados = await LoanModel.countDocuments({ usuario: userId, status: { $in: ["ativo", "atrasado"] } });
-		const reservasDocs = await ReservationModel.find({ usuarioId: userId }).populate("livroId");
-		const reservas = reservasDocs.map(r => ({
-			id: r._id.toString(),
-			status: r.status,
-			dataReserva: r.dataReserva ? new Date(r.dataReserva).toISOString() : null,
-			tituloLivro: r.livroId && r.livroId.title ? r.livroId.title : null
-		}));
-		const reservasRealizadas = reservas.length;
-		const atrasos = await LoanModel.countDocuments({ usuario: userId, status: "atrasado" });
-		const emprestimosAtrasadosDocs = await LoanModel.find({ usuario: userId, status: "atrasado" }).populate("livroId");
-		const emprestimosAtrasados = emprestimosAtrasadosDocs.map(e => ({
-			id: e._id.toString(),
-			status: e.status,
-			dataEmprestimo: e.dataEmprestimo ? new Date(e.dataEmprestimo).toISOString() : null,
-			dataDevolucao: e.dataDevolucao ? new Date(e.dataDevolucao).toISOString() : null,
-			tituloLivro: e.livroId && e.livroId.title ? e.livroId.title : null
-		}));
-		const multasPendentes = await FineModel.countDocuments({ usuarioId: userId, status: "pendente" });
-		const bibliografiasGerenciadas = papel === "professor" ? (user.bibliografiasGerenciadas || 0) : undefined;
-		const fonte = "Sistema Lumibook";
-		const ultimaAtualizacao = new Date().toISOString();
-		// Monta o objeto final, garantindo todos os campos obrigatórios
-		const stats = {
-			livrosDisponiveis: Number(livrosDisponiveis),
-			livrosEmprestados: Number(livrosEmprestados),
-			reservasRealizadas: Number(reservasRealizadas),
-			reservas: reservas,
-			atrasos: Number(atrasos),
-			emprestimosAtrasados: Array.isArray(emprestimosAtrasados) ? emprestimosAtrasados : [],
-			multasPendentes: Number(multasPendentes),
-			limiteConcorrente: Number(limiteConcorrente),
-			fonte,
-			ultimaAtualizacao
-		};
-		if (papel === "professor") {
-			stats.bibliografiasGerenciadas = Number(bibliografiasGerenciadas || 0);
+		if (!user) {
+			return res.status(404).json({ message: "Usuário não encontrado" });
 		}
-		// Garante que todos os campos obrigatórios estejam presentes
-		[
-			"livrosDisponiveis",
-			"livrosEmprestados",
-			"reservasRealizadas",
-			"reservas",
-			"atrasos",
-			"emprestimosAtrasados",
-			"multasPendentes",
-			"limiteConcorrente",
-			"fonte",
-			"ultimaAtualizacao"
-		].forEach(campo => {
-			if (typeof stats[campo] === "undefined") {
-				stats[campo] = campo === "reservas" || campo === "emprestimosAtrasados" ? [] : 0;
+
+		// Estatísticas de empréstimos
+		const emprestimos = await LoanModel.find({ usuario: userId });
+		const emprestimosAtivos = emprestimos.filter(e => !e.dataDevolucao);
+		const emprestimosConcluidos = emprestimos.filter(e => e.dataDevolucao);
+		
+		// Estatísticas de atrasos
+		const emprestimosAtrasados = emprestimosAtivos.filter(e => {
+			const dataPrevista = new Date(e.dataPrevistaDevolucao);
+			return dataPrevista < new Date() && !e.dataDevolucao;
+		});
+
+		// Estatísticas de multas
+		const multas = await FineModel.find({ usuarioId: userId });
+		const multasPendentes = multas.filter(m => !m.pago && m.status === 'pendente');
+		const multasPagas = multas.filter(m => m.pago || m.status === 'paga');
+
+		// Estatísticas de reservas
+		const reservas = await ReservationModel.find({ usuarioId: userId });
+		const reservasAtivas = reservas.filter(r => r.status === 'ativa');
+		const reservasConcluidas = reservas.filter(r => r.status === 'concluida' || r.status === 'finalizada');
+		const reservasCanceladas = reservas.filter(r => r.status === 'cancelada');
+
+		// Estatísticas de livros disponíveis
+		const livrosDisponiveis = await BookModel.countDocuments({ disponivel: true });
+
+		// Calcular valor total de multas pendentes
+		const valorMultasPendentes = multasPendentes.reduce((total, multa) => total + (multa.valor || 0), 0);
+
+		// Calcular tempo médio de empréstimo
+		const tempoMedioEmprestimo = emprestimosConcluidos.length > 0 
+			? emprestimosConcluidos.reduce((total, emp) => {
+				const inicio = new Date(emp.dataEmprestimo);
+				const fim = new Date(emp.dataDevolucao);
+				return total + (fim - inicio);
+			}, 0) / emprestimosConcluidos.length / (1000 * 60 * 60 * 24) // Converter para dias
+			: 0;
+
+		return res.status(200).json({
+			emprestimos: {
+				total: emprestimos.length,
+				ativos: emprestimosAtivos.length,
+				concluidos: emprestimosConcluidos.length,
+				atrasados: emprestimosAtrasados.length,
+				tempoMedioDias: Math.round(tempoMedioEmprestimo * 100) / 100
+			},
+			multas: {
+				total: multas.length,
+				pendentes: multasPendentes.length,
+				pagas: multasPagas.length,
+				valorPendente: valorMultasPendentes
+			},
+			reservas: {
+				total: reservas.length,
+				ativas: reservasAtivas.length,
+				concluidas: reservasConcluidas.length,
+				canceladas: reservasCanceladas.length
+			},
+			biblioteca: {
+				livrosDisponiveis: livrosDisponiveis
+			},
+			usuario: {
+				id: user.id || user._id,
+				nome: user.nome || user.name,
+				papel: papelFrontEnd(user.papel || user.role),
+				membroDesde: calcularMembroDesde(user)
 			}
 		});
-		return res.status(200).json(stats);
 	} catch (e) {
+		console.error('Erro ao buscar estatísticas do usuário:', e);
 		return res.status(500).json({ message: e.message });
 	}
 };

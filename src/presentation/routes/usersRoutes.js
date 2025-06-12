@@ -19,8 +19,8 @@ router.get("/:id", UserController.getUser);
 router.get("/:id/avatar", UserController.getAvatar);
 // Get user activities
 router.get("/:id/activities", UserController.getUserActivities);
-// Update user stats
-router.put("/:userId/stats/:statKey", UserController.getUserStats);
+// Get user stats
+router.get("/:userId/stats", requireAuth, UserController.getUserStats);
 // Reservas ativas do usuário
 router.get("/:id/reservas-ativas", requireAuth, async (req, res) => {
   const reservas = await ReservationModel.find({ usuarioId: req.params.id, status: { $in: ["pendente", "ativa"] } }).populate("livroId");

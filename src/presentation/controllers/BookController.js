@@ -14,6 +14,7 @@ const BookModel = require("../../infrastructure/mongoose/models/Book");
 const ExemplarModel = require("../../infrastructure/mongoose/models/Exemplar");
 const MongooseAuthorRepo = require("../../infrastructure/mongoose/repositories/MongooseAuthorRepository");
 const MongoosePublisherRepo = require("../../infrastructure/mongoose/repositories/MongoosePublisherRepository");
+const { getPublisherName } = require("../../infrastructure/mongoose/models/PublisherMapping");
 
 const repoBook = new MongooseBookRepo();
 const createBookUC = new CreateBook(repoBook);
@@ -26,6 +27,13 @@ const deleteBookUC = new DeleteBook(repoBook);
 async function traduzirLivro(livro) {
 	if (!livro) return null;
 	const obj = livro.toObject ? livro.toObject() : livro;
+	console.log('Objeto antes da tradução:', JSON.stringify(obj, null, 2));
+	
+	// Processa a editora - agora é uma string direta
+	const editoraNome = obj.editora || "";
+	
+	console.log('Editora processada:', editoraNome);
+	
 	return {
 		id: obj._id || obj.id || null,
 		titulo: obj.title || obj.titulo || "",
@@ -37,7 +45,7 @@ async function traduzirLivro(livro) {
 		ano: obj.ano || null,
 		tipo: obj.tipo || "",
 		categoria: obj.categoria || "",
-		editora: obj.editora && typeof obj.editora === 'object' && obj.editora.nome ? obj.editora.nome : (typeof obj.editora === 'string' ? obj.editora : ""),
+		editora: editoraNome,
 		paginas: obj.paginas || null,
 		resumo: obj.resumo || "",
 		localizacao: obj.localizacao || "",
@@ -124,12 +132,20 @@ exports.getBook = async (req, res) => {
 	try {
 		const book = await BookModel.findById(req.params.id)
 			.populate("authors")
-			.populate("editora")
 			.populate("categoria");
+		
 		if (!book) return res.status(404).json({ message: "Livro não encontrado" });
+		
+		console.log('Livro completo:', JSON.stringify(book, null, 2));
+		console.log('Editora do livro:', book.editora);
+		console.log('Editora tipo:', typeof book.editora);
+		
 		const obj = await traduzirLivro(book);
+		console.log('Objeto traduzido:', JSON.stringify(obj, null, 2));
+		
 		res.json(obj);
 	} catch (e) {
+		console.error('Erro ao buscar livro:', e);
 		res.status(500).json({ message: e.message });
 	}
 };

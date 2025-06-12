@@ -11,6 +11,7 @@ const LoanModel = require("../../infrastructure/mongoose/models/Loan");
 const ReservationModel = require("../../infrastructure/mongoose/models/Reservation");
 const ExemplarModel = require("../../infrastructure/mongoose/models/Exemplar");
 const BookModel = require("../../infrastructure/mongoose/models/Book");
+const { calcularDataDevolucao } = require("../../utils/dateUtils");
 
 // Instancia os casos de uso com o repositório de reservas
 const repoRes = new MongooseReservationRepo();
@@ -45,9 +46,6 @@ exports.createReservation = async (req, res) => {
 		const livro = await BookModel.findById(livroId);
 		if (!livro) {
 			return res.status(404).json({ success: false, error: "Livro não encontrado" });
-		}
-		if (livro.stock > 0) {
-			return res.status(400).json({ success: false, error: "Ainda há exemplares disponíveis para empréstimo. Não é possível reservar." });
 		}
 		const result = await createResUC.execute(req.body);
 		res
@@ -145,18 +143,24 @@ exports.getReservationsByBook = async (req, res) => {
 exports.retirarReserva = async (req, res) => {
 	try {
 		const reserva = await ReservationModel.findById(req.params.id).populate("livroId");
-		if (!reserva || !["pendente", "ativa"].includes(reserva.status)) {
-			return res.status(400).json({ message: "Reserva não encontrada ou já atendida." });
+		if (!reserva) {
+			return res.status(404).json({ message: "Reserva não encontrada." });
+		}
+		if (reserva.status !== "pendente") {
+			return res.status(400).json({ message: "Apenas reservas pendentes podem ser retiradas." });
 		}
 		// Atualiza status da reserva
 		reserva.status = "finalizada";
 		await reserva.save();
 		// Cria empréstimo
+		const dataEmprestimo = new Date();
+		const dataPrevistaDevolucao = calcularDataDevolucao(dataEmprestimo);
 		const novoEmprestimo = await LoanModel.create({
 			usuario: reserva.usuarioId,
 			livro: reserva.livroId._id,
 			tituloLivro: reserva.livroId.title,
-			dataEmprestimo: new Date(),
+			dataEmprestimo,
+			dataPrevistaDevolucao,
 			status: "ativo"
 		});
 		return res.status(201).json({ success: true, data: novoEmprestimo });

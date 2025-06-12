@@ -19,7 +19,7 @@ const BookSchema = new mongoose.Schema(
 		sinopse: { type: String },
 		paginas: { type: Number },
 		resumo: { type: String },
-		editora: { type: mongoose.Schema.Types.ObjectId, ref: "Publisher" },
+		editora: { type: String },
 		disponivel: { type: Boolean, default: true },
 	},
 	{ collection: "livros", timestamps: true }
