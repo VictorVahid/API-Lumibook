@@ -1,9 +1,9 @@
-const express = require("express");
-const CategoryController = require("../controllers/CategoryController");
-const router = express.Router();
+// Removido todas as rotas de categorias, pois agora será utilizado um array fixo no frontend.
 
-router.get("/", CategoryController.listCategories);
-router.post("/", CategoryController.createCategory);
-router.get("/:id", CategoryController.getCategory);
-
-module.exports = router; 
+// Caso precise expor um array fixo pelo backend, descomente abaixo:
+// const express = require("express");
+// const router = express.Router();
+// router.get("/categories", (req, res) => res.json([
+//   "Romance", "Aventura", "Biografia", "Ciência", "Tecnologia", "História"
+// ]));
+// module.exports = router; 

@@ -15,7 +15,25 @@ router.get("/types", (req, res) => {
   ]);
 });
 // Get work categories
-router.get("/categories", (req, res) => res.json(["Fiction", "Non-fiction", "Science", "History"]));
+router.get("/categories", (req, res) => res.json([
+  "Esportes",
+  "Negócios",
+  "Direito",
+  "Política",
+  "Educação",
+  "Gastronomia",
+  "Viagem",
+  "Humor",
+  "Drama",
+  "Suspense",
+  "Romance",
+  "Aventura",
+  "Biografia",
+  "Ciência",
+  "Tecnologia",
+  "História",
+  "Fantasia"
+]));
 // Check duplicate
 router.get("/check-duplicate", (req, res) => res.json({ exists: false }));
 
