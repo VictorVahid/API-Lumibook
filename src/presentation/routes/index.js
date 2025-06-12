@@ -10,7 +10,7 @@ router.use("/audit", require("./auditRoutes"));
 // Books
 router.use("/books", require("./booksRoutes"));
 // Works
-router.use(require("./worksRoutes"));
+router.use("/works", require("./worksRoutes"));
 // Copies
 router.use(require("./copiesRoutes"));
 // Authors

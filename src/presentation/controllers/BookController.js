@@ -108,7 +108,7 @@ exports.createBook = async (req, res) => {
 		const payload = {
 			...req.body,
 			authors: authorIds,
-			publisher: publisherId,
+			editora: publisherId,
 			ano,
 		};
 
@@ -122,9 +122,13 @@ exports.createBook = async (req, res) => {
 
 exports.getBook = async (req, res) => {
 	try {
-		const book = await BookModel.findById(req.params.id);
+		const book = await BookModel.findById(req.params.id)
+			.populate("authors")
+			.populate("editora")
+			.populate("categoria");
 		if (!book) return res.status(404).json({ message: "Livro não encontrado" });
-		res.json(book);
+		const obj = await traduzirLivro(book);
+		res.json(obj);
 	} catch (e) {
 		res.status(500).json({ message: e.message });
 	}
@@ -314,7 +318,7 @@ exports.updateBook = async (req, res) => {
 		const payload = {
 			...req.body,
 			authors: authorIds,
-			publisher: publisherId,
+			editora: publisherId,
 			ano,
 		};
 
